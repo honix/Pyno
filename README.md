@@ -10,7 +10,7 @@ There are only two elements:
 - node (is a function)
 - field (is a object, value or lambda function)
 
-1. To spawn **node** press **N** to spawn **field** press **F** on keyboard.
+1. To spawn **node** press **N**, to spawn **field** press **F** on keyboard.
 
 2. To open already created pathes copy *(ctrl + c)* text from examples and paste *(ctrl + v)* it in pyno window. For now it is only one way to do.
 
