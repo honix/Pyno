@@ -1,5 +1,5 @@
 # Pyno
-**Python-based visual programming**, what?
+**Python-based data-flow visual programming**, what?
 
 ![Pyno](screenshots/start.png)
 
