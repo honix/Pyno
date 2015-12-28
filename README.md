@@ -7,8 +7,8 @@
 
 ### How to use
 There are only two elements:
-- node (is a function)
-- field (is a object, value or lambda function)
+- **node** (is a function)
+- **field** (is a object, value or lambda function)
 
 1. To spawn **node** press **N**, to spawn **field** press **F** on keyboard.
 
