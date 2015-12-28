@@ -31,3 +31,5 @@ To run pyno you must install few libs:
 
 * ```pip install pyglet```
 * ```pip install clipboard```
+
+![Pyno](screenshots/mass_render.png)
