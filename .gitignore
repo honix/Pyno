@@ -1,0 +1,7 @@
+bin/
+build/
+dist/
+screens/
+*.pyc
+*.spec
+*.nja
