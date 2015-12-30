@@ -6,6 +6,10 @@
 *Pyno is a experiment. Real world scenarios is confusing.*
 
 ### How to use
+[Check wiki for tutorials](https://github.com/honix/Pyno/wiki)
+
+**Basics:**
+
 There are only two elements:
 - **node** (is a function)
 - **field** (is a object, value or lambda function)
