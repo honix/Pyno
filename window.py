@@ -1,5 +1,4 @@
 import pyglet
-pyglet.options['debug_gl'] = False  # performance boost?
 from pyglet.gl import *
 from random import randint
 import clipboard
@@ -10,11 +9,12 @@ from codeEditor import CodeEditor
 from field import Field
 from utils import *
 
+# pyglet.options['debug_gl'] = False  # performance boost?
+
 
 class PynoWindow(pyglet.window.Window):
-    ''' Main pyno window. It's gray with logo in bottom.
-        It handles all elements and controls
-    '''
+    # Main pyno window. It's gray with logo in bottom.
+    # It handles all elements and controls
 
     nodes = []
     selectedNodes = []
@@ -38,19 +38,20 @@ class PynoWindow(pyglet.window.Window):
         super().__init__(resizable=True, caption='Pyno', config=config)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
-        screen = self.display.get_default_screen()  # set window in center
+        # set window position to center
+        screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
-        #self.set_location(100, 300)
-
-        self.corner = pyglet.image.load('imgs/corner.png')
 
         pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
 
         pyglet.clock.schedule(self.update)
-        #pyglet.clock.schedule_interval(self.update, .1)
         pyglet.clock.set_fps_limit(60)
 
         self.pynoSpace['G'] = self.pynoSpace
+
+        self.batch = pyglet.graphics.Batch()
+        # load pyno-logo in left bottom
+        self.pyno_logo = pyglet.image.load('imgs/corner.png')
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
@@ -58,22 +59,17 @@ class PynoWindow(pyglet.window.Window):
         # ---- Calculations ----
 
         for node in self.nodes:
-            #if not node.problem:
+            # if not node.problem:
             node.proc_result = None
 
         for node in self.nodes:
             node.processor(self.pynoSpace)
 
     def on_draw(self):
-
-        # ---- Batch init ----
-
-        batch = pyglet.graphics.Batch()
-
         # ---- BG ----
 
         self.clear()
-        self.corner.blit(0, 0)
+        self.pyno_logo.blit(0, 0)
 
         # ---- NODES ----
 
@@ -84,7 +80,7 @@ class PynoWindow(pyglet.window.Window):
                      -self.height / 2 + ps[0][1], 0.0)
 
         for node in self.nodes:
-            node.render_base(batch)
+            node.render_base(self.batch)
 
         if self.connection:
             p = self.pointer
@@ -94,18 +90,18 @@ class PynoWindow(pyglet.window.Window):
             if self.connectNode['mode'] == 'input':
                 start = n.put_pos_by_name(cn['put']['name'], 'inputs')
                 draw.line((start, n.y + n.ch + n.offset // 2),
-                          (start, n.y + n.ch + n.offset), batch)
+                          (start, n.y + n.ch + n.offset), self.batch)
                 draw.line((start, n.y + n.ch + n.offset),
-                          (p[0], p[1]), batch)
+                          (p[0], p[1]), self.batch)
 
             elif self.connectNode['mode'] == 'output':
                 start = n.put_pos_by_name(cn['put']['name'], 'outputs')
                 draw.line((start, n.y - n.ch - n.offset // 2),
-                          (start, n.y - n.ch - n.offset), batch)
+                          (start, n.y - n.ch - n.offset), self.batch)
                 draw.line((start, n.y - n.ch - n.offset),
-                          (p[0], p[1]), batch)
+                          (p[0], p[1]), self.batch)
 
-        batch.draw()
+        self.batch.draw()
 
         if ps[1] > 0.4:
             for node in self.nodes:
@@ -120,7 +116,7 @@ class PynoWindow(pyglet.window.Window):
         # ---- GUI ----
 
         glLoadIdentity()
-        #self.fps.draw()
+        # self.fps.draw()
 
     # ---- Inputs ----
 
@@ -146,12 +142,12 @@ class PynoWindow(pyglet.window.Window):
                     self.field.pan_scale = self.pan_scale
                     self.field.screen_size = self.get_size()
 
-            nodes_lengh = len(self.nodes)
-            if nodes_lengh > 10:
+            nodes_length = len(self.nodes)
+            if nodes_length > 10:
                 if self.flipper:
-                    check_nodes = self.nodes[nodes_lengh // 2:]
+                    check_nodes = self.nodes[nodes_length // 2:]
                 else:
-                    check_nodes = self.nodes[:nodes_lengh // 2]
+                    check_nodes = self.nodes[:nodes_length // 2]
             else:
                 check_nodes = self.nodes
 
@@ -328,12 +324,14 @@ class PynoWindow(pyglet.window.Window):
         if not (self.codeEditor or self.field):
             if symbol == key.N:
                 self.nodes.append(Node(self.pointer[0],
-                                  self.pointer[1], (randint(80, 130),
-                                                 randint(80, 130),
-                                                 randint(80, 130))))
+                                  self.pointer[1], self.batch,
+                                  (randint(80, 130),
+                                   randint(80, 130),
+                                   randint(80, 130))))
 
             elif symbol == key.F:
-                self.nodes.append(Field(self.pointer[0], self.pointer[1]))
+                self.nodes.append(Field(self.pointer[0], self.pointer[1],
+                                        self.batch))
 
             if modifiers & key.MOD_CTRL:
                 x, y = self.pointer[0], self.pointer[1]
@@ -370,11 +368,12 @@ class PynoWindow(pyglet.window.Window):
                         for node in paste:
                             if node['type'] == 'node':
                                 buff.append([Node(node['x'] + x,
-                                                 node['y'] + y,
-                                                 node['color'],
-                                                 node['code'],
-                                                 node['connects'],
-                                                 node['size']),
+                                                  node['y'] + y,
+                                                  self.batch,
+                                                  node['color'],
+                                                  node['code'],
+                                                  node['connects'],
+                                                  node['size']),
                                              node['parent']])
                             elif node['type'] == 'field':
                                 buff.append([Field(node['x'] + x,
@@ -393,6 +392,7 @@ class PynoWindow(pyglet.window.Window):
 
             if symbol == key.DELETE:
                 for node in self.selectedNodes:
+                    node.delete()
                     self.nodes[self.nodes.index(node)].outputs = ()
                     del self.nodes[self.nodes.index(node)]
                     print('Delete node')

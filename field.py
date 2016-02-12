@@ -7,11 +7,10 @@ from draw import *
 
 
 class Field(Element):
-    ''' Field is a white box where you can put values
-    '''
+    # Field is a white box where you can put values
 
-    def __init__(self, x, y, code=None, connects=None, size=None):
-        Element.__init__(self, x, y, (230, 230, 230))
+    def __init__(self, x, y, batch, code=None, connects=None, size=None):
+        Element.__init__(self, x, y, (230, 230, 230), batch)
         self.init_processor()
 
         if not size is None:
@@ -50,8 +49,7 @@ class Field(Element):
         self.style(new=True)
 
     def init_processor(self):
-        ''' Processor manages calculation side of pyno
-        '''
+        # Processor manages calculation side of pyno
         self.proc_result = None
 
         self.value = None
@@ -62,8 +60,8 @@ class Field(Element):
         self.gen_output = {'output': None}
 
     def processor(self, space):
-        ''' Processor called every frame
-        '''
+        # Processor called every frame
+
         if self.proc_result:
             return self.proc_result
 
@@ -127,8 +125,7 @@ class Field(Element):
         self.layout.draw()
 
     def style(self, new=False):
-        ''' Vary how represent value, for numbers there is inc/decrement slider
-        '''
+        # Vary how represent value, for numbers there is inc/decrement slider
         l = self.layout
         if new:
             self.document.set_style(0, len(self.document.text),
@@ -168,16 +165,14 @@ class Field(Element):
         return super().intersect_point(point, visual)
 
     def intersect_incr(self, point):
-        ''' Intersect with inc/decrement slider, to fast value change
-        '''
+        # Intersect with inc/decrement slider, to fast value change
         intersect = (0 < point[0] - (self.x - self.cw) < 20 and
                      0 < point[1] - (self.y - self.ch) < self.h)
         self.incr = intersect
         return intersect
 
     def intersect_corner(self, point):
-        ''' Intersect bottom right corner to resize
-        '''
+        # Intersect bottom right corner to resize
         intersect = (0 < point[0] - (self.x + self.cw - 10) < 10 and
                      0 < point[1] - (self.y - self.ch) < 10)
         self.resize = intersect

@@ -5,12 +5,11 @@ from processor import Processor
 
 
 class Node(Element, Processor):
-    ''' Field is a main pyno element, in fact it is a function with in/outputs
-    '''
+    # Field is a main pyno element, in fact it is a function with in/outputs
 
-    def __init__(self, x, y, color=(200, 200, 200), code=None,
+    def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=None):
-        Element.__init__(self, x, y, color)
+        Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
         if not size is None:
@@ -22,21 +21,22 @@ class Node(Element, Processor):
             self.connectedTo = connects
 
         if code is None:
-            self.code = '''def newNode(a=0, b=0):
+            self.code = """def newNode(a=0, b=0):
     result = a + b
-    return result'''
+    return result"""
         else:
             self.code = code
 
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name='consolas',
-                                        bold=True, font_size=12,
-                                        anchor_x='center', anchor_y='center')
+                                       bold=True, font_size=12,
+                                       anchor_x='center', anchor_y='center')
         self.new_code(self.code)
 
+        self.render_base(batch)
+
     def new_code(self, code):
-        ''' New code recived, search for in/outputs
-        '''
+        # New code, search for in/outputs
         self.code = code
         color = code[:12].find('#color')
         if color > -1:
