@@ -52,6 +52,8 @@ class PynoWindow(pyglet.window.Window):
         self.batch = pyglet.graphics.Batch()
         # load pyno-logo in left bottom
         self.pyno_logo = pyglet.image.load('imgs/corner.png')
+        # first-meta-node to be
+        Node(-9000, 9000, self.batch, (0, 0, 0))
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt

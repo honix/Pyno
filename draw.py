@@ -66,6 +66,10 @@ class Quad:
                             x - cw, y + ch)
         self.id.colors = color * 4
 
+    def delete(self):
+        self.id.delete()
+        del self.id
+
 
 
 #def quad_gradient(x, y, cw, ch, col1, col2, batch):

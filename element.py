@@ -23,8 +23,8 @@ class Element(object):
         self.draw_color = color
         self.er_color = (230, 20, 20)
 
-        self.graphics = {}
-        self.graphics['ready'] = False
+        self.graphics = dict(inputs=dict(), outputs=dict())
+        self.graphics_ready = False
         self.batch = batch
 
         self.er_label = pyglet.text.Label('error', font_name='consolas',
@@ -80,21 +80,26 @@ class Element(object):
         # New inputs and output was created.
         # We need create labels for each
 
+        gr = self.graphics
         self.inputs = data['inputs']
         self.outputs = data['outputs']
+        [put.delete() for put in gr['inputs'].values()]
+        [put.delete() for put in gr['outputs'].values()]
+
         self.inlabels = []
-        self.graphics['inputs'] = self.graphics['outputs'] = {}
+        gr['inputs'] = dict()
         for input in self.inputs:
+            gr['inputs'][input] = Quad(self.batch)
             self.inlabels.append(pyglet.text.Label(input, x=0, y=0,
-                                        font_name='consolas',
-                                        font_size=12))
-            self.graphics['inputs'][input] = Quad(self.batch)
+                                                   font_name='consolas',
+                                                   font_size=12))
         self.outlabels = []
+        gr['outputs'] = dict()
         for output in self.outputs:
+            gr['outputs'][output] = Quad(self.batch)
             self.outlabels.append(pyglet.text.Label(output, x=0, y=0,
-                                        font_name='consolas',
-                                        font_size=12, anchor_x='right'))
-            self.graphics['outputs'][output] = Quad(self.batch)
+                                                    font_name='consolas',
+                                                    font_size=12, anchor_x='right'))
 
     def put_pos(self, puts):
         # Calclate pos for pins
@@ -131,10 +136,10 @@ class Element(object):
         # Render for base
         gr = self.graphics
         self.cw, self.ch = self.w // 2, self.h // 2
-        if not gr['ready']:
+        if not self.graphics_ready:
             gr['error'] = None
             gr['base'] = Quad(batch)
-            gr['ready'] = True
+            self.graphics_ready = True
         if self.problem:
             if not gr['error']:
                 gr['error'] = Quad(batch)
@@ -143,6 +148,7 @@ class Element(object):
                                (190, 20, 20))
         elif gr['error']:
             gr['error'].id.delete()
+            gr['error'] = None
 
         gr['base'].redraw(self.x, self.y, self.cw, self.ch,
                           self.draw_color)
@@ -227,7 +233,9 @@ class Element(object):
                 glPopMatrix()
 
     def delete(self):
-        for key in self.graphics:
-            verts = self.graphics[key]
-            if verts:
-                verts.id.delete()
+        for key in self.graphics.keys():
+            if self.graphics[key]:
+                if isinstance(self.graphics[key], dict):
+                    [d.delete() for d in self.graphics[key].values()]
+                else:
+                    self.graphics[key].delete()
