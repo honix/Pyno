@@ -1,4 +1,3 @@
-import pyglet
 import clipboard
 
 from utils import x_y_pan_scale
@@ -14,7 +13,8 @@ class CodeEditor(object):
         self.document.set_style(0, len(node.code),
                                 dict(font_name='Consolas',
                                 font_size=12, color=(255,) * 4))
-        self.layout = pyglet.text.layout.IncrementalTextLayout(self.document,
+        self.layout = pyglet.text.layout.IncrementalTextLayout(
+                                self.document,
                                 *node.editorSize,
                                 multiline=True, wrap_lines=False)
         self.caret = pyglet.text.caret.Caret(self.layout)

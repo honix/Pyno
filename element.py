@@ -17,15 +17,15 @@ class Element(object):
         self.w, self.h = 70, 30
         self.cw, self.ch = self.w // 2, self.h // 2
         self.offset = 20
-        self.putSize = 5
-        self.pinColor = self.select(color)
+        self.put_size = 5
+        self.pin_color = self.select(color)
         self.color = color
         self.draw_color = color
         self.er_color = (230, 20, 20)
 
-        self.graphics = dict(inputs=dict(), outputs=dict())
-        self.graphics_ready = False
         self.batch = batch
+        self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
+                             error=None, base=Quad(self.batch))
 
         self.er_label = pyglet.text.Label('error', font_name='consolas',
                                           bold=True, font_size=12,
@@ -33,9 +33,9 @@ class Element(object):
                                           anchor_x='right', anchor_y='center')
         self.inputs = ()
         self.outputs = ()
-        self.inlabels = []
+        self.in_labels = []
         self.connectedTo = []
-        self.outlabels = []
+        self.out_labels = []
         self.selected = False  # 714848
         self.selectedInput = {'name': 'none', 'pos': 0}
         self.selectedOutput = {'name': 'none', 'pos': 0}
@@ -44,30 +44,29 @@ class Element(object):
     def intersect_point(self, point, visual=True):
         # Intersection with whole element, also check pins intersection
 
-        if point[0] < self.x + self.cw and point[0] > self.x - self.cw:
-            if (point[1] < self.y + self.ch + self.putSize * 2
-            and point[1] > self.y - self.ch - self.putSize * 2):
+        if self.x + self.cw > point[0] > self.x - self.cw and \
+            self.y + self.ch + self.put_size * 2 > point[1] > \
+                            self.y - self.ch - self.put_size * 2:
+            self.selectedInput = {'name': 'none', 'pos': 0}
+            self.selectedOutput = {'name': 'none', 'pos': 0}
 
-                self.selectedInput = {'name': 'none', 'pos': 0}
-                self.selectedOutput = {'name': 'none', 'pos': 0}
+            if visual:
+                self.draw_color = self.select(self.color)
+                self.hover = True
 
-                if visual:
-                    self.draw_color = self.select(self.color)
-                    self.hover = True
+            if point[1] > self.y + self.ch:
+                for put in self.put_pos(self.inputs):
+                    if put['pos'] + self.put_size * 2 > point[0] > \
+                                    put['pos'] - self.put_size * 2:
+                        self.selectedInput = ({'name': put['name']})
 
-                if point[1] > self.y + self.ch:
-                    for put in self.put_pos(self.inputs):
-                        if (point[0] < put['pos'] + self.putSize * 2
-                        and point[0] > put['pos'] - self.putSize * 2):
-                            self.selectedInput = ({'name': put['name']})
+            elif point[1] < self.y - self.ch:
+                for put in self.put_pos(self.outputs):
+                    if put['pos'] + self.put_size * 2 > point[0] > \
+                                    put['pos'] - self.put_size * 2:
+                        self.selectedOutput = ({'name': put['name']})
 
-                elif point[1] < self.y - self.ch:
-                    for put in self.put_pos(self.outputs):
-                        if (point[0] < put['pos'] + self.putSize * 2
-                        and point[0] > put['pos'] - self.putSize * 2):
-                            self.selectedOutput = ({'name': put['name']})
-
-                return True
+            return True
 
         self.selectedInput = {'name': 'none', 'pos': 0}
         self.selectedOutput = {'name': 'none', 'pos': 0}
@@ -86,23 +85,23 @@ class Element(object):
         [put.delete() for put in gr['inputs'].values()]
         [put.delete() for put in gr['outputs'].values()]
 
-        self.inlabels = []
+        self.in_labels = []
         gr['inputs'] = dict()
         for input in self.inputs:
             gr['inputs'][input] = Quad(self.batch)
-            self.inlabels.append(pyglet.text.Label(input, x=0, y=0,
-                                                   font_name='consolas',
-                                                   font_size=12))
-        self.outlabels = []
+            self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
+                                                    font_name='consolas',
+                                                    font_size=12))
+        self.out_labels = []
         gr['outputs'] = dict()
         for output in self.outputs:
             gr['outputs'][output] = Quad(self.batch)
-            self.outlabels.append(pyglet.text.Label(output, x=0, y=0,
-                                                    font_name='consolas',
-                                                    font_size=12, anchor_x='right'))
+            self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
+                                                     font_name='consolas',
+                                                     font_size=12, anchor_x='right'))
 
     def put_pos(self, puts):
-        # Calclate pos for pins
+        # Calculate pos for pins
         for put in puts:
             yield {'name': put,
                    'pos': int(utils.centered(self.x, self.w * 0.8,
@@ -124,11 +123,13 @@ class Element(object):
                                               len(self.inputs),
                                               self.inputs.index(put)))
 
-    def select(self, color):
+    @staticmethod
+    def select(color):
         # Color for hover
         return tuple(map(lambda c: int(c * 0.65), color))
 
-    def inverse(self, color):
+    @staticmethod
+    def inverse(color):
         # Color for selected
         return tuple(map(lambda c: int(c * -0.8), color))
 
@@ -136,16 +137,14 @@ class Element(object):
         # Render for base
         gr = self.graphics
         self.cw, self.ch = self.w // 2, self.h // 2
-        if not self.graphics_ready:
-            gr['error'] = None
-            gr['base'] = Quad(batch)
-            self.graphics_ready = True
+
         if self.problem:
-            if not gr['error']:
+            try:
+                gr['error'].redraw(self.x, self.y, self.cw + self.put_size,
+                                   self.ch + self.put_size,
+                                   (190, 20, 20))
+            except:
                 gr['error'] = Quad(batch)
-            gr['error'].redraw(self.x, self.y, self.cw + self.putSize,
-                               self.ch + self.putSize,
-                               (190, 20, 20))
         elif gr['error']:
             gr['error'].id.delete()
             gr['error'] = None
@@ -153,55 +152,64 @@ class Element(object):
         gr['base'].redraw(self.x, self.y, self.cw, self.ch,
                           self.draw_color)
 
-        self.pinColor = self.select(self.draw_color)
+        self.pin_color = self.select(self.draw_color)
 
         for input in self.put_pos(self.inputs):
             put_name = self.selectedInput['name']
             if input['name'] == put_name:
-                c = self.inverse(self.pinColor)
+                c = self.inverse(self.pin_color)
             else:
-                c = self.pinColor
+                c = self.pin_color
             gr['inputs'][input['name']].redraw(
-                 input['pos'],
-                 self.y + self.ch + self.putSize,
-                 self.putSize, self.putSize, c)
+                    input['pos'],
+                    self.y + self.ch + self.put_size,
+                    self.put_size, self.put_size, c)
 
         for output in self.put_pos(self.outputs):
             put_name = self.selectedOutput['name']
             if output['name'] == put_name:
-                c = self.inverse(self.pinColor)
+                c = self.inverse(self.pin_color)
             else:
-                c = self.pinColor
+                c = self.pin_color
             gr['outputs'][output['name']].redraw(
-                 output['pos'],
-                 self.y - self.ch - self.putSize,
-                 self.putSize, self.putSize, c)
+                    output['pos'],
+                    self.y - self.ch - self.put_size,
+                    self.put_size, self.put_size, c)
 
-        for node in self.connectedTo:
+        con = gr['connections']
+        while len(con) < len(self.connectedTo):
+            con += [[Line(batch), Line(batch), Line(batch)]]
+
+        for i in range(len(self.connectedTo)):
+            node = self.connectedTo[i]
             n = node['output']['node']
             try:
                 iputx = self.put_pos_by_name(node['input']['put']['name'],
                                              'inputs')
                 oputx = n.put_pos_by_name(node['output']['put']['name'],
                                           'outputs')
-                line((iputx, self.y + self.ch + self.offset // 2),
-                     (iputx, self.y + self.ch + self.offset), batch)
-                line((iputx, self.y + self.ch + self.offset),
-                     (oputx, n.y - n.ch - n.offset), batch)
-                line((oputx, n.y - n.ch - n.offset),
-                     (oputx, n.y - n.ch - n.offset // 2), batch)
+                con[i][0].redraw((iputx, self.y + self.ch + self.offset // 2),
+                                 (iputx, self.y + self.ch + self.offset))
+                con[i][1].redraw((iputx, self.y + self.ch + self.offset),
+                                 (oputx, n.y - n.ch - n.offset))
+                con[i][2].redraw((oputx, n.y - n.ch - n.offset),
+                                 (oputx, n.y - n.ch - n.offset // 2))
             except:
+                for lines in con[i]:
+                    lines.delete()
+                con.remove(con[i])
                 del self.connectedTo[self.connectedTo.index(node)]
-                print('Connection is broken while redraw')
+                print('Connection is broken')
+                break
 
     def get_con_id(self):
-        new_connectedTo = []
+        new_connectedto = []
         for connect in self.connectedTo:
             new_connect = {'output': {'node': connect['output']['node'].id,
                                       'put': connect['output']['put']},
                            'input': {'put': connect['input']['put']}}
-            new_connectedTo.append(new_connect)
-        return new_connectedTo
+            new_connectedto.append(new_connect)
+        return new_connectedto
 
     def reconnect(self, buff):
         # Find parent node when paste
@@ -218,14 +226,14 @@ class Element(object):
             self.er_label.draw()
 
         if self.hover:
-            for label, put in zip(self.inlabels, self.put_pos(self.inputs)):
+            for label, put in zip(self.in_labels, self.put_pos(self.inputs)):
                 glPushMatrix()
                 glTranslatef(put['pos'], self.y + self.ch + 15, 0.0)
                 glRotatef(45.0, 0.0, 0.0, 1.0)
                 label.draw()
                 glPopMatrix()
 
-            for label, put in zip(self.outlabels, self.put_pos(self.outputs)):
+            for label, put in zip(self.out_labels, self.put_pos(self.outputs)):
                 glPushMatrix()
                 glTranslatef(put['pos'], self.y - self.ch - 20, 0.0)
                 glRotatef(45.0, 0.0, 0.0, 1.0)
@@ -234,8 +242,13 @@ class Element(object):
 
     def delete(self):
         for key in self.graphics.keys():
-            if self.graphics[key]:
-                if isinstance(self.graphics[key], dict):
-                    [d.delete() for d in self.graphics[key].values()]
+            g = self.graphics[key]
+            if g:
+                if isinstance(g, dict):
+                    [d.delete() for d in g.values()]
+                elif isinstance(g, list):
+                    for d in g:
+                        for j in d:
+                            j.delete()
                 else:
-                    self.graphics[key].delete()
+                    g.delete()
