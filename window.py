@@ -75,13 +75,17 @@ class PynoWindow(pyglet.window.Window):
         else:
             self.nodes_check = 0
 
-        [node.render_base(self.batch, dt) for node in self.nodes if node.active]
-
         if self.selectedNodes:
             [node.make_active() for node in self.selectedNodes]
         else:
             for node in self.nodes[self.nodes_check:self.nodes_check+25]:
                 node.intersect_point((self.pointer[0], self.pointer[1]))
+
+        if self.codeEditor:
+            if self.codeEditor.intersect_point(self.pointer):
+                self.codeEditor.node.hover = True
+
+        [node.render_base(self.batch, dt) for node in self.nodes if node.active]
 
     def on_draw(self):
         # ---- BG ----
