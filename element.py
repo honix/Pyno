@@ -23,6 +23,8 @@ class Element(object):
         self.draw_color = color
         self.er_color = (230, 20, 20)
 
+        self.active = False
+        self.active_timer = 0
         self.batch = batch
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
@@ -65,7 +67,7 @@ class Element(object):
                     if put['pos'] + self.put_size * 2 > point[0] > \
                                     put['pos'] - self.put_size * 2:
                         self.selectedOutput = ({'name': put['name']})
-
+            self.make_active()
             return True
 
         self.selectedInput = {'name': 'none', 'pos': 0}
@@ -133,8 +135,18 @@ class Element(object):
         # Color for selected
         return tuple(map(lambda c: int(c * -0.8), color))
 
-    def render_base(self, batch):
+    def make_active(self):
+        self.active_timer = 5.0
+        self.active = True
+
+    def render_base(self, batch, dt):
         # Render for base
+        if self.active_timer > 0:
+            self.active_timer -= dt
+        else:
+            print(str(self) + ' lost activity')
+            self.active = False
+
         gr = self.graphics
         self.cw, self.ch = self.w // 2, self.h // 2
 
@@ -144,7 +156,7 @@ class Element(object):
                                    self.ch + self.put_size,
                                    (190, 20, 20))
             except:
-                gr['error'] = Quad(batch)
+                gr['error'] = Quad(batch, True)
         elif gr['error']:
             gr['error'].id.delete()
             gr['error'] = None
@@ -178,7 +190,7 @@ class Element(object):
 
         con = gr['connections']
         while len(con) < len(self.connectedTo):
-            con += [[Line(batch), Line(batch), Line(batch)]]
+            con.append([Line(batch), Line(batch), Line(batch)])
 
         for i in range(len(self.connectedTo)):
             node = self.connectedTo[i]

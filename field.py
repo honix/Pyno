@@ -110,8 +110,8 @@ class Field(Element):
         self.proc_result = self.gen_output
         return self.gen_output
 
-    def render_base(self, batch):
-        super().render_base(batch)
+    def render_base(self, batch, dt):
+        super().render_base(batch, dt)
         if self.is_number:
             quad(self.x - self.cw + 10, self.y, 10, self.ch,
                           (172, 150, 83), batch)

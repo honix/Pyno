@@ -6,8 +6,11 @@ from math import atan2, sin, cos
 # There is some functions for drawing shapes
 
 
-class LinesGroup(pyglet.graphics.Group):
+class LinesGroup(pyglet.graphics.OrderedGroup):
     # Toggle smooth lines
+    def __init__(self, order):
+        super().__init__(order)
+
     def set_state(self):
         glEnable(GL_POLYGON_SMOOTH)
         glEnable(GL_BLEND)
@@ -17,7 +20,9 @@ class LinesGroup(pyglet.graphics.Group):
         glDisable(GL_BLEND)
 
 
-linesGroup = LinesGroup()
+linesGroup = LinesGroup(0)
+baseGroup = pyglet.graphics.OrderedGroup(1)
+labelsGroup = pyglet.graphics.OrderedGroup(2)
 
 
 class Line:
@@ -62,9 +67,10 @@ def quad(x, y, cw, ch, color, batch):
 
 
 class Quad:
-    def __init__(self, batch):
+    def __init__(self, batch, backdrop=False):
+        group = linesGroup if backdrop else baseGroup
         self.id = batch.add_indexed(
-                                4, GL_TRIANGLES, None,
+                                4, GL_TRIANGLES, group,
                                 [0, 1, 2, 2, 3, 0],
                                 ('v2i', (0, 0,
                                          0, 0,

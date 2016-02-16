@@ -28,6 +28,7 @@ class PynoWindow(pyglet.window.Window):
     select = False
     connection = False
     connectNode = None
+    nodes_check = 0
 
     w, c = (0, 0), (0, 0)
     pointer = (0, 0)
@@ -55,7 +56,7 @@ class PynoWindow(pyglet.window.Window):
         # load pyno-logo in left bottom
         self.pyno_logo = pyglet.image.load('imgs/corner.png')
         # first-meta-node to be
-        Node(-9000, 9000, self.batch, (0, 0, 0))
+        Node(-9000, 9000, self.batch, (0, 0, 0), code=' ')
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
@@ -68,6 +69,19 @@ class PynoWindow(pyglet.window.Window):
 
         for node in self.nodes:
             node.processor(self.pynoSpace)
+
+        if self.nodes_check < len(self.nodes)-25:
+            self.nodes_check += 1
+        else:
+            self.nodes_check = 0
+
+        [node.render_base(self.batch, dt) for node in self.nodes if node.active]
+
+        if self.selectedNodes:
+            [node.make_active() for node in self.selectedNodes]
+        else:
+            for node in self.nodes[self.nodes_check:self.nodes_check+25]:
+                node.intersect_point((self.pointer[0], self.pointer[1]))
 
     def on_draw(self):
         # ---- BG ----
@@ -82,9 +96,6 @@ class PynoWindow(pyglet.window.Window):
         glScalef(ps[1], ps[1], ps[1])
         glTranslatef(-self.width / 2 + ps[0][0],
                      -self.height / 2 + ps[0][1], 0.0)
-
-        for node in self.nodes:
-            node.render_base(self.batch)
 
         if self.connection:
             p = self.pointer
@@ -113,10 +124,7 @@ class PynoWindow(pyglet.window.Window):
             self.line[1].redraw((-9000, 9010), (-9010, 9000))
 
         self.batch.draw()
-
-        if ps[1] > 0.4:
-            for node in self.nodes:
-                node.render()
+        [node.render() for node in self.nodes]
 
         if self.codeEditor:
             self.codeEditor.render()
@@ -136,8 +144,6 @@ class PynoWindow(pyglet.window.Window):
 
         self.pointer = (x, y)
 
-        self.flipper = True if not self.flipper else False
-
         if len(self.selectedNodes) == 0:
             if self.codeEditor:
                 if self.codeEditor.intersect_point((x, y)):
@@ -152,18 +158,6 @@ class PynoWindow(pyglet.window.Window):
                 if self.field.intersect_point((x, y)):
                     self.field.pan_scale = self.pan_scale
                     self.field.screen_size = self.get_size()
-
-            nodes_length = len(self.nodes)
-            if nodes_length > 10:
-                if self.flipper:
-                    check_nodes = self.nodes[nodes_length // 2:]
-                else:
-                    check_nodes = self.nodes[:nodes_length // 2]
-            else:
-                check_nodes = self.nodes
-
-            for node in check_nodes:
-                node.intersect_point((x, y))
 
     def on_mouse_press(self, x, y, button, modifiers):
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
@@ -184,7 +178,7 @@ class PynoWindow(pyglet.window.Window):
                     self.codeEditor.update_node()
                     self.codeEditor = None
             for node in self.nodes:
-                if node.intersect_point((x, y), False):
+                if node.intersect_point((x, y)):
                     if (node in self.selectedNodes
                         and len(self.selectedNodes) > 1):
                         self.nodeDrag = True
@@ -239,11 +233,6 @@ class PynoWindow(pyglet.window.Window):
         elif self.select:
             self.w = self.selectPoint
             self.c = (x, y)
-            for node in self.nodes:
-                if point_intersect_quad((node.x, node.y), (self.c + self.w)):
-                    node.draw_color = node.inverse(node.color)
-                else:
-                    node.draw_color = node.color
         elif self.connection:
             self.pointer = (x, y)
             for node in self.nodes:

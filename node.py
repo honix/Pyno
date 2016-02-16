@@ -2,6 +2,7 @@ import pyglet
 
 from element import Element
 from processor import Processor
+from draw import labelsGroup
 
 
 class Node(Element, Processor):
@@ -30,10 +31,11 @@ class Node(Element, Processor):
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name='consolas',
                                        bold=True, font_size=12,
-                                       anchor_x='center', anchor_y='center')
+                                       anchor_x='center', anchor_y='center',
+                                       batch=batch, group=labelsGroup)
         self.new_code(self.code)
 
-        self.render_base(batch)
+        self.render_base(batch, 1)
 
     def new_code(self, code):
         # New code, search for in/outputs
@@ -98,8 +100,10 @@ class Node(Element, Processor):
         self.name = name
         self.label.text = self.name
 
-    def render(self):
-        super().render()
-
+    def render_base(self, batch, dt):
+        super().render_base(batch, dt)
         self.label.x, self.label.y = self.x, self.y
-        self.label.draw()
+
+    def delete(self):
+        super().delete()
+        self.label.delete()
