@@ -2,9 +2,8 @@ from utils import sum_coma
 
 
 class Processor(object):
-    ''' Processor is a engine of pyno, there functions defines
-        and outputs calculates
-    '''
+    # Processor is a engine of pyno, there functions defines
+    # and outputs calculates
 
     def init_processor(self):
         self.proc_result = None
@@ -17,9 +16,12 @@ class Processor(object):
 
         self.local_space = {}
 
+    def reset_proc(self):
+        self.proc_result = None
+
     def processor(self, space):
-        ''' Called every frame
-        '''
+        # Called every frame
+
         if self.proc_result and not self.need_update:
             return self.proc_result
 
@@ -39,10 +41,10 @@ class Processor(object):
 
         # exec that new function and put it in to space
         if self.need_update:
-            try:  # avoid name repeatness
+            try:  # avoid name repeats
                 eval(self.name)
                 self.er_label.text = ('%s already exist, please rename'
-                                       % self.name)
+                                      % self.name)
                 self.problem = True
             except:
                 try:

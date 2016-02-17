@@ -1,4 +1,3 @@
-import pyglet
 import clipboard
 
 from utils import x_y_pan_scale
@@ -6,15 +5,16 @@ from draw import *
 
 
 class CodeEditor(object):
-    ''' Code editor is the window you define nodes function
-    '''
+    # Code editor is the window you define nodes function
+
     def __init__(self, node):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
         self.document.set_style(0, len(node.code),
                                 dict(font_name='Consolas',
                                 font_size=12, color=(255,) * 4))
-        self.layout = pyglet.text.layout.IncrementalTextLayout(self.document,
+        self.layout = pyglet.text.layout.IncrementalTextLayout(
+                                self.document,
                                 *node.editorSize,
                                 multiline=True, wrap_lines=False)
         self.caret = pyglet.text.caret.Caret(self.layout)
@@ -27,26 +27,25 @@ class CodeEditor(object):
         self.screen_size = (800, 600)
 
     def update_node(self):
-        ''' Push code to node
-        '''
+        # Push code to node
         self.node.new_code(self.document.text)
         self.node.need_update = True
 
     def intersect_point(self, point):
-        ''' Intersection with whole codeEditor
-        '''
+        # Intersection with whole codeEditor
         l = self.layout
         return (0 < point[0] - l.x + 20 < l.width + 20 and
                 0 < point[1] - l.y < l.height + 10)
 
     def intersect_corner(self, point):
-        ''' Intersection with bottom right corner to risize
-        '''
+        # Intersection with bottom right corner to resize
         l = self.layout
         return (0 < point[0] - (l.x + l.width - 10) < 10 and
                 0 < point[1] - l.y < 10)
 
     def render(self):
+        self.node.make_child_active()
+
         l = self.layout
         l.x = self.node.x + self.node.cw + 25
         l.y = self.node.y - l.height + self.node.ch + 25
