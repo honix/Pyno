@@ -204,6 +204,10 @@ class PynoWindow(pyglet.window.Window):
                                                             'mode': 'output'}
                                         n = node.connectedTo
                                         del n[n.index(c)]
+                                        for line in node.graphics['connections']:
+                                            for segment in line:
+                                                segment.delete()
+                                        node.graphics['connections'] = list()
                                         return
                                 self.connectNode = {'node': node,
                                                     'put': node.selectedInput,
