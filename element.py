@@ -78,72 +78,6 @@ class Element(object):
             self.draw_color = self.color
         return False
 
-    def insert_inouts(self, data):
-        # New inputs and output was created.
-        # We need create labels for each
-
-        gr = self.graphics
-        self.inputs = data['inputs']
-        self.outputs = data['outputs']
-        [put.delete() for put in gr['inputs'].values()]
-        [put.delete() for put in gr['outputs'].values()]
-
-        self.in_labels = []
-        gr['inputs'] = dict()
-        for input in self.inputs:
-            gr['inputs'][input] = Quad(self.batch)
-            self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
-                                                    font_name='consolas',
-                                                    font_size=12))
-        self.out_labels = []
-        gr['outputs'] = dict()
-        for output in self.outputs:
-            gr['outputs'][output] = Quad(self.batch)
-            self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
-                                                     font_name='consolas',
-                                                     font_size=12, anchor_x='right'))
-
-    def put_pos(self, puts):
-        # Calculate pos for pins
-        for put in puts:
-            yield {'name': put,
-                   'pos': int(utils.centered(self.x, self.w * 0.8,
-                                             len(puts),
-                                             puts.index(put)))}
-
-    def put_pos_by_name(self, name, mode):
-        # Return pose x of pin by name
-        if mode == 'outputs':
-            for put in self.outputs:
-                if put == name:
-                    return int(utils.centered(self.x, self.w * 0.8,
-                                              len(self.outputs),
-                                              self.outputs.index(put)))
-        elif mode == 'inputs':
-            for put in self.inputs:
-                if put == name:
-                    return int(utils.centered(self.x, self.w * 0.8,
-                                              len(self.inputs),
-                                              self.inputs.index(put)))
-
-    @staticmethod
-    def select(color):
-        # Color for hover
-        return tuple(map(lambda c: int(c * 0.65), color))
-
-    @staticmethod
-    def inverse(color):
-        # Color for selected
-        return tuple(map(lambda c: int(c * -0.8), color))
-
-    def make_active(self):
-        self.active_timer = 1.0
-        self.active = True
-
-    def make_child_active(self):
-        self.make_active()
-        [c.make_active() for c in self.child]
-
     def render_base(self, batch, dt):
         # Render for base
         if self.active_timer > 0:
@@ -219,26 +153,6 @@ class Element(object):
                 print('Connection is broken')
                 break
 
-    def get_con_id(self):
-        new_connectedto = []
-        for connect in self.connectedTo:
-            new_connect = {'output': {'node': connect['output']['node'].id,
-                                      'put': connect['output']['put']},
-                           'input': {'put': connect['input']['put']}}
-            new_connectedto.append(new_connect)
-        return new_connectedto
-
-    def reconnect(self, buff):
-        # Find parent node when paste
-        for connect in self.connectedTo:
-            losed = True
-            for o in buff:
-                if connect['output']['node'] == o[1]:
-                    connect['output']['node'] = o[0]
-                    losed = False
-            if losed:
-                print('Lost connection')
-
     def render(self):
         # Render for errors and labels of pins
         if self.problem:
@@ -260,6 +174,93 @@ class Element(object):
                 glRotatef(45.0, 0.0, 0.0, 1.0)
                 label.draw()
                 glPopMatrix()
+
+    def insert_inouts(self, data):
+        # New inputs and output was created.
+        # We need create labels for each
+
+        gr = self.graphics
+        self.inputs = data['inputs']
+        self.outputs = data['outputs']
+        [put.delete() for put in gr['inputs'].values()]
+        [put.delete() for put in gr['outputs'].values()]
+
+        self.in_labels = []
+        gr['inputs'] = dict()
+        for input in self.inputs:
+            gr['inputs'][input] = Quad(self.batch)
+            self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
+                                                    font_name='consolas',
+                                                    font_size=12))
+        self.out_labels = []
+        gr['outputs'] = dict()
+        for output in self.outputs:
+            gr['outputs'][output] = Quad(self.batch)
+            self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
+                                                     font_name='consolas',
+                                                     font_size=12, anchor_x='right'))
+
+    def put_pos(self, puts):
+        # Calculate pos for pins
+        for put in puts:
+            yield {'name': put,
+                   'pos': int(utils.centered(self.x, self.w * 0.8,
+                                             len(puts),
+                                             puts.index(put)))}
+
+    def put_pos_by_name(self, name, mode):
+        # Return pose x of pin by name
+        if mode == 'outputs':
+            for put in self.outputs:
+                if put == name:
+                    return int(utils.centered(self.x, self.w * 0.8,
+                                              len(self.outputs),
+                                              self.outputs.index(put)))
+        elif mode == 'inputs':
+            for put in self.inputs:
+                if put == name:
+                    return int(utils.centered(self.x, self.w * 0.8,
+                                              len(self.inputs),
+                                              self.inputs.index(put)))
+
+    @staticmethod
+    def select(color):
+        # Color for hover
+        return tuple(map(lambda c: int(c * 0.65), color))
+
+    @staticmethod
+    def inverse(color):
+        # Color for selected
+        return tuple(map(lambda c: int(c * -0.8), color))
+
+    def make_active(self):
+        self.active_timer = 1.0
+        self.active = True
+
+    def make_child_active(self):
+        self.make_active()
+        [c.make_active() for c in self.child]
+
+    def add_child(self, child):
+        if child not in self.child:
+            self.child.append(child)
+
+    def get_con_id(self):
+        new_connectedto = []
+        for connect in self.connectedTo:
+            new_connect = {'output': {'node': connect['output']['node'].id,
+                                      'put': connect['output']['put']},
+                           'input': {'put': connect['input']['put']}}
+            new_connectedto.append(new_connect)
+        return new_connectedto
+
+    def reconnect(self, buff):
+        # Find parent node when paste
+        for connect in self.connectedTo:
+            for o in buff:
+                if connect['output']['node'] == o[1]:
+                    connect['output']['node'] = o[0]
+                    o[0].add_child(self)
 
     def delete(self):
         for key in self.graphics.keys():

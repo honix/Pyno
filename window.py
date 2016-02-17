@@ -289,7 +289,7 @@ class PynoWindow(pyglet.window.Window):
 
                                 if not (insert in node.connectedTo):
                                     node.connectedTo.append(insert)
-                                    self.connectNode['node'].child.append(node)
+                                    self.connectNode['node'].add_child(node)
                                     print('Connect output to input')
 
                             elif node.selectedOutput['name'] != 'none' \
@@ -303,7 +303,7 @@ class PynoWindow(pyglet.window.Window):
                                 n = self.connectNode['node']
                                 if not (insert in n.connectedTo):
                                     n.connectedTo.append(insert)
-                                    node.child.append(n)
+                                    node.add_child(n)
                                     n.make_active()
                                     print('Connect input to output')
 
