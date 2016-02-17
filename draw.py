@@ -67,8 +67,13 @@ def quad(x, y, cw, ch, color, batch):
 
 
 class Quad:
-    def __init__(self, batch, backdrop=False):
-        group = linesGroup if backdrop else baseGroup
+    def __init__(self, batch, backdrop=False, frontdrop=False):
+        group = baseGroup
+        if backdrop:
+            group = linesGroup
+        elif frontdrop:
+            group = labelsGroup
+
         self.id = batch.add_indexed(
                                 4, GL_TRIANGLES, group,
                                 [0, 1, 2, 2, 3, 0],

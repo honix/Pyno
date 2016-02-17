@@ -11,13 +11,12 @@ class Field(Element):
 
     def __init__(self, x, y, batch, code=None, connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
-        self.init_processor()
 
-        if not size is None:
+        if size is not None:
             self.w = size[0]
             self.h = size[1]
 
-        if not connects is None:
+        if connects is not None:
             self.connectedTo = connects
 
         if code is None:
@@ -28,10 +27,13 @@ class Field(Element):
         self.document = pyglet.text.document.FormattedDocument(self.code)
         self.document.set_style(0, len(self.document.text),
                                 dict(font_name='Consolas',
-                                font_size=12, color=(0, 0, 0, 255)))
-        self.layout = pyglet.text.layout.IncrementalTextLayout(self.document,
-                                                     self.w - 30, self.h - 3,
-                                                     multiline=True)
+                                     font_size=12,
+                                     color=(0, 0, 0, 255)))
+        self.layout = pyglet.text.layout.IncrementalTextLayout(
+                self.document,
+                self.w - 30, self.h - 3,
+                multiline=True, batch=batch,
+                group=labelsGroup)
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (0, 0, 0)
         self.caret.visible = False
@@ -46,15 +48,14 @@ class Field(Element):
         self.pan_scale = [[0.0, 0.0], 1]
         self.screen_size = (800, 600)
 
-        self.style(new=True)
+        self.graphics['scroll'] = None
+        self.graphics['corner'] = None
 
-    def init_processor(self):
-        # Processor manages calculation side of pyno
+        # Processor variables
         self.proc_result = None
 
         self.value = None
         self.is_number = True
-
         self.need_update = True
         self.problem = False
         self.gen_output = {'output': None}
@@ -112,29 +113,33 @@ class Field(Element):
 
     def render_base(self, batch, dt):
         super().render_base(batch, dt)
+        self.style()
+
         if self.is_number:
-            quad(self.x - self.cw + 10, self.y, 10, self.ch,
-                          (172, 150, 83), batch)
+            try:
+                self.graphics['scroll'].redraw(self.x - self.cw + 10,
+                                               self.y, 10, self.ch,
+                                               (172, 150, 83))
+            except:
+                self.graphics['scroll'] = Quad(batch, frontdrop=True)
+        elif self.graphics['scroll']:
+            self.graphics['scroll'].delete()
+            self.graphics['scroll'] = None
+
         if self.hover:
-            quad(self.x + self.cw - 5, self.y - self.ch + 5, 5, 5,
-                 (50, 50, 50), batch)
+            try:
+                self.graphics['corner'].redraw(self.x + self.cw - 5,
+                                               self.y - self.ch + 5,
+                                               5, 5, (50, 50, 50))
+            except:
+                self.graphics['corner'] = Quad(batch, frontdrop=True)
+        elif self.graphics['corner']:
+            self.graphics['corner'].delete()
+            self.graphics['corner'] = None
 
-    def render(self):
-        super().render()
-
-        self.layout.draw()
-
-    def style(self, new=False):
+    def style(self):
         # Vary how represent value, for numbers there is inc/decrement slider
         l = self.layout
-        if new:
-            self.document.set_style(0, len(self.document.text),
-                                    {'align': 'center'})
-            l.x = self.x - self.cw + 15
-            l.y = self.y - self.ch + 5
-            l.width = self.w - 30
-            l.height = self.h - 10
-            return
 
         if self.is_number:
             self.document.set_style(0, len(self.document.text),
@@ -158,11 +163,12 @@ class Field(Element):
         self.cw, self.ch = self.w // 2, self.h // 2
 
     def intersect_point(self, point, visual=True):
-        self.style()
-        if self.is_number:
-            self.intersect_incr(point)
-        self.intersect_corner(point)
-        return super().intersect_point(point, visual)
+        inter = super().intersect_point(point, visual)
+        if inter:
+            if self.is_number:
+                self.intersect_incr(point)
+            self.intersect_corner(point)
+        return inter
 
     def intersect_incr(self, point):
         # Intersect with inc/decrement slider, to fast value change
@@ -177,6 +183,10 @@ class Field(Element):
                      0 < point[1] - (self.y - self.ch) < 10)
         self.resize = intersect
         return intersect
+
+    def delete(self):
+        super().delete()
+        self.layout.delete()
 
     # --- Input events ---
 
@@ -230,6 +240,7 @@ class Field(Element):
         self.caret.on_text_motion_select(motion)
 
     def on_key_press(self, symbol, modifiers):
+        self.make_active()
         self.style()
         self.problem = False
         self.need_update = True

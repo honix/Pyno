@@ -233,8 +233,6 @@ class PynoWindow(pyglet.window.Window):
                 node.x += dx
                 node.y += dy
                 node.make_child_active()
-                if isinstance(node, Field):
-                    node.style()
         elif self.select:
             self.w = self.selectPoint
             self.c = (x, y)
