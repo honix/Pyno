@@ -16,6 +16,9 @@ class Processor(object):
 
         self.local_space = {}
 
+    def reset_proc(self):
+        self.proc_result = None
+
     def processor(self, space):
         # Called every frame
 

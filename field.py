@@ -60,6 +60,9 @@ class Field(Element):
         self.problem = False
         self.gen_output = {'output': None}
 
+    def reset_proc(self):
+        self.proc_result = None
+
     def processor(self, space):
         # Processor called every frame
 

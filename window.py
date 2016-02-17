@@ -47,8 +47,8 @@ class PynoWindow(pyglet.window.Window):
 
         pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
 
-        pyglet.clock.schedule(self.update)
         pyglet.clock.set_fps_limit(60)
+        pyglet.clock.schedule(self.update)
 
         self.pynoSpace['G'] = self.pynoSpace
 
@@ -60,15 +60,13 @@ class PynoWindow(pyglet.window.Window):
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
+        # print(pyglet.clock.get_fps())
 
         # ---- Calculations ----
 
-        for node in self.nodes:
-            # if not node.problem:
-            node.proc_result = None
+        tuple(map(lambda x: x.reset_proc(), self.nodes))
 
-        for node in self.nodes:
-            node.processor(self.pynoSpace)
+        tuple(map(lambda x: x.processor(self.pynoSpace), self.nodes))
 
         if self.nodes_check < len(self.nodes)-25:
             self.nodes_check += 1
@@ -76,16 +74,20 @@ class PynoWindow(pyglet.window.Window):
             self.nodes_check = 0
 
         if self.selectedNodes:
-            [node.make_active() for node in self.selectedNodes]
+            tuple(map(lambda x: x.make_active(), self.selectedNodes))
         else:
-            for node in self.nodes[self.nodes_check:self.nodes_check+25]:
-                node.intersect_point((self.pointer[0], self.pointer[1]))
+            check = self.nodes[self.nodes_check:self.nodes_check+25]
+            tuple(map(lambda x: x.intersect_point((self.pointer[0],
+                                                   self.pointer[1])), check))
 
         if self.codeEditor:
             if self.codeEditor.intersect_point(self.pointer):
                 self.codeEditor.node.hover = True
 
-        [node.render_base(self.batch, dt) for node in self.nodes if node.active]
+        # ---- Redraw actives ----
+
+        tuple(map(lambda x: x.render_base(self.batch, dt),
+                  filter(lambda x: x.active, self.nodes)))
 
     def on_draw(self):
         # ---- BG ----
@@ -128,7 +130,8 @@ class PynoWindow(pyglet.window.Window):
             self.line[1].redraw((-9000, 9010), (-9010, 9000))
 
         self.batch.draw()
-        [node.render() for node in self.nodes]
+
+        tuple(map(lambda x: x.render(), self.nodes))
 
         if self.codeEditor:
             self.codeEditor.render()
@@ -139,7 +142,6 @@ class PynoWindow(pyglet.window.Window):
         # ---- GUI ----
 
         glLoadIdentity()
-        # self.fps.draw()
 
     # ---- Inputs ----
 
@@ -398,6 +400,7 @@ class PynoWindow(pyglet.window.Window):
 
             if symbol == key.DELETE:
                 for node in self.selectedNodes:
+                    self.nodes[self.nodes.index(node)].make_child_active()
                     self.nodes[self.nodes.index(node)].delete()
                     self.nodes[self.nodes.index(node)].outputs = ()
                     del self.nodes[self.nodes.index(node)]
