@@ -44,6 +44,8 @@ class CodeEditor(object):
                 0 < point[1] - l.y < 10)
 
     def render(self):
+        self.node.make_child_active()
+
         l = self.layout
         l.x = self.node.x + self.node.cw + 25
         l.y = self.node.y - l.height + self.node.ch + 25

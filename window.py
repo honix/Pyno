@@ -232,6 +232,7 @@ class PynoWindow(pyglet.window.Window):
             for node in self.selectedNodes:
                 node.x += dx
                 node.y += dy
+                node.make_child_active()
                 if isinstance(node, Field):
                     node.style()
         elif self.select:
@@ -288,6 +289,7 @@ class PynoWindow(pyglet.window.Window):
 
                                 if not (insert in node.connectedTo):
                                     node.connectedTo.append(insert)
+                                    self.connectNode['node'].child.append(node)
                                     print('Connect output to input')
 
                             elif node.selectedOutput['name'] != 'none' \
@@ -301,6 +303,8 @@ class PynoWindow(pyglet.window.Window):
                                 n = self.connectNode['node']
                                 if not (insert in n.connectedTo):
                                     n.connectedTo.append(insert)
+                                    node.child.append(n)
+                                    n.make_active()
                                     print('Connect input to output')
 
                 self.connectNode = None
@@ -388,7 +392,7 @@ class PynoWindow(pyglet.window.Window):
                                              node['parent']])
                     except:
                         print('Wrong paste!')
-                    else:
+                    finally:
                         for node in buff:
                             node[0].reconnect(buff)
                             self.nodes.append(node[0])

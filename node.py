@@ -35,8 +35,6 @@ class Node(Element, Processor):
                                        batch=batch, group=labelsGroup)
         self.new_code(self.code)
 
-        self.render_base(batch, 1)
-
     def new_code(self, code):
         # New code, search for in/outputs
         self.code = code

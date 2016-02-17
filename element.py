@@ -23,8 +23,8 @@ class Element(object):
         self.draw_color = color
         self.er_color = (230, 20, 20)
 
-        self.active = False
-        self.active_timer = 0
+        self.active = True
+        self.active_timer = 1.0
         self.batch = batch
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
@@ -38,6 +38,7 @@ class Element(object):
         self.in_labels = []
         self.connectedTo = []
         self.out_labels = []
+        self.child = []
         self.selected = False  # 714848
         self.selectedInput = {'name': 'none', 'pos': 0}
         self.selectedOutput = {'name': 'none', 'pos': 0}
@@ -47,8 +48,8 @@ class Element(object):
         # Intersection with whole element, also check pins intersection
 
         if self.x + self.cw > point[0] > self.x - self.cw and \
-            self.y + self.ch + self.put_size * 2 > point[1] > \
-                            self.y - self.ch - self.put_size * 2:
+                                                self.y + self.ch + self.put_size * 2 > point[1] > \
+                                        self.y - self.ch - self.put_size * 2:
             self.selectedInput = {'name': 'none', 'pos': 0}
             self.selectedOutput = {'name': 'none', 'pos': 0}
 
@@ -136,15 +137,19 @@ class Element(object):
         return tuple(map(lambda c: int(c * -0.8), color))
 
     def make_active(self):
-        self.active_timer = 5.0
+        self.active_timer = 1.0
         self.active = True
+
+    def make_child_active(self):
+        self.make_active()
+        [c.make_active() for c in self.child]
 
     def render_base(self, batch, dt):
         # Render for base
         if self.active_timer > 0:
             self.active_timer -= dt
         else:
-            print(str(self) + ' lost activity')
+            #print(str(self) + ' lost activity')
             self.active = False
 
         gr = self.graphics
@@ -226,9 +231,13 @@ class Element(object):
     def reconnect(self, buff):
         # Find parent node when paste
         for connect in self.connectedTo:
+            losed = True
             for o in buff:
                 if connect['output']['node'] == o[1]:
                     connect['output']['node'] = o[0]
+                    losed = False
+            if losed:
+                print('Lost connection')
 
     def render(self):
         # Render for errors and labels of pins
