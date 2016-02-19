@@ -1,12 +1,12 @@
 import pyglet
 from pyglet.gl import *
 from random import randint
-import clipboard
 
 import draw
+import menu
 from node import Node
-from codeEditor import CodeEditor
 from field import Field
+from codeEditor import CodeEditor
 from utils import *
 
 
@@ -345,62 +345,13 @@ class PynoWindow(pyglet.window.Window):
                                         self.batch))
 
             if modifiers & key.MOD_CTRL:
-                x, y = self.pointer[0], self.pointer[1]
-
                 # ---- Copy paste ----
 
                 if symbol == key.C:
-                    nodesbuffer = []
-                    for node in self.selectedNodes:
-                        if isinstance(node, Node):
-                            nodesbuffer.append({'type': 'node',
-                                                'x': node.x - x,
-                                                'y': node.y - y,
-                                                'size': node.editorSize,
-                                                'color': node.color,
-                                                'code': node.code,
-                                                'connects': node.get_con_id(),
-                                                'parent': node.id})
-                        elif isinstance(node, Field):
-                            nodesbuffer.append({'type': 'field',
-                                                'x': node.x - x,
-                                                'y': node.y - y,
-                                                'size': (node.w, node.h),
-                                                'code': node.document.text,
-                                                'connects': node.get_con_id(),
-                                                'parent': node.id})
-                    clipboard.copy(str(nodesbuffer))
-                    print('Copy ' + str(len(nodesbuffer)) + ' nodes')
+                    menu.copy_nodes(self)
 
                 elif symbol == key.V:
-                    buff = []
-                    try:
-                        paste = eval(clipboard.paste())
-                        for node in paste:
-                            if node['type'] == 'node':
-                                buff.append([Node(node['x'] + x,
-                                                  node['y'] + y,
-                                                  self.batch,
-                                                  node['color'],
-                                                  node['code'],
-                                                  node['connects'],
-                                                  node['size']),
-                                             node['parent']])
-                            elif node['type'] == 'field':
-                                buff.append([Field(node['x'] + x,
-                                                   node['y'] + y,
-                                                   self.batch,
-                                                   node['code'],
-                                                   node['connects'],
-                                                   node['size']),
-                                             node['parent']])
-                    except:
-                        print('Wrong paste!')
-                    finally:
-                        for node in buff:
-                            node[0].reconnect(buff)
-                            self.nodes.append(node[0])
-                        print('Paste ' + str(len(buff)) + ' nodes')
+                    menu.paste_nodes(self)
 
             if symbol == key.DELETE:
                 for node in self.selectedNodes:
