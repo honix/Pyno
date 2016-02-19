@@ -34,8 +34,11 @@ class CodeEditor(object):
     def intersect_point(self, point):
         # Intersection with whole codeEditor
         l = self.layout
-        return (0 < point[0] - l.x + 20 < l.width + 20 and
-                0 < point[1] - l.y < l.height + 10)
+        if 0 < point[0] - l.x + 20 < l.width + 20 and\
+           0 < point[1] - l.y < l.height + 10:
+            self.node.hover = True
+            return True
+        return False
 
     def intersect_corner(self, point):
         # Intersection with bottom right corner to resize

@@ -6,6 +6,18 @@ from math import atan2, sin, cos
 # There is some functions for drawing shapes
 
 
+class UIGroup(pyglet.graphics.OrderedGroup):
+    def __init__(self, order):
+        super().__init__(order)
+
+    def set_state(self):
+        glPushMatrix()
+        glLoadIdentity()
+
+    def unset_state(self):
+        glPopMatrix()
+
+
 class LinesGroup(pyglet.graphics.OrderedGroup):
     # Toggle smooth lines
     def __init__(self, order):
@@ -19,7 +31,7 @@ class LinesGroup(pyglet.graphics.OrderedGroup):
         glDisable(GL_POLYGON_SMOOTH)
         glDisable(GL_BLEND)
 
-
+uiGroup = UIGroup(-1)
 linesGroup = LinesGroup(0)
 baseGroup = pyglet.graphics.OrderedGroup(1)
 labelsGroup = pyglet.graphics.OrderedGroup(2)

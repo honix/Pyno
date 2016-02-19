@@ -48,8 +48,8 @@ class Element(object):
         # Intersection with whole element, also check pins intersection
 
         if self.x + self.cw > point[0] > self.x - self.cw and \
-                                                self.y + self.ch + self.put_size * 2 > point[1] > \
-                                        self.y - self.ch - self.put_size * 2:
+           self.y + self.ch + self.put_size * 2 > point[1] > \
+           self.y - self.ch - self.put_size * 2:
             self.selectedInput = {'name': 'none', 'pos': 0}
             self.selectedOutput = {'name': 'none', 'pos': 0}
 
@@ -83,7 +83,6 @@ class Element(object):
         if self.active_timer > 0:
             self.active_timer -= dt
         else:
-            #print(str(self) + ' lost activity')
             self.active = False
 
         gr = self.graphics

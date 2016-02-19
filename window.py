@@ -10,7 +10,7 @@ from codeEditor import CodeEditor
 from utils import *
 
 
-# pyglet.options['debug_gl'] = False  # performance boost?
+pyglet.options['debug_gl'] = False  # performance boost
 
 
 class PynoWindow(pyglet.window.Window):
@@ -54,9 +54,16 @@ class PynoWindow(pyglet.window.Window):
 
         self.batch = pyglet.graphics.Batch()
         # load pyno-logo in left bottom
-        self.pyno_logo = pyglet.image.load('imgs/corner.png')
+        pyno_logo_img = pyglet.image.load('imgs/corner.png')
+        self.pyno_logo = pyglet.sprite.Sprite(pyno_logo_img,
+                                              batch=self.batch,
+                                              group=draw.uiGroup)
+        self.menu = menu.Menu(self)
         # first-meta-node to be
         Node(-9000, 9000, self.batch, (0, 0, 0), code=' ')
+
+        # open welcome-file
+        menu.paste_nodes(self, menu.load('examples/welcome.pn'))
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
@@ -93,7 +100,6 @@ class PynoWindow(pyglet.window.Window):
         # ---- BG ----
 
         self.clear()
-        self.pyno_logo.blit(0, 0)
 
         # ---- NODES ----
 
@@ -146,6 +152,7 @@ class PynoWindow(pyglet.window.Window):
     # ---- Inputs ----
 
     def on_mouse_motion(self, x, y, dx, dy):
+        self.menu.intersect_point(x, y)
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
 
         self.pointer = (x, y)
@@ -166,6 +173,8 @@ class PynoWindow(pyglet.window.Window):
                     self.field.screen_size = self.get_size()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        if self.menu.click(x, y):
+            return
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
 
         if button == 1:
@@ -373,3 +382,11 @@ class PynoWindow(pyglet.window.Window):
                 print(len(self.nodes))
                 for node in self.selectedNodes:
                     print(str(node))
+
+    def new_pyno(self):
+        for node in self.nodes:
+            node.delete()
+            del node
+        self.nodes = list()
+        self.pan_scale = [[0.0, 0.0], 1]
+        print('New pyno')
