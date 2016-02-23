@@ -100,29 +100,21 @@ def save(data):
 class Menu:
     # Save-load controls
 
+    offset = 10
+
     def __init__(self, window):
         self.window = window
 
         save_load_img = pyglet.image.load('imgs/save_load_32.png')
         self.save_load = pyglet.sprite.Sprite(
                 save_load_img,
-                x=800-save_load_img.width-10, y=10,
+                x=800-save_load_img.width-self.offset, y=self.offset,
                 batch=window.batch, group=uiGroup)
 
         self.save_load.opacity = 100
 
-    def intersect_point(self, x, y):
-        s = self.save_load
-        if s.x < x < s.x + s.width and\
-           s.y < y < s.y + s.height:
-            s.opacity = 255
-            return True
-
-        s.opacity = 100
-        return False
-
     def click(self, x, y):
-        if self.intersect_point(x, y):
+        if self.update():
             s = self.save_load
             if x < s.x + s.width / 2:
                 save(copy_nodes(self.window, data=True))
@@ -132,4 +124,14 @@ class Menu:
                 paste_nodes(self.window, load())
                 print('File loaded')
             return True
+
+    def update(self):
+        self.save_load.x = self.window.width - self.save_load.width - self.offset
+        s = self.save_load
+        if s.x < self.window.mouse[0] < s.x + s.width and \
+           s.y < self.window.mouse[1] < s.y + s.height:
+            s.opacity = 255
+            return True
+        s.opacity = 100
+        return False
 

@@ -31,6 +31,7 @@ class PynoWindow(pyglet.window.Window):
     nodes_check = 0
 
     w, c = (0, 0), (0, 0)
+    mouse = (0, 0)
     pointer = (0, 0)
     line = []
     pan_scale = [[0.0, 0.0], 1]
@@ -90,6 +91,8 @@ class PynoWindow(pyglet.window.Window):
         if self.codeEditor:
             if self.codeEditor.intersect_point(self.pointer):
                 self.codeEditor.node.hover = True
+
+        self.menu.update()
 
         # ---- Redraw actives ----
 
@@ -152,7 +155,7 @@ class PynoWindow(pyglet.window.Window):
     # ---- Inputs ----
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.menu.intersect_point(x, y)
+        self.mouse = (x, y)
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
 
         self.pointer = (x, y)
