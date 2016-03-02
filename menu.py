@@ -64,7 +64,10 @@ def paste_nodes(window, data=None):
         for node in buff:
             node[0].reconnect(buff)
             window.nodes.append(node[0])
-        print('Paste ' + str(len(buff)) + ' nodes')
+        if data:
+            print('Loaded ' + str(len(buff)) + ' nodes')
+        else:
+            print('Paste ' + str(len(buff)) + ' nodes')
 
 
 def load(file=None):

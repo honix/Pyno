@@ -2,6 +2,7 @@ bin/
 build/
 dist/
 screens/
+graphics/
 *.pyc
 *.spec
 *.nja
