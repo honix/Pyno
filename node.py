@@ -13,12 +13,12 @@ class Node(Element, Processor):
         Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
-        if not size is None:
+        if size is not None:
             self.editorSize = size
         else:
             self.editorSize = (300, 150)
 
-        if not connects is None:
+        if connects is not None:
             self.connectedTo = connects
 
         if code is None:

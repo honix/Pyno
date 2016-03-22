@@ -80,7 +80,10 @@ def load(file=None):
                                             ('Pyno files', '*.pn'),
                                             ('All files', '*.*')))
         root.destroy()
-    file = open(file_path, 'r')
+    try:
+        file = open(file_path, 'r')
+    except FileNotFoundError:
+        return False
     data = file.read()
     file.close()
     return data
@@ -95,9 +98,13 @@ def save(data):
                                          ('Pyno files', '*.pn'),
                                          ('All files', '*.*')))
     root.destroy()
-    file = open(s, 'w')
+    try:
+        file = open(s, 'w')
+    except FileNotFoundError:
+        return False
     file.write(data)
     file.close()
+    return True
 
 
 class Menu:
@@ -119,13 +126,21 @@ class Menu:
     def click(self, x, y):
         if self.update():
             s = self.save_load
+            # SAVE
             if x < s.x + s.width / 2:
-                save(copy_nodes(self.window, data=True))
-                print('File saved')
+                if save(copy_nodes(self.window, data=True)):
+                    print('File saved')
+                else:
+                    print('No file')
+            # LOAD
             else:
-                self.window.new_pyno()
-                paste_nodes(self.window, load())
-                print('File loaded')
+                loaded = load()
+                if loaded:
+                    self.window.new_pyno()
+                    paste_nodes(self.window, loaded)
+                    print('File loaded')
+                else:
+                    print('No file')
             return True
 
     def update(self):
