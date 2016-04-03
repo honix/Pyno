@@ -64,20 +64,6 @@ class Line:
         del self.id
 
 
-# OLD OLD OLD
-def quad(x, y, cw, ch, color, batch):
-    quad_id = batch.add_indexed(
-                 4, GL_TRIANGLES, None,
-                 [0, 1, 2, 2, 3, 0],
-                 ('v2i', (x - cw, y - ch,
-                          x + cw, y - ch,
-                          x + cw, y + ch,
-                          x - cw, y + ch)),
-                 ('c3B', color * 4)
-                               )
-    return quad_id
-
-
 class Quad:
     def __init__(self, batch, backdrop=False, frontdrop=False):
         group = baseGroup

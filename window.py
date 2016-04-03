@@ -20,7 +20,7 @@ class PynoWindow(pyglet.window.Window):
     nodes = []
     selectedNodes = []
 
-    pynoSpace = {}  # local space for in-pyno programms
+    pynoSpace = {}  # local space for in-pyno programs
 
     codeEditor = None
     field = None
@@ -61,7 +61,8 @@ class PynoWindow(pyglet.window.Window):
                                               group=draw.uiGroup)
         self.menu = menu.Menu(self)
         # first-meta-node to be
-        Node(-9000, 9000, self.batch, (0, 0, 0), code=' ')
+        self.nodes.append(Node(-9000, 9000, self.batch, (0, 0, 0)))
+        self.nodes.append(Field(-9000, 9030, self.batch))
 
         # open welcome-file
         menu.paste_nodes(self, menu.load('examples/welcome.pn'))
@@ -72,9 +73,9 @@ class PynoWindow(pyglet.window.Window):
 
         # ---- Calculations ----
 
-        tuple(map(lambda x: x.reset_proc(), self.nodes))
+        list(map(lambda x: x.reset_proc(), self.nodes))
 
-        tuple(map(lambda x: x.processor(self.pynoSpace), self.nodes))
+        list(map(lambda x: x.processor(self.pynoSpace), self.nodes))
 
         if self.nodes_check < len(self.nodes)-25:
             self.nodes_check += 1
@@ -82,11 +83,11 @@ class PynoWindow(pyglet.window.Window):
             self.nodes_check = 0
 
         if self.selectedNodes:
-            tuple(map(lambda x: x.make_active(), self.selectedNodes))
+            list(map(lambda x: x.make_active(), self.selectedNodes))
         else:
             check = self.nodes[self.nodes_check:self.nodes_check+25]
-            tuple(map(lambda x: x.intersect_point((self.pointer[0],
-                                                   self.pointer[1])), check))
+            list(map(lambda x: x.intersect_point((self.pointer[0],
+                                                  self.pointer[1])), check))
 
         if self.codeEditor:
             if self.codeEditor.intersect_point(self.pointer):
@@ -96,8 +97,8 @@ class PynoWindow(pyglet.window.Window):
 
         # ---- Redraw actives ----
 
-        tuple(map(lambda x: x.render_base(self.batch, dt),
-                  filter(lambda x: x.active, self.nodes)))
+        list(map(lambda x: x.render_base(self.batch, dt),
+                 filter(lambda x: x.active, self.nodes)))
 
     def on_draw(self):
         # ---- BG ----
@@ -140,7 +141,7 @@ class PynoWindow(pyglet.window.Window):
 
         self.batch.draw()
 
-        tuple(map(lambda x: x.render(), self.nodes))
+        list(map(lambda x: x.render(), self.nodes))
 
         if self.codeEditor:
             self.codeEditor.render()
@@ -367,10 +368,11 @@ class PynoWindow(pyglet.window.Window):
 
             if symbol == key.DELETE:
                 for node in self.selectedNodes:
-                    self.nodes[self.nodes.index(node)].make_child_active()
-                    self.nodes[self.nodes.index(node)].delete()
-                    self.nodes[self.nodes.index(node)].outputs = ()
+                    node.make_child_active()
+                    node.delete()
+                    node.outputs = ()
                     del self.nodes[self.nodes.index(node)]
+                    del node
                     print('Delete node')
                 self.selectedNodes = []
 
@@ -387,6 +389,7 @@ class PynoWindow(pyglet.window.Window):
                     print(str(node))
 
     def new_pyno(self):
+        return
         for node in self.nodes:
             node.delete()
             del node

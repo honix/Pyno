@@ -262,14 +262,13 @@ class Element(object):
                     o[0].add_child(self)
 
     def delete(self):
-        for key in self.graphics.keys():
-            g = self.graphics[key]
-            if g:
-                if isinstance(g, dict):
-                    [d.delete() for d in g.values()]
-                elif isinstance(g, list):
-                    for d in g:
-                        for j in d:
-                            j.delete()
+        for value in self.graphics.values():
+            if value:
+                if isinstance(value, dict):
+                    [v.delete() for v in value.values()]
+                elif isinstance(value, list):
+                    for l in value:
+                        for lines in l:
+                            lines.delete()
                 else:
-                    g.delete()
+                    value.delete()
