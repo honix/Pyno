@@ -33,7 +33,7 @@ class PynoWindow(pyglet.window.Window):
     w, c = (0, 0), (0, 0)
     mouse = (0, 0)
     pointer = (0, 0)
-    line = []
+    line = ()
     pan_scale = [[0.0, 0.0], 1]
 
     flipper = False
@@ -61,8 +61,10 @@ class PynoWindow(pyglet.window.Window):
                                               group=draw.uiGroup)
         self.menu = menu.Menu(self)
         # first-meta-node to be
-        self.nodes.append(Node(-9000, 9000, self.batch, (0, 0, 0)))
-        self.nodes.append(Field(-9000, 9030, self.batch))
+        #self.nodes.append(Node(-9050, 9000, self.batch))
+        #self.nodes.append(Field(-9050, 9050, self.batch))
+
+        self.line = (draw.Line(self.batch), draw.Line(self.batch))
 
         # open welcome-file
         menu.paste_nodes(self, menu.load('examples/welcome.pn'))
@@ -118,24 +120,21 @@ class PynoWindow(pyglet.window.Window):
             cn = self.connectNode
             n = self.connectNode['node']
 
-            try:
-                if self.connectNode['mode'] == 'input':
-                    start = n.put_pos_by_name(cn['put']['name'], 'inputs')
-                    self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
-                                        (start, n.y + n.ch + n.offset))
-                    self.line[1].redraw((start, n.y + n.ch + n.offset),
-                                        (p[0], p[1]))
+            if self.connectNode['mode'] == 'input':
+              start = n.put_pos_by_name(cn['put']['name'], 'inputs')
+              self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
+                                  (start, n.y + n.ch + n.offset))
+              self.line[1].redraw((start, n.y + n.ch + n.offset),
+                                  (p[0], p[1]))
 
-                elif self.connectNode['mode'] == 'output':
-                    start = n.put_pos_by_name(cn['put']['name'], 'outputs')
-                    self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
-                                        (start, n.y - n.ch - n.offset))
-                    self.line[1].redraw((start, n.y - n.ch - n.offset),
-                                        (p[0], p[1]))
-            except:
-                self.line = (draw.Line(self.batch), draw.Line(self.batch))
+            elif self.connectNode['mode'] == 'output':
+              start = n.put_pos_by_name(cn['put']['name'], 'outputs')
+              self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
+                                  (start, n.y - n.ch - n.offset))
+              self.line[1].redraw((start, n.y - n.ch - n.offset),
+                                  (p[0], p[1]))
 
-        elif self.line:
+        else:
             self.line[0].redraw((-9000, 9000), (-9000, 9010))
             self.line[1].redraw((-9000, 9010), (-9010, 9000))
 
@@ -341,9 +340,15 @@ class PynoWindow(pyglet.window.Window):
             ps[1] = max_zoom
             ps[0][0] -= ((-self.width / 2 + x) / 2 * scroll_y) // di
             ps[0][1] -= ((-self.height / 2 + y) / 2 * scroll_y) // di
+        else:
+            ps[1] = max_zoom
 
     def on_key_press(self, symbol, modifiers):
         key = pyglet.window.key
+
+        if symbol == key.END:
+            # double zoom
+            self.pan_scale[1] = 2
 
         if not (self.codeEditor or self.field):
             if symbol == key.N:
@@ -389,7 +394,6 @@ class PynoWindow(pyglet.window.Window):
                     print(str(node))
 
     def new_pyno(self):
-        return
         for node in self.nodes:
             node.delete()
             del node

@@ -42,11 +42,11 @@ class Line:
         self.id = batch.add_indexed(
                     4, GL_TRIANGLES, linesGroup,
                     [0, 1, 2, 2, 3, 0],
-                    ('v2f', (0, 0,
-                             0, 0,
-                             0, 0,
-                             0, 0)),
-                    ('c4B', (255, 255, 255, 80) * 4)
+                    ('v2f', (0.0, 0.0,
+                             0.0, 0.0,
+                             0.0, 0.0,
+                             0.0, 0.0)),
+                    ('c3B', (100, 100, 100) * 4)
                                    )
 
     def redraw(self, p1, p2):
@@ -60,7 +60,11 @@ class Line:
                             p2[0] - sina, p2[1] + cosa)
 
     def delete(self):
-        self.id.delete()
+        self.id.vertices = (0, 0,
+                            0, 0,
+                            0, 0,
+                            0, 0)
+        # self.id.delete() # avoid glitch
         del self.id
 
 
@@ -90,7 +94,11 @@ class Quad:
         self.id.colors = color * 4
 
     def delete(self):
-        self.id.delete()
+        self.id.vertices = (0, 0,
+                            0, 0,
+                            0, 0,
+                            0, 0)
+        # self.id.delete() # avoid glitch
         del self.id
 
 
