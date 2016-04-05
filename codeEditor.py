@@ -113,8 +113,8 @@ class CodeEditor(object):
         key = pyglet.window.key
 
         if symbol == key.TAB:
-            self.document.insert_text(self.caret.position, '    ')
-            self.caret.position += 4
+            self.document.insert_text(self.caret.position, '  ')
+            self.caret.position += 2
 
         elif modifiers & key.MOD_CTRL:
             if symbol == key.C:
