@@ -346,7 +346,7 @@ class PynoWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         key = pyglet.window.key
 
-        if symbol == key.END:
+        if modifiers == 2 and symbol == key.EQUAL:
             # double zoom
             self.pan_scale[1] = 2
 
