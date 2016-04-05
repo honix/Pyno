@@ -23,8 +23,8 @@ class Node(Element, Processor):
 
         if code is None:
             self.code = """def newNode(a=0, b=0):
-    result = a + b
-    return result"""
+  result = a + b
+  return result"""
         else:
             self.code = code
 
