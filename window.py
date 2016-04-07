@@ -395,6 +395,7 @@ class PynoWindow(pyglet.window.Window):
                     print(str(node))
 
     def new_pyno(self):
+        self.switch_to()
         self.codeEditor = None
         for node in self.nodes:
             node.delete(fully=True)
