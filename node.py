@@ -102,6 +102,6 @@ class Node(Element, Processor):
         super().render_base(batch, dt)
         self.label.x, self.label.y = self.x, self.y
 
-    def delete(self):
-        super().delete()
+    def delete(self, fully=False):
+        super().delete(fully)
         self.label.delete()

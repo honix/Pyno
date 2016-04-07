@@ -261,14 +261,14 @@ class Element(object):
                     connect['output']['node'] = o[0]
                     o[0].add_child(self)
 
-    def delete(self):
+    def delete(self, fully=False):
         for value in self.graphics.values():
             if value:
                 if isinstance(value, dict):
-                    [v.delete() for v in value.values()]
+                    [v.delete(fully) for v in value.values()]
                 elif isinstance(value, list):
                     for l in value:
                         for lines in l:
-                            lines.delete()
+                            lines.delete(fully)
                 else:
-                    value.delete()
+                    value.delete(fully)

@@ -59,12 +59,13 @@ class Line:
                             p2[0] + sina, p2[1] - cosa,
                             p2[0] - sina, p2[1] + cosa)
 
-    def delete(self):
+    def delete(self, fully=False):
         self.id.vertices = (0, 0,
                             0, 0,
                             0, 0,
                             0, 0)
-        # self.id.delete() # avoid glitch
+        if fully:
+            self.id.delete()
         del self.id
 
 
@@ -93,12 +94,13 @@ class Quad:
                             x - cw, y + ch)
         self.id.colors = color * 4
 
-    def delete(self):
+    def delete(self, fully=False):
         self.id.vertices = (0, 0,
                             0, 0,
                             0, 0,
                             0, 0)
-        # self.id.delete() # avoid glitch
+        if fully:
+            self.id.delete()
         del self.id
 
 

@@ -53,6 +53,13 @@ class PynoWindow(pyglet.window.Window):
 
         self.pynoSpace['G'] = self.pynoSpace
 
+        self.batch, self.pyno_logo, self.menu = None, None, None
+        self.new_batch()
+
+        # open welcome-file
+        menu.paste_nodes(self, menu.load('examples/welcome.pn'))
+
+    def new_batch(self):
         self.batch = pyglet.graphics.Batch()
         # load pyno-logo in left bottom
         pyno_logo_img = pyglet.image.load('imgs/corner.png')
@@ -60,14 +67,8 @@ class PynoWindow(pyglet.window.Window):
                                               batch=self.batch,
                                               group=draw.uiGroup)
         self.menu = menu.Menu(self)
-        # first-meta-node to be
-        #self.nodes.append(Node(-9050, 9000, self.batch))
-        #self.nodes.append(Field(-9050, 9050, self.batch))
-
+        # line place-holder
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
-
-        # open welcome-file
-        menu.paste_nodes(self, menu.load('examples/welcome.pn'))
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
@@ -394,9 +395,11 @@ class PynoWindow(pyglet.window.Window):
                     print(str(node))
 
     def new_pyno(self):
+        self.codeEditor = None
         for node in self.nodes:
-            node.delete()
+            node.delete(fully=True)
             del node
-        self.nodes = list()
+        self.new_batch()
+        self.nodes = []
         self.pan_scale = [[0.0, 0.0], 1]
         print('New pyno')

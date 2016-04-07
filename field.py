@@ -187,8 +187,8 @@ class Field(Element):
         self.resize = intersect
         return intersect
 
-    def delete(self):
-        super().delete()
+    def delete(self, fully=False):
+        super().delete(fully)
         self.layout.delete()
 
     # --- Input events ---
