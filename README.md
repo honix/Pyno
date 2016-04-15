@@ -3,7 +3,7 @@
 
 ![Pyno](screenshots/start.png)
 
-*Pyno is a experiment. Real world scenarios is confusing.*
+*Pyno is an experiment. Real world scenarios is confusing.*
 
 ### How to use
 **Basics:**
@@ -13,12 +13,12 @@ There are only two elements:
 - **field** (is a object, value or lambda function)
 
 Controls:
-- Use right-mouse-button to pan.
+- Use right-mouse-button to panning.
 - To spawn **node** press **N**, to spawn **field** press **F** on keyboard.
-- You can save and load pathes using bottom-right buttons (S-save, L-load).
-- You can move and select elements by mouse, selected elements can be deleted by **Delete** key.
+- Save and load pathes using bottom-right buttons (S-save, L-load).
+- Move and select elements by mouse, selected elements can be deleted by **Delete** key.
 - Selected elements can be ctrl-c and ctrl-v.
-- Any node has a code inside, edit code just by pressing on node and hover code editor.
+- Nodes has a code inside, edit code just by pressing on node and hover code editor.
 - Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin.
 ![Pyno](screenshots/edit.png)
 
