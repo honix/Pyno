@@ -6,6 +6,9 @@
 *Pyno is an experiment. Real world scenarios is confusing.*
 
 ### How to use
+
+[Check wiki for advanced tutorials!](https://github.com/honix/Pyno/wiki)
+
 **Basics:**
 
 There are only two elements:
@@ -21,8 +24,6 @@ Controls:
 - Nodes has a code inside, edit code just by pressing on node and hover code editor.
 - Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin.
 ![Pyno](screenshots/edit.png)
-
-[Check wiki for advanced tutorials!](https://github.com/honix/Pyno/wiki)
 
 ### How to run
 To run pyno you must install few libs:
