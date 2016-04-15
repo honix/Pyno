@@ -50,7 +50,7 @@ class Processor(object):
                 try:
                     space['S'] = self.local_space
                     exec(self.code, space)
-                    self.func = eval('%s' % self.name, space)
+                    self.func = eval(self.name, space)
                 except Exception as ex:
                     if not self.problem:
                         self.er_label.text = str(ex)
