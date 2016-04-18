@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.gl import *
 from random import randint
+import gc
 
 import draw
 import menu
@@ -50,6 +51,7 @@ class PynoWindow(pyglet.window.Window):
 
         pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.update)
+        self.gc_timer = 0.0
 
         self.pynoSpace['G'] = self.pynoSpace
 
@@ -72,7 +74,12 @@ class PynoWindow(pyglet.window.Window):
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
-        # print(pyglet.clock.get_fps())
+        if self.gc_timer > 12:
+          self.gc_timer = 0.0
+          print('Frame-rate', int(pyglet.clock.get_fps()))
+          gc.collect()
+        else:
+          self.gc_timer += dt
 
         # ---- Calculations ----
 
@@ -193,8 +200,6 @@ class PynoWindow(pyglet.window.Window):
                     if self.codeEditor.hover:
                         self.pop_handlers()
                         self.push_handlers()
-                    #self.codeEditor.node.code = self.codeEditor.document.text
-                    #self.codeEditor.update_node()
                     del self.codeEditor
             for node in self.nodes:
                 if node.intersect_point((x, y)):

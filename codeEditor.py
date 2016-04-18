@@ -62,10 +62,7 @@ class CodeEditor(object):
         l.x = self.node.x + self.node.cw + 25
         l.y = self.node.y - l.height + self.node.ch + 25
 
-        if not self.change:
-            if not self.node.code == self.document.text:
-                self.change = True
-        else:
+        if self.change:
             self.update_label.x = l.x
             self.update_label.y = l.y - 20
             self.update_label.draw()
@@ -116,6 +113,7 @@ class CodeEditor(object):
 
     def on_text(self, text):
         if self.hover:
+            self.change = True
             self.caret.on_text(text)
 
     def on_text_motion(self, motion):
@@ -130,6 +128,7 @@ class CodeEditor(object):
         key = pyglet.window.key
 
         if symbol == key.TAB:
+            self.change = True
             self.document.insert_text(self.caret.position, '  ')
             self.caret.position += 2
 
@@ -148,7 +147,15 @@ class CodeEditor(object):
                 self.document.insert_text(self.caret.position, text)
                 self.caret.position += len(text)
 
+        elif symbol == key.BACKSPACE or symbol == key.DELETE:
+            self.change = True
+
     def set_focus(self):
         self.caret.visible = True
         self.caret.mark = 0
         self.caret.position = len(self.document.text)
+
+    def __del__(self):
+      self.layout.delete()
+      self.update_label.delete()
+      self.caret.delete()
