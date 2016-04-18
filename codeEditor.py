@@ -10,18 +10,26 @@ class CodeEditor(object):
     def __init__(self, node):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
+
         self.document.set_style(0, len(node.code),
                                 dict(font_name='Consolas',
                                 font_size=12, color=(255,) * 4))
+
         self.layout = pyglet.text.layout.IncrementalTextLayout(
                                 self.document,
                                 *node.editorSize,
                                 multiline=True, wrap_lines=False)
+
+        self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',
+                                              font_name='Consolas',
+                                              font_size=9)
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
         self.hover = False
         self.resize = False
+
+        self.change = False
 
         self.pan_scale = [[0.0, 0.0], 1]
         self.screen_size = (800, 600)
@@ -30,6 +38,7 @@ class CodeEditor(object):
         # Push code to node
         self.node.new_code(self.document.text)
         self.node.need_update = True
+        self.change = False
 
     def intersect_point(self, point):
         # Intersection with whole codeEditor
@@ -53,17 +62,26 @@ class CodeEditor(object):
         l.x = self.node.x + self.node.cw + 25
         l.y = self.node.y - l.height + self.node.ch + 25
 
+        if not self.change:
+            if not self.node.code == self.document.text:
+                self.change = True
+        else:
+            self.update_label.x = l.x
+            self.update_label.y = l.y - 20
+            self.update_label.draw()
+
         if self.hover:
             if self.document.text:
                 self.document.set_style(0, len(self.node.code),
                                         dict(color=(255, 255, 255, 255)))
+
             quad_aligned(l.x - 20, l.y,
                          l.width + 20, l.height + 10,
-                         (0, 0, 0, 150))
-            quad_aligned(l.x - 20, l.y, 5, l.height + 10,
-                         self.node.color + (255,))
-            quad_aligned(l.x + l.width - 10, l.y, 10, 10,
-                         self.node.color + (255,))
+                         ((0, 0, 0) if not self.change else (20, 10, 5)) + (230,))
+
+            color = self.node.color if not self.change else (255, 100, 10)
+            quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))
+            quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
         else:
             if self.document.text:
                 self.document.set_style(0, len(self.node.code),
@@ -99,7 +117,6 @@ class CodeEditor(object):
     def on_text(self, text):
         if self.hover:
             self.caret.on_text(text)
-            self.update_node()
 
     def on_text_motion(self, motion):
         if self.hover:
@@ -116,6 +133,10 @@ class CodeEditor(object):
             self.document.insert_text(self.caret.position, '  ')
             self.caret.position += 2
 
+        elif modifiers & key.MOD_CTRL and symbol == key.ENTER:
+            print('Reload code')
+            self.update_node()
+
         elif modifiers & key.MOD_CTRL:
             if symbol == key.C:
                 start = min(self.caret.position, self.caret.mark)
@@ -127,15 +148,7 @@ class CodeEditor(object):
                 self.document.insert_text(self.caret.position, text)
                 self.caret.position += len(text)
 
-    def on_key_release(self, symbol, modifiers):
-        k = pyglet.window.key
-        if symbol == k.BACKSPACE or symbol == k.DELETE:
-            self.update_node()
-
     def set_focus(self):
         self.caret.visible = True
         self.caret.mark = 0
         self.caret.position = len(self.document.text)
-
-    def __del__(self):
-        self.update_node()

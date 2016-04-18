@@ -193,9 +193,9 @@ class PynoWindow(pyglet.window.Window):
                     if self.codeEditor.hover:
                         self.pop_handlers()
                         self.push_handlers()
-                    self.codeEditor.node.code = self.codeEditor.document.text
-                    self.codeEditor.update_node()
-                    self.codeEditor = None
+                    #self.codeEditor.node.code = self.codeEditor.document.text
+                    #self.codeEditor.update_node()
+                    del self.codeEditor
             for node in self.nodes:
                 if node.intersect_point((x, y)):
                     if (node in self.selectedNodes
