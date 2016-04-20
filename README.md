@@ -3,7 +3,14 @@
 
 ![Pyno](screenshots/start.png)
 
-*Pyno is an experiment. Real world scenarios is confusing.*
+**So, what you can?**
+- real-time interactive development
+- no predefined nodes - you will code yours
+- use python as you like (any libs and tips)
+- crash-less errors
+- perpetuum mobile
+
+*Pyno is an experiment. Real-world scenarios is confusing.*
 
 ### How to use
 
