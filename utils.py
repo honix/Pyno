@@ -22,10 +22,8 @@ def centered(init, width, count, number):
         return init
 
 
-def point_intersect_quad(point, rect=(0, 0, 10, 10)):
-    if (point[0] < max(rect[0], rect[2])
-    and point[0] > min(rect[0], rect[2])):
-        if (point[1] < max(rect[1], rect[3])
-        and point[1] > min(rect[1], rect[3])):
-            return True
+def point_intersect_quad(point, rect):
+    if (min(rect[0], rect[2]) < point[0] < max(rect[0], rect[2]) and
+            min(rect[1], rect[3]) < point[1] < max(rect[1], rect[3])):
+        return True
     return False
