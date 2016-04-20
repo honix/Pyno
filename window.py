@@ -11,52 +11,44 @@ from codeEditor import CodeEditor
 from utils import *
 
 
-pyglet.options['debug_gl'] = False  # performance boost
-
-
 class PynoWindow(pyglet.window.Window):
     # Main pyno window. It's gray with logo in bottom.
     # It handles all elements and controls
-
-    nodes = []
-    selectedNodes = []
-
-    pynoSpace = {}  # local space for in-pyno programs
-
-    codeEditor = None
-    field = None
-    nodeDrag = False
-    select = False
-    connection = False
-    connectNode = None
-    nodes_check = 0
-
-    w, c = (0, 0), (0, 0)
-    mouse = (0, 0)
-    pointer = (0, 0)
-    line = ()
-    pan_scale = [[0.0, 0.0], 1]
-
-    flipper = False
-
     def __init__(self, config):
         super().__init__(resizable=True, caption='Pyno', config=config)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
+
         # set window position to center
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
-
-        pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.update)
-        self.gc_timer = 0.0
 
-        self.pynoSpace['G'] = self.pynoSpace
+        self.nodes = []
+        self.selectedNodes = []
+
+        self.pynoSpace = {}  # local space for in-pyno programs
+        self.pynoSpace['G'] = self.pynoSpace  # to get global stuff
+
+        self.codeEditor = None
+        self.field = None
+        self.nodeDrag = False
+        self.select = False
+        self.connection = False
+        self.connectNode = None
+        self.nodes_check = 0
+
+        self.w, self.c = (0, 0), (0, 0)
+        self.mouse = (0, 0)
+        self.pointer = (0, 0)
+        self.line = ()
+        self.pan_scale = [[0.0, 0.0], 1]
 
         self.batch, self.pyno_logo, self.menu = None, None, None
         self.new_batch()
+
+        self.gc_timer = 0.0
 
         # open welcome-file
         menu.paste_nodes(self, menu.load('examples/welcome.pn'))
@@ -74,12 +66,14 @@ class PynoWindow(pyglet.window.Window):
 
     def update(self, dt):
         self.pynoSpace['dt'] = dt
-        if self.gc_timer > 12:
-          self.gc_timer = 0.0
-          print('Frame-rate', int(pyglet.clock.get_fps()))
-          gc.collect()
+
+        # do garbage collect every 22 seconds (why?)
+        if self.gc_timer > 22:
+            self.gc_timer = 0.0
+            print('Frame-rate', int(pyglet.clock.get_fps()))
+            gc.collect()
         else:
-          self.gc_timer += dt
+            self.gc_timer += dt
 
         # ---- Calculations ----
 
@@ -87,17 +81,14 @@ class PynoWindow(pyglet.window.Window):
 
         list(map(lambda x: x.processor(self.pynoSpace), self.nodes))
 
-        if self.nodes_check < len(self.nodes)-25:
-            self.nodes_check += 1
-        else:
-            self.nodes_check = 0
-
         if self.selectedNodes:
             list(map(lambda x: x.make_active(), self.selectedNodes))
         else:
+            # pointer over nodes
+            nc = self.nodes_check
+            self.nodes_check = nc + 1 if nc < len(self.nodes)-25 else 0
             check = self.nodes[self.nodes_check:self.nodes_check+25]
-            list(map(lambda x: x.intersect_point((self.pointer[0],
-                                                  self.pointer[1])), check))
+            list(map(lambda x: x.intersect_point(self.pointer), check))
 
         if self.codeEditor:
             if self.codeEditor.intersect_point(self.pointer):
@@ -115,7 +106,7 @@ class PynoWindow(pyglet.window.Window):
 
         self.clear()
 
-        # ---- NODES ----
+        # ---- PYNORAMA ----
 
         ps = self.pan_scale
         glTranslatef(self.width / 2, self.height / 2, 0)
@@ -123,28 +114,31 @@ class PynoWindow(pyglet.window.Window):
         glTranslatef(-self.width / 2 + ps[0][0],
                      -self.height / 2 + ps[0][1], 0.0)
 
+        # ---- CURRENT LINK DRAW ----
+
         if self.connection:
             p = self.pointer
             cn = self.connectNode
             n = self.connectNode['node']
 
             if self.connectNode['mode'] == 'input':
-              start = n.put_pos_by_name(cn['put']['name'], 'inputs')
-              self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
-                                  (start, n.y + n.ch + n.offset))
-              self.line[1].redraw((start, n.y + n.ch + n.offset),
-                                  (p[0], p[1]))
+                start = n.put_pos_by_name(cn['put']['name'], 'inputs')
+                self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
+                                    (start, n.y + n.ch + n.offset))
+                self.line[1].redraw((start, n.y + n.ch + n.offset), p)
 
             elif self.connectNode['mode'] == 'output':
-              start = n.put_pos_by_name(cn['put']['name'], 'outputs')
-              self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
-                                  (start, n.y - n.ch - n.offset))
-              self.line[1].redraw((start, n.y - n.ch - n.offset),
-                                  (p[0], p[1]))
+                start = n.put_pos_by_name(cn['put']['name'], 'outputs')
+                self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
+                                    (start, n.y - n.ch - n.offset))
+                self.line[1].redraw((start, n.y - n.ch - n.offset), p)
 
         else:
+            # line place-holder
             self.line[0].redraw((-9000, 9000), (-9000, 9010))
             self.line[1].redraw((-9000, 9010), (-9010, 9000))
+
+        # ---- NODES ----
 
         self.batch.draw()
 
@@ -158,19 +152,18 @@ class PynoWindow(pyglet.window.Window):
 
         # ---- GUI ----
 
+        # reset camera position
         glLoadIdentity()
-
-    # ---- Inputs ----
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse = (x, y)
-        x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
 
+        x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
         self.pointer = (x, y)
 
-        if len(self.selectedNodes) == 0:
+        if not self.selectedNodes:
             if self.codeEditor:
-                if self.codeEditor.intersect_point((x, y)):
+                if self.codeEditor.intersect_point(self.pointer):
                     if not self.codeEditor.hover and not self.field:
                         self.push_handlers(self.codeEditor)
                     self.codeEditor.pan_scale = self.pan_scale
@@ -186,6 +179,7 @@ class PynoWindow(pyglet.window.Window):
     def on_mouse_press(self, x, y, button, modifiers):
         if self.menu.click(x, y):
             return
+
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
 
         if button == 1:
@@ -200,16 +194,16 @@ class PynoWindow(pyglet.window.Window):
                     if self.codeEditor.hover:
                         self.pop_handlers()
                         self.push_handlers()
-                    del self.codeEditor
+                    self.codeEditor = None
             for node in self.nodes:
                 if node.intersect_point((x, y)):
-                    if (node in self.selectedNodes
-                        and len(self.selectedNodes) > 1):
+                    if (node in self.selectedNodes and
+                            len(self.selectedNodes) > 1):
                         self.nodeDrag = True
                         return
                     else:
-                        if (node.selectedInput['name'] != 'none'
-                            or node.selectedOutput['name'] != 'none'):
+                        if (node.selectedInput['name'] != 'none' or
+                                node.selectedOutput['name'] != 'none'):
                             self.pointer = (x, y)
                             self.connection = True
                             if node.selectedInput['name'] != 'none':
@@ -238,8 +232,7 @@ class PynoWindow(pyglet.window.Window):
                             return
                         if isinstance(node, Node):
                             self.codeEditor = CodeEditor(node)
-                        elif (isinstance(node, Field)
-                              and not self.field):
+                        elif isinstance(node, Field) and not self.field:
                             self.push_handlers(node)
                             self.field = node
                         self.selectedNodes = [node]
@@ -277,13 +270,13 @@ class PynoWindow(pyglet.window.Window):
             self.connection = False
 
             if self.select:
-                self.select = []
+                select = []
                 for node in self.nodes:
                     if point_intersect_quad((node.x, node.y),
                                             (self.c + self.w)):
-                        self.select.append(node)
+                        select.append(node)
                         node.draw_color = node.inverse(node.color)
-                self.selectedNodes = self.select
+                self.selectedNodes = select
                 self.w, self.c = (0, 0), (0, 0)
                 self.select = False
             else:
@@ -294,28 +287,28 @@ class PynoWindow(pyglet.window.Window):
                     if node.intersect_point((x, y)):
                         if node != self.connectNode['node']:
 
-                            if node.selectedInput['name'] != 'none' \
-                                    and self.connectNode['mode'] == 'output':
+                            if (node.selectedInput['name'] != 'none' and
+                                    self.connectNode['mode'] == 'output'):
                                 del self.connectNode['mode']
                                 another = {'node': node,
                                            'put': node.selectedInput}
                                 insert = {'output': self.connectNode,
                                           'input': another}
 
-                                i = node.selectedInput
-                                for input in node.connectedTo:
-                                    if input['input']['put']['name'] == i['name']:
-                                        n = node.connectedTo
-                                        del n[n.index(input)]
+                                # check if something already connected to put
+                                i, n = node.selectedInput, node.connectedTo
+                                for inp in n:
+                                    if inp['input']['put']['name'] == i['name']:
+                                        del n[n.index(inp)]
                                         break
 
-                                if not (insert in node.connectedTo):
+                                if insert not in node.connectedTo:
                                     node.connectedTo.append(insert)
                                     self.connectNode['node'].add_child(node)
                                     print('Connect output to input')
 
-                            elif node.selectedOutput['name'] != 'none' \
-                                    and self.connectNode['mode'] == 'input':
+                            elif (node.selectedOutput['name'] != 'none' and
+                                    self.connectNode['mode'] == 'input'):
                                 del self.connectNode['mode']
                                 another = {'node': node,
                                            'put': node.selectedOutput}
@@ -323,7 +316,7 @@ class PynoWindow(pyglet.window.Window):
                                           'input': self.connectNode}
 
                                 n = self.connectNode['node']
-                                if not (insert in n.connectedTo):
+                                if insert not in n.connectedTo:
                                     n.connectedTo.append(insert)
                                     node.add_child(n)
                                     n.make_active()
@@ -358,19 +351,15 @@ class PynoWindow(pyglet.window.Window):
 
         if not (self.codeEditor or self.field):
             if symbol == key.N:
-                self.nodes.append(Node(self.pointer[0],
-                                       self.pointer[1], self.batch,
+                self.nodes.append(Node(*self.pointer, self.batch,
                                        (randint(80, 130),
                                         randint(80, 130),
                                         randint(80, 130))))
 
             elif symbol == key.F:
-                self.nodes.append(Field(self.pointer[0], self.pointer[1],
-                                        self.batch))
+                self.nodes.append(Field(*self.pointer, self.batch))
 
             if modifiers & key.MOD_CTRL:
-                # ---- Copy paste ----
-
                 if symbol == key.C:
                     menu.copy_nodes(self)
 
@@ -389,10 +378,6 @@ class PynoWindow(pyglet.window.Window):
 
             elif symbol == key.HOME:
                 self.pan_scale = [[0.0, 0.0], 1]
-
-            elif symbol == key.F1:
-                for node in self.selectedNodes:
-                    print(node.proc_result)
 
             elif symbol == key.END:
                 print(len(self.nodes))

@@ -1,8 +1,5 @@
 import pyglet
 import window
-# import cProfile
-
-# pynoSpace = {}
 
 if __name__ == '__main__':
     print('Loading...')
@@ -16,5 +13,6 @@ if __name__ == '__main__':
         # if config is crashed run more default one
         pwindow = window.PynoWindow(pyglet.gl.Config())
 
+    pyglet.options['debug_gl'] = False  # performance boost?
+    pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
     pyglet.app.run()
-    # cProfile.run("pyglet.app.run()")
