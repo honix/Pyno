@@ -351,13 +351,13 @@ class PynoWindow(pyglet.window.Window):
 
         if not (self.codeEditor or self.field):
             if symbol == key.N:
-                self.nodes.append(Node(*self.pointer, self.batch,
+                self.nodes.append(Node(self.pointer[0], self.pointer[1], self.batch,
                                        (randint(80, 130),
                                         randint(80, 130),
                                         randint(80, 130))))
 
             elif symbol == key.F:
-                self.nodes.append(Field(*self.pointer, self.batch))
+                self.nodes.append(Field(self.pointer[0], self.pointer[1], self.batch))
 
             if modifiers & key.MOD_CTRL:
                 if symbol == key.C:
