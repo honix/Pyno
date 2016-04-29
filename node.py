@@ -1,4 +1,5 @@
 import pyglet
+import platform
 
 from element import Element
 from processor import Processor
@@ -29,7 +30,9 @@ class Node(Element, Processor):
             self.code = code
 
         self.name = ''
-        self.label = pyglet.text.Label(self.name, font_name='consolas',
+        win = platform.system() == 'Windows'
+        font = ('Consolas' if win else 'FreeMono')
+        self.label = pyglet.text.Label(self.name, font_name=font,
                                        bold=True, font_size=12,
                                        anchor_x='center', anchor_y='center',
                                        batch=batch, group=labelsGroup)

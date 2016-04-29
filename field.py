@@ -1,5 +1,6 @@
 import pyglet
 import clipboard
+import platform
 
 from element import Element
 from utils import x_y_pan_scale
@@ -24,9 +25,11 @@ class Field(Element):
         else:
             self.code = code
 
+        win = platform.system() == 'Windows'
+        font = ('Consolas' if win else 'FreeMono')
         self.document = pyglet.text.document.FormattedDocument(self.code)
         self.document.set_style(0, len(self.document.text),
-                                dict(font_name='Consolas',
+                                dict(font_name=font,
                                      font_size=12,
                                      color=(0, 0, 0, 255)))
         self.layout = pyglet.text.layout.IncrementalTextLayout(

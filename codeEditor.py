@@ -1,4 +1,5 @@
 import clipboard
+import platform
 
 from utils import x_y_pan_scale
 from draw import *
@@ -11,8 +12,10 @@ class CodeEditor(object):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
 
+        win = platform.system() == 'Windows'
+        font = ('Consolas' if win else 'FreeMono')
         self.document.set_style(0, len(node.code),
-                                dict(font_name='Consolas',
+                                dict(font_name=font,
                                 font_size=12, color=(255,) * 4))
 
         self.layout = pyglet.text.layout.IncrementalTextLayout(

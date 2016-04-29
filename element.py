@@ -1,4 +1,5 @@
 import pyglet
+import platform
 
 from draw import *
 import utils
@@ -28,8 +29,10 @@ class Element(object):
         self.batch = batch
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
-
-        self.er_label = pyglet.text.Label('error', font_name='consolas',
+        
+        win = platform.system() == 'Windows'
+        self.font = ('Consolas' if win else 'FreeMono')
+        self.er_label = pyglet.text.Label('error', font_name=self.font,
                                           bold=True, font_size=12,
                                           color=self.er_color + (255,),
                                           anchor_x='right', anchor_y='center')
@@ -189,14 +192,14 @@ class Element(object):
         for input in self.inputs:
             gr['inputs'][input] = Quad(self.batch)
             self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
-                                                    font_name='consolas',
+                                                    font_name=self.font,
                                                     font_size=12))
         self.out_labels = []
         gr['outputs'] = dict()
         for output in self.outputs:
             gr['outputs'][output] = Quad(self.batch)
             self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
-                                                     font_name='consolas',
+                                                     font_name=self.font,
                                                      font_size=12, anchor_x='right'))
 
     def put_pos(self, puts):

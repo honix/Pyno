@@ -82,7 +82,7 @@ def load(file=None):
         root.destroy()
     try:
         file = open(file_path, 'r')
-    except FileNotFoundError:
+    except:
         return False
     data = file.read()
     file.close()
@@ -100,7 +100,7 @@ def save(data):
     root.destroy()
     try:
         file = open(s, 'w')
-    except FileNotFoundError:
+    except:
         return False
     file.write(data)
     file.close()
