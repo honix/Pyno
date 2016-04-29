@@ -67,20 +67,16 @@ class Processor(object):
                 if not self.problem:
                     self.er_label.text = str(ex)
                 self.problem = True
-
-            # build output
-            for output in self.outputs:
-                try:
+            else:
+                # build output
+                for output in self.outputs:
                     if (result and len(self.outputs) > 1
-                    and isinstance(result, tuple)):
+                        and isinstance(result, tuple)):
                         r = result[self.outputs.index(output)]
                         self.gen_output[output] = r  # tuple output
                     else:
                         self.gen_output[output] = result  # one output
-                except Exception as ex:
-                    if not self.problem:
-                        self.er_label.text = str(ex)
-                    self.problem = True
 
                 self.proc_result = self.gen_output
+                
         return self.gen_output
