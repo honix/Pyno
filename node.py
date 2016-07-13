@@ -9,6 +9,9 @@ from draw import labelsGroup
 class Node(Element, Processor):
     # Field is a main pyno element, in fact it is a function with in/outputs
 
+    win = platform.system() == 'Windows'
+    font = 'Consolas' if win else 'DejaVu Sans Mono'
+
     def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=None):
         Element.__init__(self, x, y, color, batch)
@@ -30,12 +33,11 @@ class Node(Element, Processor):
             self.code = code
 
         self.name = ''
-        win = platform.system() == 'Windows'
-        font = ('Consolas' if win else 'FreeMono')
-        self.label = pyglet.text.Label(self.name, font_name=font,
-                                       bold=True, font_size=12,
+        self.label = pyglet.text.Label(self.name, font_name=self.font,
+                                       bold=True, font_size=11,
                                        anchor_x='center', anchor_y='center',
-                                       batch=batch, group=labelsGroup)
+                                       batch=batch, group=labelsGroup,
+                                       color=(255, 255, 255, 230))
         self.new_code(self.code)
 
     def new_code(self, code):

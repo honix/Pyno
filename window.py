@@ -1,7 +1,6 @@
 import pyglet
 from pyglet.gl import *
 from random import randint
-import gc
 
 import draw
 import menu
@@ -48,7 +47,7 @@ class PynoWindow(pyglet.window.Window):
         self.batch, self.pyno_logo, self.menu = None, None, None
         self.new_batch()
 
-        self.gc_timer = 0.0
+        self.fps_timer = 0.0
 
         # open welcome-file
         menu.paste_nodes(self, menu.load('examples/welcome.pn'))
@@ -64,31 +63,35 @@ class PynoWindow(pyglet.window.Window):
         # line place-holder
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
 
+    def nodes_update(self):
+        for node in self.nodes:
+            node.reset_proc()
+
+        for node in self.nodes:
+            node.processor(self.pynoSpace)
+
     def update(self, dt):
         self.pynoSpace['dt'] = dt
 
-        # do garbage collect every 22 seconds (why?)
-        if self.gc_timer > 22:
-            self.gc_timer = 0.0
+        if self.fps_timer > 5:
+            self.fps_timer = 0.0
             print('Frame-rate', int(pyglet.clock.get_fps()))
-            gc.collect()
         else:
-            self.gc_timer += dt
+            self.fps_timer += dt
 
         # ---- Calculations ----
 
-        list(map(lambda x: x.reset_proc(), self.nodes))
-
-        list(map(lambda x: x.processor(self.pynoSpace), self.nodes))
+        self.nodes_update()
 
         if self.selectedNodes:
-            list(map(lambda x: x.make_active(), self.selectedNodes))
+            for node in self.selectedNodes:
+                node.make_active()
         else:
             # pointer over nodes
             nc = self.nodes_check
             self.nodes_check = nc + 1 if nc < len(self.nodes)-25 else 0
-            check = self.nodes[self.nodes_check:self.nodes_check+25]
-            list(map(lambda x: x.intersect_point(self.pointer), check))
+            for node in self.nodes[self.nodes_check:self.nodes_check+25]:
+                node.intersect_point(self.pointer)
 
         if self.codeEditor:
             if self.codeEditor.intersect_point(self.pointer):
@@ -98,8 +101,9 @@ class PynoWindow(pyglet.window.Window):
 
         # ---- Redraw actives ----
 
-        list(map(lambda x: x.render_base(self.batch, dt),
-                 filter(lambda x: x.active, self.nodes)))
+        for node in self.nodes:
+            if node.active:
+                node.render_base(self.batch, dt)
 
     def on_draw(self):
         # ---- BG ----
@@ -142,7 +146,8 @@ class PynoWindow(pyglet.window.Window):
 
         self.batch.draw()
 
-        list(map(lambda x: x.render(), self.nodes))
+        for node in self.nodes:
+            node.render()
 
         if self.codeEditor:
             self.codeEditor.render()

@@ -1,4 +1,3 @@
-import pyglet
 import clipboard
 import platform
 
@@ -9,6 +8,9 @@ from draw import *
 
 class Field(Element):
     # Field is a white box where you can put values
+
+    win = platform.system() == 'Windows'
+    font = 'Consolas' if win else 'DejaVu Sans Mono'
 
     def __init__(self, x, y, batch, code=None, connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
@@ -25,13 +27,11 @@ class Field(Element):
         else:
             self.code = code
 
-        win = platform.system() == 'Windows'
-        font = ('Consolas' if win else 'FreeMono')
         self.document = pyglet.text.document.FormattedDocument(self.code)
         self.document.set_style(0, len(self.document.text),
-                                dict(font_name=font,
-                                     font_size=12,
-                                     color=(0, 0, 0, 255)))
+                                dict(font_name=self.font,
+                                     font_size=11,
+                                     color=(0, 0, 0, 230)))
         self.layout = pyglet.text.layout.IncrementalTextLayout(
                 self.document,
                 self.w - 30, self.h - 3,
@@ -63,6 +63,8 @@ class Field(Element):
         self.problem = False
         self.gen_output = {'output': None}
 
+        self.timeout = 42
+
     def reset_proc(self):
         self.proc_result = None
 
@@ -84,9 +86,13 @@ class Field(Element):
                 self.er_label.text = 'Cant read input'
                 self.problem = True
             else:
-                self.document.text = repr(data)
                 self.is_number = False
                 self.gen_output['output'] = data
+                if self.timeout > 3:
+                    self.timeout = 0
+                    self.document.text = repr(data)
+                else:
+                    self.timeout += 1
 
         # update value carefully and check some stuff
         elif self.need_update:

@@ -1,6 +1,3 @@
-from utils import sum_coma
-
-
 class Processor(object):
     # Processor is a engine of pyno, there functions defines
     # and outputs calculates
@@ -28,7 +25,7 @@ class Processor(object):
         self.problem = False
 
         # check all in-connections, get results and gave names of in-puts
-        gen_inputs = []
+        gen_inputs = {}
         for connection in self.connectedTo:
             try:
                 inputs = connection['output']['node'].processor(space)
@@ -37,7 +34,7 @@ class Processor(object):
                 self.er_label.text = 'Cant read input'
                 self.problem = True
                 continue
-            gen_inputs.append((connection['input']['put']['name'], data))
+            gen_inputs[connection['input']['put']['name']] = data
 
         # exec that new function and put it in to space
         if self.need_update:
@@ -62,7 +59,7 @@ class Processor(object):
         else:
             try:
                 space['S'] = self.local_space
-                result = eval('self.func({})'.format(sum_coma(gen_inputs)))
+                result = self.func(**gen_inputs)
             except Exception as ex:
                 if not self.problem:
                     self.er_label.text = str(ex)

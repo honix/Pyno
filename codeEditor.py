@@ -8,15 +8,16 @@ from draw import *
 class CodeEditor(object):
     # Code editor is the window you define nodes function
 
+    win = platform.system() == 'Windows'
+    font = 'Consolas' if win else 'DejaVu Sans Mono'
+
     def __init__(self, node):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
 
-        win = platform.system() == 'Windows'
-        font = ('Consolas' if win else 'FreeMono')
         self.document.set_style(0, len(node.code),
-                                dict(font_name=font,
-                                font_size=12, color=(255,) * 4))
+                                dict(font_name=self.font,
+                                font_size=11, color=(255, 255, 255, 230)))
 
         self.layout = pyglet.text.layout.IncrementalTextLayout(
                                 self.document,
@@ -24,7 +25,7 @@ class CodeEditor(object):
                                 multiline=True, wrap_lines=False)
 
         self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',
-                                              font_name='Consolas',
+                                              font_name=self.font,
                                               font_size=9)
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)

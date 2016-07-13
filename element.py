@@ -1,4 +1,3 @@
-import pyglet
 import platform
 
 from draw import *
@@ -9,6 +8,9 @@ class Element(object):
     # Element is a base class of pyno objects
 
     id_counter = 0  # count of all elements
+
+    win = platform.system() == 'Windows'
+    font = 'Consolas' if win else 'DejaVu Sans Mono'
 
     def __init__(self, x, y, color, batch):
         Element.id_counter += 1
@@ -29,9 +31,7 @@ class Element(object):
         self.batch = batch
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
-        
-        win = platform.system() == 'Windows'
-        self.font = ('Consolas' if win else 'FreeMono')
+
         self.er_label = pyglet.text.Label('error', font_name=self.font,
                                           bold=True, font_size=12,
                                           color=self.er_color + (255,),
@@ -193,6 +193,8 @@ class Element(object):
             gr['inputs'][input] = Quad(self.batch)
             self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
                                                     font_name=self.font,
+                                                    bold=True,
+                                                    color=(255,255,255,200),
                                                     font_size=12))
         self.out_labels = []
         gr['outputs'] = dict()
@@ -200,6 +202,8 @@ class Element(object):
             gr['outputs'][output] = Quad(self.batch)
             self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
                                                      font_name=self.font,
+                                                     bold=True,
+                                                     color=(255,255,255,200),
                                                      font_size=12, anchor_x='right'))
 
     def put_pos(self, puts):

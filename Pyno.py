@@ -1,9 +1,9 @@
 import pyglet
 import window
+# import profile
 
 if __name__ == '__main__':
     print('Loading...')
-
     config = pyglet.gl.Config(double_buffer=True, depth_size=0,
                               stencil_size=0, aux_buffers=0,
                               samples=1)
@@ -15,4 +15,7 @@ if __name__ == '__main__':
 
     pyglet.options['debug_gl'] = False  # performance boost?
     pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
+
+    # profile.run('pyglet.app.run()', sort=1)
     pyglet.app.run()
+
