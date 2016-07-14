@@ -1,16 +1,22 @@
-import platform
-
 from draw import *
-import utils
+from utils import *
+
+
+# some colors functions
+def color_select(color):
+    # Color for hover
+    return tuple(map(lambda c: int(c * 0.65), color))
+
+
+def color_inverse(color):
+    # Color for selected
+    return tuple(map(lambda c: int(c * -0.8), color))
 
 
 class Element(object):
     # Element is a base class of pyno objects
 
     id_counter = 0  # count of all elements
-
-    win = platform.system() == 'Windows'
-    font = 'Consolas' if win else 'DejaVu Sans Mono'
 
     def __init__(self, x, y, color, batch):
         Element.id_counter += 1
@@ -21,7 +27,7 @@ class Element(object):
         self.cw, self.ch = self.w // 2, self.h // 2
         self.offset = 20
         self.put_size = 5
-        self.pin_color = self.select(color)
+        self.pin_color = color_select(color)
         self.color = color
         self.draw_color = color
         self.er_color = (230, 20, 20)
@@ -32,7 +38,7 @@ class Element(object):
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
 
-        self.er_label = pyglet.text.Label('error', font_name=self.font,
+        self.er_label = pyglet.text.Label('error', font_name=font,
                                           bold=True, font_size=12,
                                           color=self.er_color + (255,),
                                           anchor_x='right', anchor_y='center')
@@ -47,6 +53,8 @@ class Element(object):
         self.selectedOutput = {'name': 'none', 'pos': 0}
         self.hover = False
 
+        self.problem = False
+
     def intersect_point(self, point, visual=True):
         # Intersection with whole element, also check pins intersection
 
@@ -57,7 +65,7 @@ class Element(object):
             self.selectedOutput = {'name': 'none', 'pos': 0}
 
             if visual:
-                self.draw_color = self.select(self.color)
+                self.draw_color = color_select(self.color)
                 self.hover = True
 
             if point[1] > self.y + self.ch:
@@ -81,10 +89,11 @@ class Element(object):
             self.draw_color = self.color
         return False
 
-    def render_base(self, batch, dt):
+    def render_base(self):
         # Render for base
+
         if self.active_timer > 0:
-            self.active_timer -= dt
+            self.active_timer -= 0.1
         else:
             self.active = False
 
@@ -97,7 +106,7 @@ class Element(object):
                                    self.ch + self.put_size,
                                    (190, 20, 20))
             except:
-                gr['error'] = Quad(batch, True)
+                gr['error'] = Quad(self.batch, True)
         elif gr['error']:
             gr['error'].id.delete()
             gr['error'] = None
@@ -105,12 +114,12 @@ class Element(object):
         gr['base'].redraw(self.x, self.y, self.cw, self.ch,
                           self.draw_color)
 
-        self.pin_color = self.select(self.draw_color)
+        self.pin_color = color_select(self.draw_color)
 
         for input in self.put_pos(self.inputs):
             put_name = self.selectedInput['name']
             if input['name'] == put_name:
-                c = self.inverse(self.pin_color)
+                c = color_inverse(self.pin_color)
             else:
                 c = self.pin_color
             gr['inputs'][input['name']].redraw(
@@ -121,7 +130,7 @@ class Element(object):
         for output in self.put_pos(self.outputs):
             put_name = self.selectedOutput['name']
             if output['name'] == put_name:
-                c = self.inverse(self.pin_color)
+                c = color_inverse(self.pin_color)
             else:
                 c = self.pin_color
             gr['outputs'][output['name']].redraw(
@@ -131,7 +140,7 @@ class Element(object):
 
         con = gr['connections']
         while len(con) < len(self.connectedTo):
-            con.append([Line(batch), Line(batch), Line(batch)])
+            con.append([Line(self.batch), Line(self.batch), Line(self.batch)])
 
         for i in range(len(self.connectedTo)):
             node = self.connectedTo[i]
@@ -155,8 +164,9 @@ class Element(object):
                 print('Connection is broken')
                 break
 
-    def render(self):
+    def render_labels(self):
         # Render for errors and labels of pins
+
         if self.problem:
             self.er_label.x = self.x - self.cw - self.offset
             self.er_label.y = self.y
@@ -192,7 +202,7 @@ class Element(object):
         for input in self.inputs:
             gr['inputs'][input] = Quad(self.batch)
             self.in_labels.append(pyglet.text.Label(input, x=0, y=0,
-                                                    font_name=self.font,
+                                                    font_name=font,
                                                     bold=True,
                                                     color=(255,255,255,200),
                                                     font_size=12))
@@ -201,7 +211,7 @@ class Element(object):
         for output in self.outputs:
             gr['outputs'][output] = Quad(self.batch)
             self.out_labels.append(pyglet.text.Label(output, x=0, y=0,
-                                                     font_name=self.font,
+                                                     font_name=font,
                                                      bold=True,
                                                      color=(255,255,255,200),
                                                      font_size=12, anchor_x='right'))
@@ -210,34 +220,24 @@ class Element(object):
         # Calculate pos for pins
         for put in puts:
             yield {'name': put,
-                   'pos': int(utils.centered(self.x, self.w * 0.8,
-                                             len(puts),
-                                             puts.index(put)))}
+                   'pos': int(centered(self.x, self.w * 0.8,
+                                       len(puts),
+                                       puts.index(put)))}
 
     def put_pos_by_name(self, name, mode):
         # Return pose x of pin by name
         if mode == 'outputs':
             for put in self.outputs:
                 if put == name:
-                    return int(utils.centered(self.x, self.w * 0.8,
-                                              len(self.outputs),
-                                              self.outputs.index(put)))
+                    return int(centered(self.x, self.w * 0.8,
+                                        len(self.outputs),
+                                        self.outputs.index(put)))
         elif mode == 'inputs':
             for put in self.inputs:
                 if put == name:
-                    return int(utils.centered(self.x, self.w * 0.8,
-                                              len(self.inputs),
-                                              self.inputs.index(put)))
-
-    @staticmethod
-    def select(color):
-        # Color for hover
-        return tuple(map(lambda c: int(c * 0.65), color))
-
-    @staticmethod
-    def inverse(color):
-        # Color for selected
-        return tuple(map(lambda c: int(c * -0.8), color))
+                    return int(centered(self.x, self.w * 0.8,
+                                        len(self.inputs),
+                                        self.inputs.index(put)))
 
     def make_active(self):
         self.active_timer = 1.0

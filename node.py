@@ -1,16 +1,13 @@
 import pyglet
-import platform
 
 from element import Element
 from processor import Processor
 from draw import labelsGroup
+from utils import font
 
 
 class Node(Element, Processor):
     # Field is a main pyno element, in fact it is a function with in/outputs
-
-    win = platform.system() == 'Windows'
-    font = 'Consolas' if win else 'DejaVu Sans Mono'
 
     def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=None):
@@ -33,7 +30,7 @@ class Node(Element, Processor):
             self.code = code
 
         self.name = ''
-        self.label = pyglet.text.Label(self.name, font_name=self.font,
+        self.label = pyglet.text.Label(self.name, font_name=font,
                                        bold=True, font_size=11,
                                        anchor_x='center', anchor_y='center',
                                        batch=batch, group=labelsGroup,
@@ -103,10 +100,10 @@ class Node(Element, Processor):
         self.name = name
         self.label.text = self.name
 
-    def render_base(self, batch, dt):
-        super().render_base(batch, dt)
+    def render_base(self):
+        Element.render_base(self)
         self.label.x, self.label.y = self.x, self.y
 
     def delete(self, fully=False):
-        super().delete(fully)
+        Element.delete(self, fully)
         self.label.delete()

@@ -58,7 +58,8 @@ def paste_nodes(window, data=None):
                                    node['connects'],
                                    node['size']),
                              node['parent']])
-    except:
+    except Exception as ex:
+        print(ex)
         print('Wrong paste!')
     finally:
         for node in buff:
@@ -82,7 +83,8 @@ def load(file=None):
         root.destroy()
     try:
         file = open(file_path, 'r')
-    except:
+    except Exception as ex:
+        print(ex)
         return False
     data = file.read()
     file.close()

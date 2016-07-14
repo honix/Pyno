@@ -1,3 +1,8 @@
+import platform
+
+win = platform.system() == 'Windows'
+font = 'Consolas' if win else 'DejaVu Sans Mono'
+
 def sum_coma(t):
     result = ''
     for i in t:

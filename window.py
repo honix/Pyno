@@ -7,12 +7,14 @@ import menu
 from node import Node
 from field import Field
 from codeEditor import CodeEditor
+from element import color_inverse
 from utils import *
 
 
 class PynoWindow(pyglet.window.Window):
     # Main pyno window. It's gray with logo in bottom.
     # It handles all elements and controls
+
     def __init__(self, config):
         super().__init__(resizable=True, caption='Pyno', config=config)
         self.set_minimum_size(320, 200)
@@ -25,6 +27,7 @@ class PynoWindow(pyglet.window.Window):
         pyglet.clock.schedule(self.update)
 
         self.nodes = []
+        self.active_nodes = []
         self.selectedNodes = []
 
         self.pynoSpace = {}  # local space for in-pyno programs
@@ -44,7 +47,9 @@ class PynoWindow(pyglet.window.Window):
         self.line = ()
         self.pan_scale = [[0.0, 0.0], 1]
 
-        self.batch, self.pyno_logo, self.menu = None, None, None
+        self.batch = None
+        self.fps_label, self.pyno_logo, self.menu = None, None, None
+
         self.new_batch()
 
         self.fps_timer = 0.0
@@ -54,6 +59,10 @@ class PynoWindow(pyglet.window.Window):
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
+        self.fps_label = pyglet.text.Label('BOOM!!', font_name=font,
+                                           font_size=9, batch=self.batch,
+                                           color=(200, 200, 255, 100),
+                                           x=160, y=10, group=draw.uiGroup)
         # load pyno-logo in left bottom
         pyno_logo_img = pyglet.image.load('imgs/corner.png')
         self.pyno_logo = pyglet.sprite.Sprite(pyno_logo_img,
@@ -73,9 +82,10 @@ class PynoWindow(pyglet.window.Window):
     def update(self, dt):
         self.pynoSpace['dt'] = dt
 
-        if self.fps_timer > 5:
+        if self.fps_timer > 0.2:
             self.fps_timer = 0.0
-            print('Frame-rate', int(pyglet.clock.get_fps()))
+            self.fps_label.text = ('fps:' + str(int(pyglet.clock.get_fps()))
+                             + ' active:' + str(len(self.active_nodes)))
         else:
             self.fps_timer += dt
 
@@ -101,9 +111,9 @@ class PynoWindow(pyglet.window.Window):
 
         # ---- Redraw actives ----
 
-        for node in self.nodes:
-            if node.active:
-                node.render_base(self.batch, dt)
+        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
+        for node in self.active_nodes:
+            node.render_base()
 
     def on_draw(self):
         # ---- BG ----
@@ -146,8 +156,8 @@ class PynoWindow(pyglet.window.Window):
 
         self.batch.draw()
 
-        for node in self.nodes:
-            node.render()
+        for node in self.active_nodes:
+            node.render_labels()
 
         if self.codeEditor:
             self.codeEditor.render()
@@ -280,7 +290,7 @@ class PynoWindow(pyglet.window.Window):
                     if point_intersect_quad((node.x, node.y),
                                             (self.c + self.w)):
                         select.append(node)
-                        node.draw_color = node.inverse(node.color)
+                        node.draw_color = color_inverse(node.color)
                 self.selectedNodes = select
                 self.w, self.c = (0, 0), (0, 0)
                 self.select = False

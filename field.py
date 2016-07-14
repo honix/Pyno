@@ -1,16 +1,12 @@
 import clipboard
-import platform
 
 from element import Element
-from utils import x_y_pan_scale
+from utils import x_y_pan_scale, font
 from draw import *
 
 
 class Field(Element):
     # Field is a white box where you can put values
-
-    win = platform.system() == 'Windows'
-    font = 'Consolas' if win else 'DejaVu Sans Mono'
 
     def __init__(self, x, y, batch, code=None, connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
@@ -29,7 +25,7 @@ class Field(Element):
 
         self.document = pyglet.text.document.FormattedDocument(self.code)
         self.document.set_style(0, len(self.document.text),
-                                dict(font_name=self.font,
+                                dict(font_name=font,
                                      font_size=11,
                                      color=(0, 0, 0, 230)))
         self.layout = pyglet.text.layout.IncrementalTextLayout(
@@ -127,8 +123,8 @@ class Field(Element):
         self.proc_result = self.gen_output
         return self.gen_output
 
-    def render_base(self, batch, dt):
-        super().render_base(batch, dt)
+    def render_base(self):
+        Element.render_base(self)
         self.style()
 
         if self.is_number:
@@ -137,7 +133,7 @@ class Field(Element):
                                                self.y, 10, self.ch,
                                                (172, 150, 83))
             except:
-                self.graphics['scroll'] = Quad(batch, frontdrop=True)
+                self.graphics['scroll'] = Quad(self.batch, frontdrop=True)
         elif self.graphics['scroll']:
             self.graphics['scroll'].delete()
             self.graphics['scroll'] = None
@@ -148,7 +144,7 @@ class Field(Element):
                                                self.y - self.ch + 5,
                                                5, 5, (50, 50, 50))
             except:
-                self.graphics['corner'] = Quad(batch, frontdrop=True)
+                self.graphics['corner'] = Quad(self.batch, frontdrop=True)
         elif self.graphics['corner']:
             self.graphics['corner'].delete()
             self.graphics['corner'] = None
@@ -197,7 +193,7 @@ class Field(Element):
         return intersect
 
     def delete(self, fully=False):
-        super().delete(fully)
+        Element.delete(self, fully)
         self.layout.delete()
 
     # --- Input events ---
