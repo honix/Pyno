@@ -113,6 +113,10 @@ class Field(Element):
                 self.is_number = (isinstance(self.value, (int, float))
                                   and not self.connectedTo)
 
+            self.document.set_style(0, len(self.document.text),
+                                    {'align': 'right' if self.is_number
+                                    else 'left'})
+
             self.gen_output['output'] = self.value
             self.need_update = False
 
@@ -154,16 +158,12 @@ class Field(Element):
         l = self.layout
 
         if self.is_number:
-            self.document.set_style(0, len(self.document.text),
-                                    {'align': 'right'})
             l.x = self.x - self.cw + 30
             l.y = self.y - self.ch + 5
             l.width = self.w - 45
             l.height = self.h - 10
 
         else:
-            self.document.set_style(0, len(self.document.text),
-                                    {'align': 'left'})
             l.x = self.x - self.cw + 15
             l.y = self.y - self.ch + 5
             l.width = self.w - 30
