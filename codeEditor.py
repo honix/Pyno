@@ -89,7 +89,7 @@ class CodeEditor(object):
             #  codeEditor resize corner
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
         else:
-            if self.document.text:
+            if self.document.text and self.hovered:
                 self.hovered = False
                 self.document.set_style(0, len(self.node.code),
                                         dict(color=(255, 255, 255, 50)))
