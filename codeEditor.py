@@ -31,6 +31,7 @@ class CodeEditor(object):
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
         self.hover = False
+        self.hovered = True
         self.resize = False
 
         self.change = False
@@ -72,19 +73,28 @@ class CodeEditor(object):
             self.update_label.draw()
 
         if self.hover:
-            if self.document.text:
+            if self.document.text and not self.hovered:
+                self.hovered = True
                 self.document.set_style(0, len(self.node.code),
                                         dict(color=(255, 255, 255, 255)))
 
+            color = self.node.color if not self.change else (255, 100, 10)
+            #  codeEditor background
             quad_aligned(l.x - 20, l.y,
                          l.width + 20, l.height + 10,
                          ((0, 0, 0) if not self.change else (20, 10, 5)) + (230,))
 
-            color = self.node.color if not self.change else (255, 100, 10)
+            if self.resize:
+                quad_aligned(self.node.x + self.node.cw + 5, self.node.y + self.node.ch + 35,
+                             self.node.editorSize[0] + 20, -self.node.editorSize[1] - 10,
+                             color + (100,))
+            #  codeEditor left line
             quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))
+            #  codeEditor resize corner
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
         else:
             if self.document.text:
+                self.hovered = False
                 self.document.set_style(0, len(self.node.code),
                                         dict(color=(255, 255, 255, 50)))
 
@@ -106,14 +116,16 @@ class CodeEditor(object):
         dx, dy = int(dx / self.pan_scale[1]), int(dy / self.pan_scale[1])
 
         if buttons == 1 and self.resize:
-            self.layout.width = max(self.layout.width + dx, 300)
-            self.layout.height = max(self.layout.height - dy, 150)
-            self.node.editorSize = (self.layout.width, self.layout.height)
+            width = max(self.node.editorSize[0] + dx, 300)
+            height = max(self.node.editorSize[1] - dy, 150)
+            self.node.editorSize = width, height
         elif buttons == 1 and self.hover:
             self.caret.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        self.resize = False
+        if self.resize:
+            self.layout.width, self.layout.height = self.node.editorSize
+            self.resize = False
 
     def on_text(self, text):
         if self.hover:
