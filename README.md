@@ -23,13 +23,13 @@ There are only two elements:
 - **field** (is a object, value or lambda function)
 
 Controls:
-- Use right-mouse-button to panning.
-- To spawn node press **N**, to spawn field press **F** on keyboard.
-- Save and load pyno-file using bottom-right buttons (S-save, L-load).
-- Move and select elements by mouse, selected elements can be deleted by **Delete** key.
-- Selected elements can be **ctrl-c** and **ctrl-v**.
-- Nodes has a code inside, edit code just by pressing on node and hover code editor.
-- Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin.
+- Use right-mouse-button to panning
+- To spawn node press **N**, to spawn field press **F** on keyboard
+- Save and load pyno-file using bottom-right buttons (S-save, L-load)
+- Move and select elements by mouse, selected elements can be deleted by **Delete** key
+- Selected elements can be **ctrl-c** and **ctrl-v**
+- Nodes has a code inside, edit code just by pressing on node and hover code editor
+- Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin
 ![Pyno](screenshots/edit.png)
 
 ### How to run
@@ -40,6 +40,8 @@ To run pyno you must install few libs:
 * ```pip install pyglet```
 * ```pip install clipboard```
 
-Make sure you have Python 3.4 or better on your computer. If true then run **Pyno.py**
+Make sure you have Python 3.4 or better on your computer. If true then run ```Pyno.py```
+
+For more efficency i really recommend to use [PyPy implementation](http://pypy.org/)
 
 ![Pyno](screenshots/mass_render.png)
