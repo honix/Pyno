@@ -1,4 +1,5 @@
 import pyglet
+from inspect import getargspec
 
 from element import Element
 from processor import Processor
@@ -10,24 +11,21 @@ class Node(Element, Processor):
     # Field is a main pyno element, in fact it is a function with in/outputs
 
     def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
-                 connects=None, size=None):
+                 connects=None, size=(300, 150)):
         Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
-        if size is not None:
-            self.editorSize = size
-        else:
-            self.editorSize = (300, 150)
-
-        if connects is not None:
+        self.editorSize = size
+        
+        if connects:
             self.connectedTo = connects
 
-        if code is None:
-            self.code = """def newNode(a=0, b=0):
-  result = a + b
-  return result"""
-        else:
+        if code:
             self.code = code
+        else:
+            self.code = '''def newNode(a=0, b=0):
+  result = a + b
+  return result'''
 
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name=font,
@@ -39,51 +37,27 @@ class Node(Element, Processor):
 
     def new_code(self, code):
         # New code, search for in/outputs
+
         self.code = code
-        color = code[:12].find('#color')
-        if color > -1:
-            try:
-                value = eval(code[color + 6:code[color + 6:].find(')') + 7])
-            except:
-                pass
-            else:
-                if isinstance(value, tuple) and len(value) == 3:
-                    check = 0
-                    for i in value:
-                        if isinstance(i, int):
-                            check += 1
-                    if check == 3:
-                        self.color = value
 
         def_pos = code.find('def')
         if def_pos > -1:
             inputs = outputs = ()
 
-            b = code[def_pos:].find('(')
-            if b > -1:
-                self.new_name(code[def_pos + 3:def_pos + b].strip())
-                e = code[def_pos:].find(':') - 1
-                if e > -1:
-                    name = ''
-                    trash = False
-                    brackets = False
-                    for char in code[def_pos + b + 1:def_pos + e]:
-                        if char == '(' or char == '[':
-                            brackets = True
-                            continue
-                        elif char == ')' or char == ']':
-                            brackets = False
-                            continue
-                        if not brackets:
-                            if char == ',' or char == '=':
-                                if not trash:
-                                    inputs += (name,)
-                                    name = ''
-                                trash = True if char == '=' else False
-                            elif char != ' ' and not trash:
-                                name += char
-                    if len(name):
-                        inputs += (name,)
+            bracket = code[def_pos:].find('(')
+            if bracket > -1:
+                self.name = code[def_pos + 3:def_pos + bracket].strip()
+                self.label.text = self.name
+
+                S, G = {}, {}  # temporally stores and globals to exec function
+                try:
+                    exec(code[def_pos:])  # dummy function to eject args names
+                except Exception as ex:
+                    self.problem = True
+                    self.er_label.text = repr(ex)
+                else:
+                    # got tuple with args names like ('a', 'b')
+                    inputs = tuple(getargspec(eval(self.name)).args)
 
             ret_pos = code.rfind('return')
             if ret_pos > -1:
@@ -93,12 +67,9 @@ class Node(Element, Processor):
             self.w = max(len(self.name) * 10 + 20,
                          len(inputs) * 20, len(outputs) * 20, 64)
             self.cw = self.w // 2
+
             self.insert_inouts({'inputs': inputs,
                                 'outputs': outputs})
-
-    def new_name(self, name):
-        self.name = name
-        self.label.text = self.name
 
     def render_base(self):
         Element.render_base(self)
