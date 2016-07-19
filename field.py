@@ -116,10 +116,6 @@ class Field(Element):
             self.gen_output['output'] = self.value
             self.need_update = False
 
-        # run-time mode
-        else:
-            self.gen_output['output'] = self.value
-
         self.proc_result = self.gen_output
         return self.gen_output
 
