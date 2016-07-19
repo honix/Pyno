@@ -48,21 +48,22 @@ class PynoWindow(pyglet.window.Window):
         self.pan_scale = [[0.0, 0.0], 1]
 
         self.batch = None
-        self.fps_label, self.pyno_logo, self.menu = None, None, None
+        self.info_label, self.pyno_logo, self.menu = None, None, None
 
         self.new_batch()
 
-        self.fps_timer = 0.0
+        self.info_timer = 0.0
+        self.autosave_timer = 0.0
 
         # open welcome-file
-        menu.paste_nodes(self, menu.load('examples/welcome.pn'))
+        menu.paste_nodes(self, menu.load('.auto-saved.pn'))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
-        self.fps_label = pyglet.text.Label('BOOM!!', font_name=font,
-                                           font_size=9, batch=self.batch,
-                                           color=(200, 200, 255, 100),
-                                           x=160, y=10, group=draw.uiGroup)
+        self.info_label = pyglet.text.Label('BOOM!!', font_name=font,
+                                            font_size=9, batch=self.batch,
+                                            color=(200, 200, 255, 100),
+                                            x=160, y=10, group=draw.uiGroup)
         # load pyno-logo in left bottom
         pyno_logo_img = pyglet.image.load('imgs/corner.png')
         self.pyno_logo = pyglet.sprite.Sprite(pyno_logo_img,
@@ -79,15 +80,28 @@ class PynoWindow(pyglet.window.Window):
         for node in self.nodes:
             node.processor(self.pynoSpace)
 
+    def info(self, message=None, delay=0.2):
+        self.info_timer = -delay
+        if message:
+            self.info_label.text = message
+        else:
+            self.info_label.text = ('fps:' + str(int(pyglet.clock.get_fps())) +
+                                    ' active:' + str(len(self.active_nodes)))
+
     def update(self, dt):
         self.pynoSpace['dt'] = dt
 
-        if self.fps_timer > 0.2:
-            self.fps_timer = 0.0
-            self.fps_label.text = ('fps:' + str(int(pyglet.clock.get_fps()))
-                             + ' active:' + str(len(self.active_nodes)))
+        if self.info_timer > 0.0:
+            self.info()
         else:
-            self.fps_timer += dt
+            self.info_timer += dt
+
+        if self.autosave_timer > 25.0:
+            self.autosave_timer = 0.0
+            if menu.autosave(menu.copy_nodes(self, data=True)):
+                self.info("auto-saved", delay=1.0)
+        else:
+            self.autosave_timer += dt
 
         # ---- Calculations ----
 

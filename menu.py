@@ -108,6 +108,14 @@ def save(data):
     file.close()
     return True
 
+def autosave(data):
+    try:
+        file = open('.auto-saved.pn', 'w')
+    except:
+        return False
+    file.write(data)
+    file.close()
+    return True
 
 class Menu:
     # Save-load controls
