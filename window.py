@@ -96,7 +96,7 @@ class PynoWindow(pyglet.window.Window):
         else:
             self.info_timer += dt
 
-        if self.autosave_timer > 25.0:
+        if self.autosave_timer > 60.0:
             self.autosave_timer = 0.0
             if menu.autosave(menu.copy_nodes(self, data=True)):
                 self.info("auto-saved", delay=1.0)
