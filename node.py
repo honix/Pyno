@@ -16,7 +16,7 @@ class Node(Element, Processor):
         Processor.init_processor(self)  # node has a processor for calculation
 
         self.editorSize = size
-        
+
         if connects:
             self.connectedTo = connects
 

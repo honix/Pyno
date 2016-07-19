@@ -149,7 +149,7 @@ class CodeEditor(object):
             self.update_node()
 
         elif modifiers & key.MOD_CTRL:
-            if symbol == key.C:
+            if symbol == key.C and self.caret.mark:
                 start = min(self.caret.position, self.caret.mark)
                 end = max(self.caret.position, self.caret.mark)
                 text = self.document.text[start:end]
