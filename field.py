@@ -8,20 +8,16 @@ from draw import *
 class Field(Element):
     # Field is a white box where you can put values
 
-    def __init__(self, x, y, batch, code=None, connects=None, size=None):
+    def __init__(self, x, y, batch, code='0', connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
 
-        if size is not None:
-            self.w = size[0]
-            self.h = size[1]
+        if size:
+            self.w, self.h = size
 
-        if connects is not None:
-            self.connectedTo = connects
+        if connects:
+            self.connected_to = connects
 
-        if code is None:
-            self.code = '0'
-        else:
-            self.code = code
+        self.code = code
 
         self.document = pyglet.text.document.FormattedDocument(self.code)
         self.document.set_style(0, len(self.document.text),
@@ -73,8 +69,8 @@ class Field(Element):
         self.problem = False
 
         # if field is a child
-        if self.connectedTo:
-            connection = self.connectedTo[0]
+        if self.connected_to:
+            connection = self.connected_to[0]
             try:
                 inputs = connection['output']['node'].processor(space)
                 data = inputs[connection['output']['put']['name']]
@@ -107,7 +103,7 @@ class Field(Element):
                     self.problem = False
             else:
                 self.is_number = (isinstance(self.value, (int, float))
-                                  and not self.connectedTo)
+                                  and not self.connected_to)
 
             self.document.set_style(0, len(self.document.text),
                                     {'align': 'right' if self.is_number

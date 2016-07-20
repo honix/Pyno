@@ -9,14 +9,14 @@ from draw import uiGroup
 
 def copy_nodes(window, data=False):
     x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
-    nodes = window.nodes if data else window.selectedNodes
+    nodes = window.nodes if data else window.selected_nodes
     buff = []
     for node in nodes:
         if isinstance(node, Node):
             buff.append({'type': 'node',
                          'x': node.x - x,
                          'y': node.y - y,
-                         'size': node.editorSize,
+                         'size': node.editor_size,
                          'color': node.color,
                          'code': node.code,
                          'connects': node.get_con_id(),
@@ -32,7 +32,7 @@ def copy_nodes(window, data=False):
     if data:
         return str(buff)
     clipboard.copy(str(buff))
-    print('Copy ' + str(len(buff)) + ' nodes')
+    window.info('Copy ' + str(len(buff)) + ' nodes', delay=1.0)
 
 
 def paste_nodes(window, data=None):
@@ -67,9 +67,9 @@ def paste_nodes(window, data=None):
             node[0].reconnect(buff)
             window.nodes.append(node[0])
         if data:
-            print('Loaded ' + str(len(buff)) + ' nodes')
+            window.info('Loaded ' + str(len(buff)) + ' nodes', delay=1.0)
         else:
-            print('Paste ' + str(len(buff)) + ' nodes')
+            window.info('Paste ' + str(len(buff)) + ' nodes', delay=1.0)
         return True
 
 
@@ -104,11 +104,13 @@ def save(data):
     root.destroy()
     try:
         file = open(s, 'w')
-    except:
+    except Exception as ex:
+        print(ex)
         return False
     file.write(data)
     file.close()
     return True
+
 
 def autosave(data):
     try:
@@ -118,6 +120,7 @@ def autosave(data):
     file.write(data)
     file.close()
     return True
+
 
 class Menu:
     # Save-load controls
@@ -150,7 +153,6 @@ class Menu:
                 if loaded:
                     self.window.new_pyno()
                     paste_nodes(self.window, loaded)
-                    print('File loaded')
                 else:
                     print('No file')
             return True

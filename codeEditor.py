@@ -17,7 +17,7 @@ class CodeEditor(object):
 
         self.layout = pyglet.text.layout.IncrementalTextLayout(
                                 self.document,
-                                *node.editorSize,
+                                *node.editor_size,
                                 multiline=True, wrap_lines=False)
 
         self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',

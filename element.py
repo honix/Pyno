@@ -45,7 +45,7 @@ class Element(object):
         self.inputs = ()
         self.outputs = ()
         self.in_labels = []
-        self.connectedTo = []
+        self.connected_to = []
         self.out_labels = []
         self.child = []
         self.selected = False  # 714848
@@ -139,11 +139,11 @@ class Element(object):
                     self.put_size, self.put_size, c)
 
         con = gr['connections']
-        while len(con) < len(self.connectedTo):
+        while len(con) < len(self.connected_to):
             con.append([Line(self.batch), Line(self.batch), Line(self.batch)])
 
-        for i in range(len(self.connectedTo)):
-            node = self.connectedTo[i]
+        for i in range(len(self.connected_to)):
+            node = self.connected_to[i]
             n = node['output']['node']
             try:
                 iputx = self.put_pos_by_name(node['input']['put']['name'],
@@ -160,7 +160,7 @@ class Element(object):
                 for lines in con[i]:
                     lines.delete()
                 con.remove(con[i])
-                del self.connectedTo[self.connectedTo.index(node)]
+                del self.connected_to[self.connected_to.index(node)]
                 print('Connection is broken')
                 break
 
@@ -253,7 +253,7 @@ class Element(object):
 
     def get_con_id(self):
         new_connectedto = []
-        for connect in self.connectedTo:
+        for connect in self.connected_to:
             new_connect = {'output': {'node': connect['output']['node'].id,
                                       'put': connect['output']['put']},
                            'input': {'put': connect['input']['put']}}
@@ -262,7 +262,7 @@ class Element(object):
 
     def reconnect(self, buff):
         # Find parent node when paste
-        for connect in self.connectedTo:
+        for connect in self.connected_to:
             for o in buff:
                 if connect['output']['node'] == o[1]:
                     connect['output']['node'] = o[0]

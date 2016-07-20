@@ -26,7 +26,7 @@ class Processor(object):
 
         # check all in-connections, get results and gave names of in-puts
         gen_inputs = {}
-        for connection in self.connectedTo:
+        for connection in self.connected_to:
             try:
                 inputs = connection['output']['node'].processor(space)
                 data = inputs[connection['output']['put']['name']]

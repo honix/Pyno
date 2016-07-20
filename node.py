@@ -15,10 +15,10 @@ class Node(Element, Processor):
         Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
-        self.editorSize = size
+        self.editor_size = size
 
         if connects:
-            self.connectedTo = connects
+            self.connected_to = connects
 
         if code:
             self.code = code
