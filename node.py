@@ -42,7 +42,7 @@ class Node(Element, Processor):
 
         def_pos = code.find('def')
         if def_pos > -1:
-            inputs = outputs = ()
+            inputs, outputs = self.inputs, self.outputs
 
             bracket = code[def_pos:].find('(')
             if bracket > -1:
