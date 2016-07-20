@@ -5,7 +5,9 @@
 
 **So, what you can?**
 - real-time interactive development
-- no predefined nodes - you will code yours
+- no predefined nodes - you will code yours 
+
+*(i'm planning some of github-pages-site with nodes to share, so i need your help!)*
 - use python as you like (any libs and tips)
 - crash-less errors
 - perpetuum mobile
