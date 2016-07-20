@@ -61,6 +61,7 @@ def paste_nodes(window, data=None):
     except Exception as ex:
         print(ex)
         print('Wrong paste!')
+        return False
     finally:
         for node in buff:
             node[0].reconnect(buff)
@@ -69,6 +70,7 @@ def paste_nodes(window, data=None):
             print('Loaded ' + str(len(buff)) + ' nodes')
         else:
             print('Paste ' + str(len(buff)) + ' nodes')
+        return True
 
 
 def load(file=None):
