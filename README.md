@@ -40,7 +40,7 @@ To run pyno you must install few libs:
 *(type this commands to your command line)*
 
 * ```pip install pyglet```
-* ```pip install clipboard```
+* ```pip install pyperclip```
 
 Make sure you have Python 3.4 or better on your computer. If true then run ```Pyno.py```
 

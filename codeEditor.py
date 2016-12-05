@@ -1,4 +1,4 @@
-import clipboard
+import pyperclip
 
 from utils import x_y_pan_scale, font
 from draw import *
@@ -153,9 +153,9 @@ class CodeEditor(object):
                 start = min(self.caret.position, self.caret.mark)
                 end = max(self.caret.position, self.caret.mark)
                 text = self.document.text[start:end]
-                clipboard.copy(text)
+                pyperclip.copy(text)
             elif symbol == key.V:
-                text = clipboard.paste()
+                text = pyperclip.paste()
                 self.document.insert_text(self.caret.position, text)
                 self.caret.position += len(text)
 

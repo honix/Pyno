@@ -1,6 +1,6 @@
 import pyglet
 from tkinter import Tk, filedialog
-import clipboard
+import pyperclip
 
 from node import Node
 from field import Field
@@ -31,7 +31,7 @@ def copy_nodes(window, data=False):
                          'parent': node.id})
     if data:
         return str(buff)
-    clipboard.copy(str(buff))
+    pyperclip.copy(str(buff))
     window.info('Copy ' + str(len(buff)) + ' nodes', delay=1.0)
 
 
@@ -39,7 +39,7 @@ def paste_nodes(window, data=None):
     x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
     buff = []
     try:
-        paste = eval(data) if data else eval(clipboard.paste())
+        paste = eval(data) if data else eval(pyperclip.paste())
         for node in paste:
             if node['type'] == 'node':
                 buff.append([Node(node['x'] + x,
