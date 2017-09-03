@@ -82,7 +82,7 @@ class CodeEditor(object):
 
             if self.resize:
                 quad_aligned(self.node.x + self.node.cw + 5, self.node.y + self.node.ch + 35,
-                             self.node.editorSize[0] + 20, -self.node.editorSize[1] - 10,
+                             self.node.editor_size[0] + 20, -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line
             quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))
@@ -112,15 +112,15 @@ class CodeEditor(object):
         dx, dy = int(dx / self.pan_scale[1]), int(dy / self.pan_scale[1])
 
         if buttons == 1 and self.resize:
-            width = max(self.node.editorSize[0] + dx, 300)
-            height = max(self.node.editorSize[1] - dy, 150)
-            self.node.editorSize = width, height
+            width = max(self.node.editor_size[0] + dx, 300)
+            height = max(self.node.editor_size[1] - dy, 150)
+            self.node.editor_size = width, height
         elif buttons == 1 and self.hover:
             self.caret.on_mouse_drag(x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if self.resize:
-            self.layout.width, self.layout.height = self.node.editorSize
+            self.layout.width, self.layout.height = self.node.editor_size
             self.resize = False
 
     def on_text(self, text):
