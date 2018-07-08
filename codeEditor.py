@@ -5,7 +5,9 @@ from draw import *
 
 
 class CodeEditor(object):
-    # Code editor is the window you define nodes function
+    '''
+    Code editor is the window you define nodes function
+    '''
 
     def __init__(self, node):
         self.node = node  # node-owner of this codeEditor
@@ -44,7 +46,7 @@ class CodeEditor(object):
     def intersect_point(self, point):
         # Intersection with whole codeEditor
         l = self.layout
-        if 0 < point[0] - l.x + 20 < l.width + 20 and\
+        if 0 < point[0] - l.x + 20 < l.width + 20 and \
            0 < point[1] - l.y < l.height + 10:
             self.node.hover = True
             return True
@@ -78,11 +80,14 @@ class CodeEditor(object):
             #  codeEditor background
             quad_aligned(l.x - 20, l.y,
                          l.width + 20, l.height + 10,
-                         ((0, 0, 0) if not self.change else (20, 10, 5)) + (230,))
+                         ((0, 0, 0) if not self.change 
+                                    else (20, 10, 5)) + (230,))
 
             if self.resize:
-                quad_aligned(self.node.x + self.node.cw + 5, self.node.y + self.node.ch + 35,
-                             self.node.editor_size[0] + 20, -self.node.editor_size[1] - 10,
+                quad_aligned(self.node.x + self.node.cw + 5, 
+                             self.node.y + self.node.ch + 35,
+                             self.node.editor_size[0] + 20, 
+                             -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line
             quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))

@@ -1,6 +1,8 @@
 class Processor(object):
-    # Processor is a engine of pyno, there functions defines
-    # and outputs calculates
+    '''
+    Processor is a engine of pyno, 
+    there functions defines and outputs calculates
+    '''
 
     def init_processor(self):
         self.proc_result = None

@@ -12,8 +12,10 @@ from utils import *
 
 
 class PynoWindow(pyglet.window.Window):
-    # Main pyno window. It's gray with logo in bottom.
-    # It handles all elements and controls
+    '''
+    Main pyno window. It's gray with logo in bottom.
+    It handles all elements and controls
+    '''
 
     def __init__(self, config):
         super().__init__(resizable=True, caption='Pyno', config=config)
@@ -24,7 +26,9 @@ class PynoWindow(pyglet.window.Window):
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        pyglet.clock.schedule(self.update)
+        pyglet.clock.schedule(self.update) # ~60fps
+        pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
+        pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
 
         self.nodes = []
         self.active_nodes = []
@@ -52,12 +56,9 @@ class PynoWindow(pyglet.window.Window):
 
         self.new_batch()
 
-        self.info_timer = 0.0
-        self.autosave_timer = 0.0
-
         # open auto-save or welcome-file
-        menu.paste_nodes(self, (menu.load('.auto-saved.pn') or
-                                menu.load('examples/welcome.pn')))
+        menu.paste_nodes(self, menu.load('.auto-saved.pn') or \
+                               menu.load('examples/welcome.pn'))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
@@ -81,26 +82,17 @@ class PynoWindow(pyglet.window.Window):
         for node in self.nodes:
             node.processor(self.pyno_namespace)
 
-    def info(self, message=False, delay=0.2):
-        self.info_timer = -delay
-        self.info_label.text = (message or
-                                ('fps:' + str(int(pyglet.clock.get_fps())) +
-                                 ' active:' + str(len(self.active_nodes))))
+    def info(self, message=None):
+        self.info_label.text = message or \
+                                'fps:' + str(int(pyglet.clock.get_fps())) + \
+                                ' active:' + str(len(self.active_nodes))
+
+    def autosave(self):
+        if menu.autosave(menu.copy_nodes(self, data=True)):
+            self.info("auto-saved")
 
     def update(self, dt):
         self.pyno_namespace['dt'] = dt
-
-        if self.info_timer > 0.0:
-            self.info()
-        else:
-            self.info_timer += dt
-
-        if self.autosave_timer > 60.0:
-            self.autosave_timer = 0.0
-            if menu.autosave(menu.copy_nodes(self, data=True)):
-                self.info("auto-saved", delay=1.0)
-        else:
-            self.autosave_timer += dt
 
         # ---- Calculations ----
 
@@ -121,12 +113,6 @@ class PynoWindow(pyglet.window.Window):
                 self.code_editor.node.hover = True
 
         self.menu.update()
-
-        # ---- Redraw actives ----
-
-        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
-        for node in self.active_nodes:
-            node.render_base()
 
     def on_draw(self):
         # ---- BG ----
@@ -168,6 +154,10 @@ class PynoWindow(pyglet.window.Window):
         # ---- NODES ----
 
         self.batch.draw()
+
+        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
+        for node in self.active_nodes:
+            node.render_base()
 
         for node in self.active_nodes:
             node.render_labels()

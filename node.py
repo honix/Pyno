@@ -8,7 +8,9 @@ from utils import font
 
 
 class Node(Element, Processor):
-    # Field is a main pyno element, in fact it is a function with in/outputs
+    '''
+    Field is a main pyno element, in fact it is a function with in/outputs
+    '''
 
     def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=(300, 150)):

@@ -4,17 +4,19 @@ from utils import *
 
 # some colors functions
 def color_select(color):
-    # Color for hover
+    '''Color for hover'''
     return tuple(map(lambda c: int(c * 0.65), color))
 
 
 def color_inverse(color):
-    # Color for selected
+    '''Color for selected'''
     return tuple(map(lambda c: int(c * -0.8), color))
 
 
 class Element(object):
-    # Element is a base class of pyno objects
+    '''
+    Element is a base class of pyno objects
+    '''
 
     id_counter = 0  # count of all elements
 
@@ -214,7 +216,8 @@ class Element(object):
                                                      font_name=font,
                                                      bold=True,
                                                      color=(255,255,255,200),
-                                                     font_size=12, anchor_x='right'))
+                                                     font_size=12, 
+                                                     anchor_x='right'))
 
     def put_pos(self, puts):
         # Calculate pos for pins

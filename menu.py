@@ -32,7 +32,7 @@ def copy_nodes(window, data=False):
     if data:
         return str(buff)
     pyperclip.copy(str(buff))
-    window.info('Copy ' + str(len(buff)) + ' nodes', delay=1.0)
+    window.info('Copy ' + str(len(buff)) + ' nodes')
 
 
 def paste_nodes(window, data=None):
@@ -67,9 +67,9 @@ def paste_nodes(window, data=None):
             node[0].reconnect(buff)
             window.nodes.append(node[0])
         if data:
-            window.info('Loaded ' + str(len(buff)) + ' nodes', delay=1.0)
+            window.info('Loaded ' + str(len(buff)) + ' nodes')
         else:
-            window.info('Paste ' + str(len(buff)) + ' nodes', delay=1.0)
+            window.info('Paste ' + str(len(buff)) + ' nodes')
         return True
 
 
@@ -123,7 +123,9 @@ def autosave(data):
 
 
 class Menu:
-    # Save-load controls
+    '''
+    Save-load controls
+    '''
 
     offset = 10
 

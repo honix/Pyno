@@ -6,7 +6,9 @@ from draw import *
 
 
 class Field(Element):
-    # Field is a white box where you can put values
+    '''
+    Field is a white box where you can put values
+    '''
 
     def __init__(self, x, y, batch, code='0', connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
