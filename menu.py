@@ -1,6 +1,6 @@
 import pyglet
-from tkinter import Tk, filedialog
 import pyperclip
+from tkinter import Tk, filedialog
 
 from node import Node
 from field import Field

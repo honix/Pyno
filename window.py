@@ -1,5 +1,5 @@
 import pyglet
-from pyglet.gl import *
+from pyglet import gl
 from random import randint
 
 import draw
@@ -8,7 +8,7 @@ from node import Node
 from field import Field
 from codeEditor import CodeEditor
 from element import color_inverse
-from utils import *
+from utils import font, x_y_pan_scale, point_intersect_quad
 
 
 class PynoWindow(pyglet.window.Window):
@@ -122,10 +122,10 @@ class PynoWindow(pyglet.window.Window):
         # ---- PYNORAMA ----
 
         ps = self.pan_scale
-        glTranslatef(self.width / 2, self.height / 2, 0)
-        glScalef(ps[1], ps[1], ps[1])
-        glTranslatef(-self.width / 2 + ps[0][0],
-                     -self.height / 2 + ps[0][1], 0.0)
+        gl.glTranslatef(self.width / 2, self.height / 2, 0)
+        gl.glScalef(ps[1], ps[1], ps[1])
+        gl.glTranslatef(-self.width / 2 + ps[0][0],
+                        -self.height / 2 + ps[0][1], 0.0)
 
         # ---- CURRENT LINK DRAW ----
 
@@ -171,7 +171,7 @@ class PynoWindow(pyglet.window.Window):
         # ---- GUI ----
 
         # reset camera position
-        glLoadIdentity()
+        gl.glLoadIdentity()
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse = (x, y)

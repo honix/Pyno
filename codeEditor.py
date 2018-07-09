@@ -1,7 +1,8 @@
+import pyglet
 import pyperclip
 
 from utils import x_y_pan_scale, font
-from draw import *
+from draw import quad_aligned
 
 
 class CodeEditor(object):
@@ -80,13 +81,13 @@ class CodeEditor(object):
             #  codeEditor background
             quad_aligned(l.x - 20, l.y,
                          l.width + 20, l.height + 10,
-                         ((0, 0, 0) if not self.change 
+                         ((0, 0, 0) if not self.change
                                     else (20, 10, 5)) + (230,))
 
             if self.resize:
-                quad_aligned(self.node.x + self.node.cw + 5, 
+                quad_aligned(self.node.x + self.node.cw + 5,
                              self.node.y + self.node.ch + 35,
-                             self.node.editor_size[0] + 20, 
+                             self.node.editor_size[0] + 20,
                              -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line

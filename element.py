@@ -1,5 +1,8 @@
-from draw import *
-from utils import *
+import pyglet
+from pyglet import gl
+
+from draw import Line, Quad
+from utils import font, centered
 
 
 # some colors functions
@@ -176,18 +179,18 @@ class Element(object):
 
         if self.hover:
             for label, put in zip(self.in_labels, self.put_pos(self.inputs)):
-                glPushMatrix()
-                glTranslatef(put['pos'], self.y + self.ch + 15, 0.0)
-                glRotatef(45.0, 0.0, 0.0, 1.0)
+                gl.glPushMatrix()
+                gl.glTranslatef(put['pos'], self.y + self.ch + 15, 0.0)
+                gl.glRotatef(45.0, 0.0, 0.0, 1.0)
                 label.draw()
-                glPopMatrix()
+                gl.glPopMatrix()
 
             for label, put in zip(self.out_labels, self.put_pos(self.outputs)):
-                glPushMatrix()
-                glTranslatef(put['pos'], self.y - self.ch - 20, 0.0)
-                glRotatef(45.0, 0.0, 0.0, 1.0)
+                gl.glPushMatrix()
+                gl.glTranslatef(put['pos'], self.y - self.ch - 20, 0.0)
+                gl.glRotatef(45.0, 0.0, 0.0, 1.0)
                 label.draw()
-                glPopMatrix()
+                gl.glPopMatrix()
 
     def insert_inouts(self, data):
         # New inputs and output was created.
@@ -216,7 +219,7 @@ class Element(object):
                                                      font_name=font,
                                                      bold=True,
                                                      color=(255,255,255,200),
-                                                     font_size=12, 
+                                                     font_size=12,
                                                      anchor_x='right'))
 
     def put_pos(self, puts):
