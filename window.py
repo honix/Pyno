@@ -220,33 +220,18 @@ class PynoWindow(pyglet.window.Window):
                         self.node_drag = True
                         return
                     else:
-                        if (node.selectedInput['name'] != 'none' or
-                                node.selectedOutput['name'] != 'none'):
+                        si = node.selectedInput['name'] != 'none'
+                        so = node.selectedOutput['name'] != 'none'
+                        if si or so:
                             self.pointer = (x, y)
                             self.connection = True
-                            if node.selectedInput['name'] != 'none':
-                                for c in node.connected_to:
-                                    a = c['output']
-                                    if (c['input']['put']['name'] ==
-                                            node.selectedInput['name']):
-                                        self.connecting_node = {'node': a['node'],
-                                                            'put': {'name': a['put']['name']},
-                                                            'mode': 'output'}
-                                        n = node.connected_to
-                                        del n[n.index(c)]
-                                        for line in node.graphics['connections']:
-                                            for segment in line:
-                                                segment.delete()
-                                        node.graphics['connections'] = list()
-                                        return
-                                self.connecting_node = {'node': node,
-                                                    'put': node.selectedInput,
-                                                    'mode': 'input'}
-                                return
-                            elif node.selectedOutput['name'] != 'none':
-                                self.connecting_node = {'node': node,
-                                                    'put': node.selectedOutput,
-                                                    'mode': 'output'}
+                            if si:
+                                self.disconnect_node(node)
+                            elif so:
+                                self.connecting_node = \
+                                    {'node': node,
+                                     'put': node.selectedOutput,
+                                     'mode': 'output'}
                             return
                         if isinstance(node, Node):
                             self.code_editor = CodeEditor(node)
@@ -300,47 +285,18 @@ class PynoWindow(pyglet.window.Window):
             else:
                 self.selected_nodes = []
 
-            if self.connecting_node:
+            cn = self.connecting_node
+            if cn:
                 for node in self.nodes:
                     if node.intersect_point((x, y)):
-                        if node != self.connecting_node['node']:
-
+                        if node != cn['node']:
                             if (node.selectedInput['name'] != 'none' and
-                                    self.connecting_node['mode'] == 'output'):
-                                del self.connecting_node['mode']
-                                another = {'node': node,
-                                           'put': node.selectedInput}
-                                insert = {'output': self.connecting_node,
-                                          'input': another}
-
-                                # check if something already connected to put
-                                i, n = node.selectedInput, node.connected_to
-                                for inp in n:
-                                    if inp['input']['put']['name'] == i['name']:
-                                        del n[n.index(inp)]
-                                        break
-
-                                if insert not in node.connected_to:
-                                    node.connected_to.append(insert)
-                                    self.connecting_node['node'].add_child(node)
-                                    print('Connect output to input')
-
+                                    cn['mode'] == 'output'):
+                                self.connect_out_to_in(node)
                             elif (node.selectedOutput['name'] != 'none' and
-                                    self.connecting_node['mode'] == 'input'):
-                                del self.connecting_node['mode']
-                                another = {'node': node,
-                                           'put': node.selectedOutput}
-                                insert = {'output': another,
-                                          'input': self.connecting_node}
-
-                                n = self.connecting_node['node']
-                                if insert not in n.connected_to:
-                                    n.connected_to.append(insert)
-                                    node.add_child(n)
-                                    n.make_active()
-                                    print('Connect input to output')
-
-                self.connecting_node = None
+                                    cn['mode'] == 'input'):
+                                self.connect_in_to_out(node)
+                cn = self.connecting_node
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         di = 10
@@ -405,6 +361,59 @@ class PynoWindow(pyglet.window.Window):
     def on_close(self):
         menu.autosave(menu.copy_nodes(self, data=True))
         self.close()
+
+    def disconnect_node(self, node):
+        n = node.connected_to
+        for c in n:
+            a = c['output']
+            # if user clicked on input connection destroyed
+            if c['input']['put']['name'] == node.selectedInput['name']:
+                self.connecting_node = {'node': a['node'],
+                                        'put': {'name': a['put']['name']},
+                                        'mode': 'output'}
+                del n[n.index(c)]
+                for line in node.graphics['connections']:
+                    for segment in line:
+                        segment.delete()
+                node.graphics['connections'] = list()
+                return
+        # if user clicked on output connecting wire created
+        self.connecting_node = {'node': node,
+                                'put': node.selectedInput,
+                                'mode': 'input'}
+
+    def connect_out_to_in(self, node):
+        del self.connecting_node['mode']
+        another = {'node': node,
+                   'put': node.selectedInput}
+        insert = {'output': self.connecting_node,
+                  'input': another}
+
+        # check if something already connected to put
+        i, n = node.selectedInput, node.connected_to
+        for inp in n:
+            if inp['input']['put']['name'] == i['name']:
+                del n[n.index(inp)]
+                break
+
+        if insert not in node.connected_to:
+            node.connected_to.append(insert)
+            self.connecting_node['node'].add_child(node)
+            print('Connect output to input')
+
+    def connect_in_to_out(self, node):
+        del self.connecting_node['mode']
+        another = {'node': node,
+                   'put': node.selectedOutput}
+        insert = {'output': another,
+                  'input': self.connecting_node}
+
+        n = self.connecting_node['node']
+        if insert not in n.connected_to:
+            n.connected_to.append(insert)
+            node.add_child(n)
+            n.make_active()
+            print('Connect input to output')
 
     def new_pyno(self):
         self.switch_to()
