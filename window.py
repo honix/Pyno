@@ -124,8 +124,8 @@ class PynoWindow(pyglet.window.Window):
         ps = self.pan_scale
         gl.glTranslatef(self.width / 2, self.height / 2, 0)
         gl.glScalef(ps[1], ps[1], ps[1])
-        gl.glTranslatef(-self.width / 2 + ps[0][0],
-                        -self.height / 2 + ps[0][1], 0.0)
+        gl.glTranslatef(self.width / -2 + ps[0][0],
+                        self.height / -2 + ps[0][1], 0.0)
 
         # ---- CURRENT LINK DRAW ----
 
@@ -351,12 +351,12 @@ class PynoWindow(pyglet.window.Window):
 
         if ps[1] + zoom < max_zoom:
             ps[1] += zoom
-            ps[0][0] -= ((-self.width / 2 + x) / ps[1] * scroll_y) // di
-            ps[0][1] -= ((-self.height / 2 + y) / ps[1] * scroll_y) // di
+            ps[0][0] -= ((self.width / -2 + x) / ps[1] * scroll_y) // di
+            ps[0][1] -= ((self.height / -2 + y) / ps[1] * scroll_y) // di
         elif ps[1] < max_zoom:
             ps[1] = max_zoom
-            ps[0][0] -= ((-self.width / 2 + x) / 2 * scroll_y) // di
-            ps[0][1] -= ((-self.height / 2 + y) / 2 * scroll_y) // di
+            ps[0][0] -= ((self.width / -2 + x) / 2 * scroll_y) // di
+            ps[0][1] -= ((self.height / -2 + y) / 2 * scroll_y) // di
         else:
             ps[1] = max_zoom
 
