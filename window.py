@@ -114,6 +114,11 @@ class PynoWindow(pyglet.window.Window):
 
         self.menu.update()
 
+        # a bit strange to do drawing here, but it does better results here
+        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
+        for node in self.active_nodes:
+            node.render_base()
+
     def on_draw(self):
         # ---- BG ----
 
@@ -154,10 +159,6 @@ class PynoWindow(pyglet.window.Window):
         # ---- NODES ----
 
         self.batch.draw()
-
-        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
-        for node in self.active_nodes:
-            node.render_base()
 
         for node in self.active_nodes:
             node.render_labels()
