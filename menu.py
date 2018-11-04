@@ -4,6 +4,7 @@ from tkinter import Tk, filedialog
 
 from node import Node
 from field import Field
+from sub import Sub
 from draw import uiGroup
 
 
@@ -27,6 +28,15 @@ def copy_nodes(window, data=False):
                          'y': node.y - y,
                          'size': (node.w, node.h),
                          'code': node.document.text,
+                         'connects': node.get_con_id(),
+                         'parent': node.id})
+        elif isinstance(node, Sub):
+            buff.append({'type': 'sub',
+                         'x': node.x - x,
+                         'y': node.y - y,
+                         'size': node.editor_size,
+                         'color': node.color,
+                         'code': node.code,
                          'connects': node.get_con_id(),
                          'parent': node.id})
     if data:
@@ -57,6 +67,15 @@ def paste_nodes(window, data=None):
                                    node['code'],
                                    node['connects'],
                                    node['size']),
+                             node['parent']])
+            elif node['type'] == 'sub':
+                buff.append([Sub(node['x'] + x,
+                                  node['y'] + y,
+                                  window.batch,
+                                  node['color'],
+                                  node['code'],
+                                  node['connects'],
+                                  node['size']),
                              node['parent']])
     except Exception as ex:
         print(ex)
@@ -143,8 +162,12 @@ class Menu:
     def click(self, x, y):
         if self.update():
             s = self.save_load
+            # RUN/PAUSE
+            if x < s.x + (s.width / 3):
+                self.window.running = not self.window.running
+                return True
             # SAVE
-            if x < s.x + s.width / 2:
+            if x < s.x + (s.width * 2 / 3):
                 if save(copy_nodes(self.window, data=True)):
                     print('File saved')
                 else:
