@@ -1,6 +1,5 @@
 import pyglet
 import window
-from inspect import getargspec
 
 from element import Element
 from processor import Processor
@@ -24,17 +23,9 @@ class Sub(Element, Processor):
         if connects:
             self.connected_to = connects
 
-#        if code:
-#            self.code = code
-#        else:
-##            self.code = '''examples/sub_add2.pn'''
-#            self.code = '''examples/sub_pass.pn'''  # identical to '''examples/blank.pn'''
-##            self.code = 'examples/welcome.pn'
         self.code = None
         if not code:
-#            code = '''examples/sub_add2.pn'''
             code = '''examples/sub_pass.pn'''  # identical to '''examples/blank.pn'''
-#            code = 'examples/welcome.pn'
 
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name=font,
@@ -102,8 +93,9 @@ class Sub(Element, Processor):
                             'outputs': outputs})
 
     # processor copying values to and from fields, has error handling
-    # works with: sub_pass.pn
-    # not yet working with: sub_add2.pn
+    # works with: sub_pass.pn (see test-sub_pass.pn)
+    # works with: sub_add2.pn (see test-sub_add2.pn)
+    # works with: sub_add2-2.pn (see test-sub_add2-2.pn)
     def processor(self, space):
         # Called every frame
 
@@ -115,7 +107,6 @@ class Sub(Element, Processor):
         # check all in-connections, get results and gave names of in-puts
         gen_inputs = {}
         for connection in self.connected_to:
-#            print(connection)
             try:
                 inputs = connection['output']['node'].processor(space)
                 data = inputs[connection['output']['put']['name']]
@@ -137,8 +128,6 @@ class Sub(Element, Processor):
 
         # run-time mode: just get inputs and put in function
         try:
-            space['S'] = self.local_space
-#            result = self.func(**gen_inputs)
             # get data back and return them
             self.gen_output = {}
             for outp in self.outputs:
@@ -148,20 +137,8 @@ class Sub(Element, Processor):
             if not self.problem:
                 self.er_label.text = str(ex)
             self.problem = True
-#        else:
-#            # build output
-#            for output in self.outputs:
-#                if (result and len(self.outputs) > 1
-#                    and isinstance(result, tuple)):
-#                    r = result[self.outputs.index(output)]
-#                    self.gen_output[output] = r  # tuple output
-#                else:
-#                    self.gen_output[output] = result  # one output
-#
-#            self.proc_result = self.gen_output
         self.proc_result = self.gen_output
                 
-#        print(self.gen_output)
         return self.gen_output
 
     # processor connecting inputs and outputs of fields, does not have error handling
