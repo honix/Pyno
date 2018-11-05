@@ -63,7 +63,7 @@ class Node(Element, Processor):
 
             ret_pos = code.rfind('return')
             if ret_pos > -1:
-                outputs = tuple(x.strip()
+                outputs = tuple(x.strip(' \n()')
                                 for x in code[ret_pos + 6:].split(','))
 
             self.w = max(len(self.name) * 10 + 20,

@@ -6,6 +6,7 @@ import draw
 import menu
 from node import Node
 from field import Field
+from sub import Sub
 from codeEditor import CodeEditor
 from element import color_inverse
 from utils import font, x_y_pan_scale, point_intersect_quad
@@ -17,7 +18,7 @@ class PynoWindow(pyglet.window.Window):
     It handles all elements and controls
     '''
 
-    def __init__(self, config):
+    def __init__(self, config, filename='.auto-saved.pn'):
         super().__init__(resizable=True, caption='Pyno', config=config)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
@@ -26,9 +27,11 @@ class PynoWindow(pyglet.window.Window):
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        pyglet.clock.schedule(self.update) # ~60fps
+        #pyglet.clock.schedule(self.update) # ~60fps
+        pyglet.clock.schedule_interval(self.update, 0.04) # ~25fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
+        self.running = True
 
         self.nodes = []
         self.active_nodes = []
@@ -57,7 +60,7 @@ class PynoWindow(pyglet.window.Window):
         self.new_batch()
 
         # open auto-save or welcome-file
-        menu.paste_nodes(self, menu.load('.auto-saved.pn') or \
+        menu.paste_nodes(self, menu.load(filename) or \
                                menu.load('examples/welcome.pn'))
 
     def new_batch(self):
@@ -76,6 +79,9 @@ class PynoWindow(pyglet.window.Window):
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
 
     def nodes_update(self):
+        if not self.running:
+            return
+
         for node in self.nodes:
             node.reset_proc()
 
@@ -85,7 +91,8 @@ class PynoWindow(pyglet.window.Window):
     def info(self, message=None):
         self.info_label.text = message or \
                                 'fps:' + str(int(pyglet.clock.get_fps())) + \
-                                ' active:' + str(len(self.active_nodes))
+                                ' active:' + str(len(self.active_nodes)) + \
+                                ' run:' + str(self.running)
 
     def autosave(self):
         if menu.autosave(menu.copy_nodes(self, data=True)):
@@ -239,6 +246,9 @@ class PynoWindow(pyglet.window.Window):
                         elif isinstance(node, Field) and not self.field:
                             self.push_handlers(node)
                             self.field = node
+                        elif isinstance(node, Sub):
+                            self.code_editor = CodeEditor(node)
+                            node.pwindow.set_visible(not node.pwindow.visible)
                         self.selected_nodes = [node]
                         self.node_drag = True
                         return
@@ -333,6 +343,12 @@ class PynoWindow(pyglet.window.Window):
 
             elif symbol == key.F:
                 self.nodes.append(Field(self.pointer[0], self.pointer[1], self.batch))
+
+            elif symbol == key.S:
+                self.nodes.append(Sub(self.pointer[0], self.pointer[1], self.batch,
+                                       (randint(80, 130),
+                                        randint(80, 130),
+                                        randint(80, 130))))
 
             if modifiers & key.MOD_CTRL:
                 if symbol == key.C:
