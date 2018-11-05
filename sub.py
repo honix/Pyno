@@ -47,12 +47,14 @@ class Sub(Element, Processor):
         self.code = code
 
         self.name = code.strip()
-        self.label.text = self.name
+        self.label.text = self.name + ' →'
 
         try:
             if not window.menu.load(self.code):
                 raise FileNotFoundError("File could not be loaded.")
-            pwin = window.PynoWindow(pyglet.gl.Config(), filename=self.code)
+            pwin = window.PynoWindow(pyglet.gl.Config(), 
+                                     filename=self.code,
+                                     caption='→ ' + self.code)
             if self.pwindow:
                 self.pwindow.close()
             del self.pwindow
@@ -88,6 +90,8 @@ class Sub(Element, Processor):
                     name = "%s_%i" % (outp, nid)
                     outputs.append(name)
                     self.output_nodes[name] = node  # from self.pwindow.nodes
+
+        self.resize_to_name(self.name)
 
         self.insert_inouts({'inputs': inputs,
                             'outputs': outputs})

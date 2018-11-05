@@ -245,6 +245,11 @@ class Element(object):
                                         len(self.inputs),
                                         self.inputs.index(put)))
 
+    def resize_to_name(self, name):
+        self.w = max(len(name) * 10 + 20,
+                     len(self.inputs) * 20, len(self.outputs) * 20, 64)
+        self.cw = self.w // 2
+
     def make_active(self):
         self.active_timer = 1.0
         self.active = True

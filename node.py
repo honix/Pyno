@@ -66,9 +66,7 @@ class Node(Element, Processor):
                 outputs = tuple(x.strip(' \n()')
                                 for x in code[ret_pos + 6:].split(','))
 
-            self.w = max(len(self.name) * 10 + 20,
-                         len(inputs) * 20, len(outputs) * 20, 64)
-            self.cw = self.w // 2
+            self.resize_to_name(self.name)
 
             self.insert_inouts({'inputs': inputs,
                                 'outputs': outputs})

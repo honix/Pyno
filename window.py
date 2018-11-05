@@ -18,8 +18,8 @@ class PynoWindow(pyglet.window.Window):
     It handles all elements and controls
     '''
 
-    def __init__(self, config, filename='.auto-saved.pn'):
-        super().__init__(resizable=True, caption='Pyno', config=config)
+    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno'):
+        super().__init__(resizable=True, caption=caption, config=config)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
 
@@ -27,8 +27,7 @@ class PynoWindow(pyglet.window.Window):
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        #pyglet.clock.schedule(self.update) # ~60fps
-        pyglet.clock.schedule_interval(self.update, 0.04) # ~25fps
+        pyglet.clock.schedule_interval(self.update, 0.016) # ~60fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
         self.running = True
@@ -129,6 +128,7 @@ class PynoWindow(pyglet.window.Window):
     def on_draw(self):
         # ---- BG ----
 
+        pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
         self.clear()
 
         # ---- PYNORAMA ----

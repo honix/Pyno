@@ -14,7 +14,6 @@ if __name__ == '__main__':
         pwindow = window.PynoWindow(pyglet.gl.Config())
 
     pyglet.options['debug_gl'] = False  # performance boost?
-    pyglet.gl.glClearColor(0.14, 0.14, 0.14, 0)
 
     # profile.run('pyglet.app.run()', sort=1)
     pyglet.app.run()
