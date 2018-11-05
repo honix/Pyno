@@ -16,13 +16,16 @@
 
 **Basics:**
 
-There are only two elements:
-- **node** (is a function)
-- **field** (is a object, value or lambda function)
+There are only three elements:
+
+| Element | Description | Key on keyboard to spawn |
+|-|-|:-:|
+| **node** | is a function | **N** |
+| **field** | is a object, value or lambda function | **F** |
+| **subpatch** | is a link to pyno-file, allows you to control complexity of your patches | **S** |
 
 Controls:
 - Use right-mouse-button to panning
-- To spawn node press **N**, to spawn field press **F** on keyboard
 - Save and load pyno-file using bottom-right buttons (S-save, L-load)
 - Move and select elements by mouse, selected elements can be deleted by **Delete** key
 - Selected elements can be **ctrl-c** and **ctrl-v**
@@ -38,7 +41,7 @@ To run pyno you must install few libs:
 
 * ```pip install pyglet==1.3.0```
 * ```pip install pyperclip```
-
+ 
 Make sure you have Python 3.4 or better on your computer. If true then run ```Pyno.py```
 
 Pay attention on systems that have python 2 and 3 installed. E.g. on ubuntu you have to use
