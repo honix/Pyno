@@ -29,7 +29,6 @@ class PynoWindow(pyglet.window.Window):
 
         #pyglet.clock.schedule(self.update) # ~60fps
         pyglet.clock.schedule_interval(self.update, 0.04) # ~25fps
-# TODO: scheduling, flow control, timing from code/schematic needed - add functionality (and dedicated functions/nodes if needed)
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
         self.running = True
