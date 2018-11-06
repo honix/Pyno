@@ -24,8 +24,6 @@ class Processor(object):
         if self.proc_result and not self.need_update:
             return self.proc_result
 
-        self.problem = False
-
         # check all in-connections, get results and gave names of in-puts
         gen_inputs = {}
         for connection in self.connected_to:
@@ -33,38 +31,18 @@ class Processor(object):
                 inputs = connection['output']['node'].processor(space)
                 data = inputs[connection['output']['put']['name']]
             except:
-                self.er_label.text = 'Cant read input'
+                self.er_label.text = 'Can\'t read input'
                 self.problem = True
                 continue
             gen_inputs[connection['input']['put']['name']] = data
 
-        # exec that new function and put it in to space
-        if self.need_update:
-            try:  # avoid name repeats
-                eval(self.name)
-                self.er_label.text = ('%s already exist, please rename'
-                                      % self.name)
-                self.problem = True
-            except:
-                try:
-                    space['S'] = self.local_space
-                    exec(self.code, space)
-                    self.func = eval(self.name, space)
-                except Exception as ex:
-                    if not self.problem:
-                        self.er_label.text = str(ex)
-                    self.problem = True
-                else:
-                    self.need_update = False
-
         # run-time mode: just get inputs and put in function
         else:
             try:
-                space['S'] = self.local_space
                 result = self.func(**gen_inputs)
             except Exception as ex:
                 if not self.problem:
-                    self.er_label.text = str(ex)
+                    self.er_label.text = "Runtime error: " + str(ex)
                 self.problem = True
             else:
                 # build output
@@ -77,5 +55,6 @@ class Processor(object):
                         self.gen_output[output] = result  # one output
 
                 self.proc_result = self.gen_output
+                self.problem = False
                 
         return self.gen_output

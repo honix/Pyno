@@ -1,4 +1,5 @@
 import pyglet
+import types
 from inspect import getargspec
 
 from element import Element
@@ -12,11 +13,12 @@ class Node(Element, Processor):
     Node is a main pyno element, in fact it is a function with in/outputs
     '''
 
-    def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
+    def __init__(self, window, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=(300, 150)):
         Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
+        self.window = window
         self.editor_size = size
 
         if connects:
@@ -27,7 +29,9 @@ class Node(Element, Processor):
         else:
             self.code = '''def newNode(a=0, b=0):
   result = a + b
-  return result'''
+  return result
+  
+call = newNode'''
 
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name=font,
@@ -41,33 +45,24 @@ class Node(Element, Processor):
         # New code, search for in/outputs
 
         self.code = code
+        self.problem = False
 
-        def_pos = code.find('def')
-        if def_pos > -1:
+        self.func = None
+        try:
+            env = {}
+            exec(code, {'S': self.local_space, 'G': self.window.pyno_namespace}, env)
+            self.func = env['call']
+            if not isinstance(self.func, types.FunctionType):
+                raise Exception('Call value is not callable!')
+        except Exception as ex:
+            self.problem = True
+            self.er_label.text = "Reader error: " + str(ex)
+        else:
             inputs, outputs = self.inputs, self.outputs
-
-            bracket = code[def_pos:].find('(')
-            if bracket > -1:
-                self.name = code[def_pos + 3:def_pos + bracket].strip()
-                self.label.text = self.name
-
-                S, G = {}, {}  # temporally stores and globals to exec function
-                try:
-                    exec(code[def_pos:])  # dummy function to eject args names
-                except Exception as ex:
-                    self.problem = True
-                    self.er_label.text = repr(ex)
-                else:
-                    # got tuple with args names like ('a', 'b')
-                    inputs = tuple(getargspec(eval(self.name)).args)
-
-            ret_pos = code.rfind('return')
-            if ret_pos > -1:
-                outputs = tuple(x.strip(' \n()')
-                                for x in code[ret_pos + 6:].split(','))
-
+            self.label.text = self.name = self.func.__name__
+            inputs = tuple(getargspec(self.func).args)
+            outputs = ('result',)
             self.resize_to_name(self.name)
-
             self.insert_inouts({'inputs': inputs,
                                 'outputs': outputs})
 
