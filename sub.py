@@ -52,7 +52,7 @@ class Sub(Element, Processor):
         try:
             if not window.menu.load(self.code):
                 raise FileNotFoundError("File could not be loaded.")
-            pwin = window.PynoWindow(pyglet.gl.Config(), 
+            pwin = window.PynoWindow(pyglet.gl.Config(),
                                      filename=self.code,
                                      caption='→ ' + self.code)
             if self.pwindow:

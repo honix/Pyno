@@ -376,6 +376,9 @@ class PynoWindow(pyglet.window.Window):
                     print(str(node))
 
     def on_close(self):
+        for node in self.nodes:
+            if isinstance(node, Sub):
+                node.pwindow.on_close()
         menu.autosave(menu.copy_nodes(self, data=True))
         self.close()
 
