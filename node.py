@@ -49,8 +49,8 @@ call = newNode'''
 
         self.func = None
         try:
-            env = {}
-            exec(code, {'S': self.local_space, 'G': self.window.pyno_namespace}, env)
+            env = {'S': self.local_space, 'G': self.window.pyno_namespace}
+            exec(code, env)
             self.func = env['call']
             if not isinstance(self.func, types.FunctionType):
                 raise Exception('Call value is not callable!')
