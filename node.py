@@ -1,5 +1,7 @@
 import pyglet
 import types
+import typing
+import inspect
 from inspect import getargspec
 
 from element import Element
@@ -30,7 +32,7 @@ class Node(Element, Processor):
             self.code = '''def newNode(a=0, b=0):
   result = a + b
   return result
-  
+
 call = newNode'''
 
         self.name = ''
@@ -60,8 +62,18 @@ call = newNode'''
         else:
             inputs, outputs = self.inputs, self.outputs
             self.label.text = self.name = self.func.__name__
-            inputs = tuple(getargspec(self.func).args)
-            outputs = ('result',)
+
+            signature = inspect.signature(self.func)
+            inputs = tuple(map(lambda x: x.name, signature.parameters.values()))
+
+            if (tuple in signature.return_annotation.mro()):
+                list = []
+                for i in range(0, len(signature.return_annotation.__args__)):
+                    list.append('result ' + str(i))
+                outputs = tuple(list)
+            else:
+                outputs = ('result',)
+
             self.resize_to_name(self.name)
             self.insert_inouts({'inputs': inputs,
                                 'outputs': outputs})
