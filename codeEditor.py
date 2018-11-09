@@ -106,7 +106,7 @@ class CodeEditor(object):
             count_line = min(int(self.layout.height/font_height)+1, self.layout.get_line_count())
             self.line_numbering.x = l.x - 20 + 1
             self.line_numbering.y = self.node.y + self.node.ch + 10 - (self.layout.view_y + first_line*font_height)
-            self.line_numbering.text = "\n".join(map(str, range(first_line+1, first_line+count_line+1)))
+            self.line_numbering.text = "\n".join([str(i)[-1] for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
         else:
             if self.document.text and self.hovered:
