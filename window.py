@@ -377,10 +377,12 @@ class PynoWindow(pyglet.window.Window):
                 for node in self.selected_nodes:
                     print(str(node))
 
-    def on_close(self):
+    def on_close(self, force=False):
+        if (not self.caption == "Pyno") and (not force):  # is this the root/main window?
+            return True
         for node in self.nodes:
             if isinstance(node, Sub) and node.pwindow:
-                node.pwindow.on_close()
+                node.pwindow.on_close(force=True)
         menu.autosave(menu.copy_nodes(self, data=True))
         self.close()
 
