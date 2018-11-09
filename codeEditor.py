@@ -1,8 +1,11 @@
 import pyglet
 import pyperclip
+import keyword
 
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
+
+highlight = list(__builtins__.keys()) + list(keyword.__dict__.keys()) + keyword.kwlist
 
 
 class CodeEditor(object):
@@ -108,6 +111,12 @@ class CodeEditor(object):
             self.line_numbering.y = self.node.y + self.node.ch + 10 - (self.layout.view_y + first_line*font_height)
             self.line_numbering.text = "\n".join([str(i)[-1] for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
+            # rudimentary syntax highlighting
+            for item in highlight:
+                p = self.node.code.find(item)
+                if (p >= 0) and (item == self.node.code[max(0, p-1):min(len(self.node.code), p+len(item)+1)].strip(" \n\t()[]:=<>,\\+-*/")):
+                    self.document.set_style(p, p+len(item),
+                                            dict(color=(0, 255, 0, 255)))
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
