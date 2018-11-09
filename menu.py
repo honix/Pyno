@@ -159,12 +159,19 @@ class Menu:
 
         self.save_load.opacity = 100
 
-    def click(self, x, y):
+    def click(self, x, y, button=1):
         if self.update():
             s = self.save_load
             # RUN/PAUSE
             if x < s.x + (s.width / 3):
-                self.window.running = not self.window.running
+                if button == 1:
+                    if not self.window.running:
+                        self.window.running = -1  # -1: run continously
+                    else:
+                        self.window.running = 0   #  0: pause/stop
+                elif (button == 4) and not self.window.running:
+                    self.window.running = 1       #  n: do n steps
+                    self.window.nodes_update()
                 return True
             # SAVE
             if x < s.x + (s.width * 2 / 3):
