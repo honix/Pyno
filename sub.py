@@ -55,7 +55,9 @@ class Sub(Element, Processor):
                 raise FileNotFoundError("File could not be loaded.")
             pwin = window.PynoWindow(pyglet.gl.Config(),
                                      filename=self.code,
-                                     caption='→ ' + self.name)
+                                     caption='→ ' + self.name,
+                                     style=pyglet.window.Window.WINDOW_STYLE_BORDERLESS)
+            pwin.set_location(0,0)
             if self.pwindow:
                 self.pwindow.close()
                 del self.pwindow

@@ -18,8 +18,8 @@ class PynoWindow(pyglet.window.Window):
     It handles all elements and controls
     '''
 
-    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno'):
-        super().__init__(resizable=True, caption=caption, config=config)
+    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
+        super().__init__(resizable=True, caption=caption, config=config, style=style)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
 
