@@ -52,7 +52,8 @@ def paste_nodes(window, data=None):
         paste = eval(data) if data else eval(pyperclip.paste())
         for node in paste:
             if node['type'] == 'node':
-                buff.append([Node(node['x'] + x,
+                buff.append([Node(window, 
+                                  node['x'] + x,
                                   node['y'] + y,
                                   window.batch,
                                   node['color'],
