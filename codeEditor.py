@@ -5,7 +5,10 @@ import keyword
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
 
-highlight = list(__builtins__.keys()) + list(keyword.__dict__.keys()) + keyword.kwlist
+highlight = set(list(__builtins__.keys()) +
+                list(keyword.__dict__.keys()) +
+                keyword.kwlist + 
+                ['call'])
 
 
 class CodeEditor(object):
