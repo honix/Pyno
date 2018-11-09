@@ -18,8 +18,8 @@ class PynoWindow(pyglet.window.Window):
     It handles all elements and controls
     '''
 
-    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno'):
-        super().__init__(resizable=True, caption=caption, config=config)
+    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
+        super().__init__(resizable=True, caption=caption, config=config, style=style)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
 
@@ -30,7 +30,7 @@ class PynoWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 0.016) # ~60fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
-        self.running = True
+        self.running = -1  # -1: run continously, 0: pause/stop, n: do n steps
 
         self.nodes = []
         self.active_nodes = []
@@ -80,6 +80,8 @@ class PynoWindow(pyglet.window.Window):
     def nodes_update(self):
         if not self.running:
             return
+        if self.running > 0:
+            self.running -= 1
 
         for node in self.nodes:
             node.reset_proc()
@@ -203,7 +205,7 @@ class PynoWindow(pyglet.window.Window):
                     self.field.screen_size = self.get_size()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.menu.click(x, y):
+        if self.menu.click(x, y, button):
             return
 
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.get_size())
@@ -375,10 +377,12 @@ class PynoWindow(pyglet.window.Window):
                 for node in self.selected_nodes:
                     print(str(node))
 
-    def on_close(self):
+    def on_close(self, force=False):
+        if (not self.caption == "Pyno") and (not force):  # is this the root/main window?
+            return True
         for node in self.nodes:
-            if isinstance(node, Sub):
-                node.pwindow.on_close()
+            if isinstance(node, Sub) and node.pwindow:
+                node.pwindow.on_close(force=True)
         menu.autosave(menu.copy_nodes(self, data=True))
         self.close()
 

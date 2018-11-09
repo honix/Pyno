@@ -44,8 +44,9 @@ class Sub(Element, Processor):
         if self.code == code:
             return
 
-        self.code = code
+        self.problem = False
 
+        self.code = code
         self.name = code.strip()
         self.label.text = self.name + ' →'
 
@@ -54,18 +55,15 @@ class Sub(Element, Processor):
                 raise FileNotFoundError("File could not be loaded.")
             pwin = window.PynoWindow(pyglet.gl.Config(),
                                      filename=self.code,
-                                     caption='→ ' + self.code)
+                                     caption='→ ' + self.name)
             if self.pwindow:
                 self.pwindow.close()
-            del self.pwindow
+                del self.pwindow
             self.pwindow = pwin
         except Exception as ex:
-            self.problem = True
+            self.problem = ex  # abusing since this resolves in most cases like "True"
             self.er_label.text = repr(ex)
             return
-        #else:
-        #    # got tuple with args names like ('a', 'b')
-        #    inputs = tuple(getargspec(eval(self.name)).args)
 
         # window visibility handeled in window.py
 
@@ -91,10 +89,10 @@ class Sub(Element, Processor):
                     outputs.append(name)
                     self.output_nodes[name] = node  # from self.pwindow.nodes
 
-        self.resize_to_name(self.name)
-
         self.insert_inouts({'inputs': inputs,
                             'outputs': outputs})
+
+        self.resize_to_name(self.name)
 
     # processor copying values to and from fields, has error handling
     # works with: sub_pass.pn (see test-sub_pass.pn)
@@ -103,7 +101,9 @@ class Sub(Element, Processor):
     def processor(self, space):
         # Called every frame
 
-        if (self.proc_result and not self.need_update) or not self.pwindow:
+        if (self.proc_result and not self.need_update) \
+            or not self.pwindow \
+            or not isinstance(self.problem, bool):
             return self.proc_result
 
         self.problem = False
@@ -130,6 +130,16 @@ class Sub(Element, Processor):
         self.pwindow.nodes_update()
 #        self.pwindow.update()
 
+        # check for errors
+        errors = []
+        for node in self.pwindow.nodes:
+            if node.problem:
+                errors.append(node)
+        if errors:
+            if not self.problem:
+                self.er_label.text = "Errors in %i node(s)." % len(errors)
+            self.problem = True
+
         # run-time mode: just get inputs and put in function
         try:
             # get data back and return them
@@ -142,6 +152,8 @@ class Sub(Element, Processor):
                 self.er_label.text = str(ex)
             self.problem = True
         self.proc_result = self.gen_output
+
+        self.render_base()  # update error display
                 
         return self.gen_output
 
@@ -176,6 +188,6 @@ class Sub(Element, Processor):
     def delete(self, fully=False):
         if self.pwindow:
             self.pwindow.close()
-        del self.pwindow
+            del self.pwindow
         Element.delete(self, fully)
         self.label.delete()

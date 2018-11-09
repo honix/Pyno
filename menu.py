@@ -1,6 +1,8 @@
 import pyglet
 import pyperclip
 from tkinter import Tk, filedialog
+import json
+from collections import OrderedDict
 
 from node import Node
 from field import Field
@@ -14,34 +16,36 @@ def copy_nodes(window, data=False):
     buff = []
     for node in nodes:
         if isinstance(node, Node):
-            buff.append({'type': 'node',
+            buff.append(OrderedDict({'type': 'node',
                          'x': node.x - x,
                          'y': node.y - y,
                          'size': node.editor_size,
                          'color': node.color,
                          'code': node.code,
                          'connects': node.get_con_id(),
-                         'parent': node.id})
+                         'parent': node.id}))
         elif isinstance(node, Field):
-            buff.append({'type': 'field',
+            buff.append(OrderedDict({'type': 'field',
                          'x': node.x - x,
                          'y': node.y - y,
                          'size': (node.w, node.h),
                          'code': node.document.text,
                          'connects': node.get_con_id(),
-                         'parent': node.id})
+                         'parent': node.id}))
         elif isinstance(node, Sub):
-            buff.append({'type': 'sub',
+            buff.append(OrderedDict({'type': 'sub',
                          'x': node.x - x,
                          'y': node.y - y,
                          'size': node.editor_size,
                          'color': node.color,
                          'code': node.code,
                          'connects': node.get_con_id(),
-                         'parent': node.id})
+                         'parent': node.id}))
     if data:
-        return str(buff)
-    pyperclip.copy(str(buff))
+        #return str(buff)
+        return json.dumps(buff, indent=4)
+    #pyperclip.copy(str(buff))
+    pyperclip.copy(json.dumps(buff, indent=4))
     window.info('Copy ' + str(len(buff)) + ' nodes')
 
 
@@ -49,14 +53,21 @@ def paste_nodes(window, data=None):
     x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
     buff = []
     try:
-        paste = eval(data) if data else eval(pyperclip.paste())
+        #paste = eval(data) if data else eval(pyperclip.paste())
+        data = data if data else pyperclip.paste()
+        try:
+            paste = json.loads(data)
+            #paste = json.loads(data, object_pairs_hook=OrderedDict)
+        except ValueError:
+            print("Attention: pyno-file still uses the old save format, please re-save soon!")
+            paste = eval(data)
         for node in paste:
             if node['type'] == 'node':
                 buff.append([Node(window, 
                                   node['x'] + x,
                                   node['y'] + y,
                                   window.batch,
-                                  node['color'],
+                                  tuple(node['color']),
                                   node['code'],
                                   node['connects'],
                                   node['size']),
@@ -73,7 +84,7 @@ def paste_nodes(window, data=None):
                 buff.append([Sub(node['x'] + x,
                                   node['y'] + y,
                                   window.batch,
-                                  node['color'],
+                                  tuple(node['color']),
                                   node['code'],
                                   node['connects'],
                                   node['size']),
@@ -160,12 +171,19 @@ class Menu:
 
         self.save_load.opacity = 100
 
-    def click(self, x, y):
+    def click(self, x, y, button=1):
         if self.update():
             s = self.save_load
             # RUN/PAUSE
             if x < s.x + (s.width / 3):
-                self.window.running = not self.window.running
+                if button == 1:
+                    if not self.window.running:
+                        self.window.running = -1  # -1: run continously
+                    else:
+                        self.window.running = 0   #  0: pause/stop
+                elif (button == 4) and not self.window.running:
+                    self.window.running = 1       #  n: do n steps
+                    self.window.nodes_update()
                 return True
             # SAVE
             if x < s.x + (s.width * 2 / 3):
