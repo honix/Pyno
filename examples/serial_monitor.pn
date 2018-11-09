@@ -1,0 +1,231 @@
+[
+    {
+        "color": [
+            81,
+            102,
+            105
+        ],
+        "type": "node",
+        "x": 293,
+        "parent": 34,
+        "y": 390,
+        "connects": [
+            {
+                "output": {
+                    "node": 35,
+                    "put": {
+                        "name": "output"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "port"
+                    }
+                }
+            },
+            {
+                "output": {
+                    "node": 42,
+                    "put": {
+                        "name": "output"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "baud"
+                    }
+                }
+            }
+        ],
+        "code": "import serial  # sudo pip3 install pyserial\n#import time\nfrom typing import *\n\ndef open_port(port='', baud=9600) -> Tuple[Any, Any, Any]:\n  ser = serial.Serial(port, baudrate=baud)  # open first serial port\n  return ( ser, ser.portstr, ser.baudrate )\n\ncall = open_port",
+        "size": [
+            300,
+            150
+        ]
+    },
+    {
+        "type": "field",
+        "x": 185,
+        "parent": 35,
+        "y": 459,
+        "connects": [],
+        "code": "'/dev/ttyACM0'",
+        "size": [
+            208,
+            30
+        ]
+    },
+    {
+        "type": "field",
+        "x": 401,
+        "parent": 36,
+        "y": 301,
+        "connects": [
+            {
+                "output": {
+                    "node": 34,
+                    "put": {
+                        "name": "result 1"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "code": "'/dev/ttyACM0'",
+        "size": [
+            150,
+            30
+        ]
+    },
+    {
+        "type": "field",
+        "x": 545,
+        "parent": 37,
+        "y": 301,
+        "connects": [
+            {
+                "output": {
+                    "node": 34,
+                    "put": {
+                        "name": "result 2"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "code": "115200",
+        "size": [
+            94,
+            30
+        ]
+    },
+    {
+        "color": [
+            98,
+            96,
+            91
+        ],
+        "type": "node",
+        "x": 248,
+        "parent": 38,
+        "y": 275,
+        "connects": [
+            {
+                "output": {
+                    "node": 34,
+                    "put": {
+                        "name": "result 0"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "ser"
+                    }
+                }
+            }
+        ],
+        "code": "from typing import *\ndef read_port(ser=None) -> Tuple[Any, Any, Any]:\n  #while True:\n  string = ser.readline()\n  #s = ser.read()\n  length = len(string)\n  hex = ['0x%02x ' % b for b in string]\n#  time.sleep(1.)\n  return ( length, string, hex )\n\ncall = read_port",
+        "size": [
+            300,
+            150
+        ]
+    },
+    {
+        "type": "field",
+        "x": 81,
+        "parent": 39,
+        "y": 184,
+        "connects": [
+            {
+                "output": {
+                    "node": 38,
+                    "put": {
+                        "name": "result 0"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "code": "10",
+        "size": [
+            70,
+            30
+        ]
+    },
+    {
+        "type": "field",
+        "x": 291,
+        "parent": 40,
+        "y": 134,
+        "connects": [
+            {
+                "output": {
+                    "node": 38,
+                    "put": {
+                        "name": "result 1"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "code": "b'900,0.00\\r\\n'",
+        "size": [
+            288,
+            130
+        ]
+    },
+    {
+        "type": "field",
+        "x": 629,
+        "parent": 41,
+        "y": 134,
+        "connects": [
+            {
+                "output": {
+                    "node": 38,
+                    "put": {
+                        "name": "result 2"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "code": "['0x39 ', '0x30 ', '0x30 ', '0x2c ', '0x30 ', '0x2e ', '0x30 ', '0x30 ', '0x0d ', '0x0a ']",
+        "size": [
+            300,
+            128
+        ]
+    },
+    {
+        "type": "field",
+        "x": 357,
+        "parent": 42,
+        "y": 459,
+        "connects": [],
+        "code": "115200\n",
+        "size": [
+            108,
+            30
+        ]
+    }
+]

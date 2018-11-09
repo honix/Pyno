@@ -26,6 +26,12 @@ class CodeEditor(object):
         self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',
                                               font_name=font,
                                               font_size=9)
+        self.line_numbering = pyglet.text.Label('',
+                                                font_name=font,
+                                                font_size=11,
+                                                color=(0, 0, 0, 127),
+                                                width=1,
+                                                multiline=True)
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -91,9 +97,14 @@ class CodeEditor(object):
                              -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line
-            quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))
+            quad_aligned(l.x - 20, l.y, 10, l.height + 10, color + (255,))
             #  codeEditor resize corner
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
+            #  codeEditor left line numbering
+            self.line_numbering.x = l.x - 20 + 1
+            self.line_numbering.y = self.node.y + self.node.ch + 10
+            self.line_numbering.text = "\n".join(map(str, range(1, self.layout.get_line_count()+1)))
+            self.line_numbering.draw()
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
