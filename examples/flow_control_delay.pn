@@ -1,0 +1,284 @@
+[
+    {
+        "type": "field",
+        "parent": 12,
+        "code": "# TODO: from code/schematic add\n# * flow control [done]\n# * timing       [done]\n# * scheduling   [open]\n# add dedicated functions/nodes \n\n",
+        "connects": [],
+        "size": [
+            312,
+            334
+        ],
+        "x": 190,
+        "y": 400
+    },
+    {
+        "type": "node",
+        "parent": 13,
+        "code": "import time\ndef newNode(a=0, b=0):\n  result = time.time()\n  return result\ncall = newNode",
+        "color": [
+            91,
+            109,
+            117
+        ],
+        "connects": [],
+        "size": [
+            300,
+            150
+        ],
+        "x": 470,
+        "y": 482
+    },
+    {
+        "type": "field",
+        "parent": 14,
+        "code": "1541784055.7765543",
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                },
+                "output": {
+                    "node": 13,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            214,
+            34
+        ],
+        "x": 632,
+        "y": 401
+    },
+    {
+        "type": "node",
+        "parent": 15,
+        "code": "import time\ndef newNode(a=0, b=0):\n  result = time.time() - a\n  return result\ncall = newNode",
+        "color": [
+            91,
+            109,
+            117
+        ],
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "a"
+                    }
+                },
+                "output": {
+                    "node": 13,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            300,
+            150
+        ],
+        "x": 399,
+        "y": 156
+    },
+    {
+        "type": "node",
+        "parent": 16,
+        "code": "import time\ndef delay(variable=0, delay=0):\n  time.sleep(delay)\n  return variable\ncall = delay",
+        "color": [
+            85,
+            121,
+            85
+        ],
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "variable"
+                    }
+                },
+                "output": {
+                    "node": 13,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            },
+            {
+                "input": {
+                    "put": {
+                        "name": "delay"
+                    }
+                },
+                "output": {
+                    "node": 20,
+                    "put": {
+                        "name": "output"
+                    }
+                }
+            }
+        ],
+        "size": [
+            300,
+            150
+        ],
+        "x": 529,
+        "y": 246
+    },
+    {
+        "type": "node",
+        "parent": 17,
+        "code": "import time\ndef newNode(a=0, b=0):\n  result = time.time() - a\n  return result\ncall = newNode",
+        "color": [
+            91,
+            109,
+            117
+        ],
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "a"
+                    }
+                },
+                "output": {
+                    "node": 16,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            300,
+            150
+        ],
+        "x": 565,
+        "y": 158
+    },
+    {
+        "type": "field",
+        "parent": 18,
+        "code": "0.10026955604553223",
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                },
+                "output": {
+                    "node": 17,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            186,
+            30
+        ],
+        "x": 574,
+        "y": 65
+    },
+    {
+        "type": "field",
+        "parent": 19,
+        "code": "0.00087738037109375",
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                },
+                "output": {
+                    "node": 15,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            236,
+            30
+        ],
+        "x": 347,
+        "y": 64
+    },
+    {
+        "type": "field",
+        "parent": 20,
+        "code": "0.1",
+        "connects": [],
+        "size": [
+            72,
+            30
+        ],
+        "x": 544,
+        "y": 323
+    },
+    {
+        "type": "node",
+        "parent": 21,
+        "code": "import time\ndef newNode(a=0, b=0):\n  result = time.time() - a\n  return result\ncall = newNode",
+        "color": [
+            91,
+            109,
+            117
+        ],
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "a"
+                    }
+                },
+                "output": {
+                    "node": 13,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            300,
+            150
+        ],
+        "x": 783,
+        "y": 160
+    },
+    {
+        "type": "field",
+        "parent": 22,
+        "code": "2.6226043701171875e-06",
+        "connects": [
+            {
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                },
+                "output": {
+                    "node": 21,
+                    "put": {
+                        "name": "result"
+                    }
+                }
+            }
+        ],
+        "size": [
+            232,
+            30
+        ],
+        "x": 794,
+        "y": 65
+    }
+]

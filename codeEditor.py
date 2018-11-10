@@ -1,8 +1,14 @@
 import pyglet
 import pyperclip
+import keyword
 
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
+
+highlight = set(list(__builtins__.keys()) +
+                list(keyword.__dict__.keys()) +
+                keyword.kwlist + 
+                ['call'])
 
 
 class CodeEditor(object):
@@ -26,6 +32,12 @@ class CodeEditor(object):
         self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',
                                               font_name=font,
                                               font_size=9)
+        self.line_numbering = pyglet.text.Label('',
+                                                font_name=font,
+                                                font_size=11,
+                                                color=(255, 255, 255, 127),
+                                                width=2,
+                                                multiline=True)
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -91,9 +103,23 @@ class CodeEditor(object):
                              -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line
-            quad_aligned(l.x - 20, l.y, 5, l.height + 10, color + (255,))
+            quad_aligned(l.x - 20, l.y, 20, l.height + 10, color + (255,))
             #  codeEditor resize corner
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
+            #  codeEditor left line numbering
+            font_height = self.layout.content_height / self.layout.get_line_count()
+            first_line = int(-self.layout.view_y/font_height)
+            count_line = min(int(self.layout.height/font_height)+1, self.layout.get_line_count())
+            self.line_numbering.x = l.x - 20 + 2
+            self.line_numbering.y = self.node.y + self.node.ch + 10 - (self.layout.view_y + first_line*font_height)
+            self.line_numbering.text = "\n".join([str(i).zfill(2) for i in range(first_line+1, first_line+count_line+1)])
+            self.line_numbering.draw()
+            # rudimentary syntax highlighting
+            for item in highlight:
+                p = self.node.code.find(item)
+                if (p >= 0) and (item == self.node.code[max(0, p-1):min(len(self.node.code), p+len(item)+1)].strip(" \n\t()[]:=<>,\\+-*/")):
+                    self.document.set_style(p, p+len(item),
+                                            dict(color=(100, 200, 255, 255)))
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
