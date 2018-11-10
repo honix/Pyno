@@ -112,7 +112,7 @@ class CodeEditor(object):
             first_line = int(-self.layout.view_y/font_height)
             count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
             self.line_numbering.x = l.x - 20 + 2
-            self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset
+            self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
             self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
             # rudimentary syntax highlighting
