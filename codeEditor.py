@@ -140,17 +140,20 @@ class CodeEditor(object):
         newline_offset = ([0] +
                           [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
                           [len(self.document.text)])
-        for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
-            start = newline_offset[item.start[0] - 1] + item.start[1]
-            stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
-            if (item.type == tokenize.NAME) and (item.string in highlight):
-                pass
-            elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
-                start = start + 1
-            else:
-                continue  # do not highlight this token
-            self.document.set_style(start, stopp,
-                                    dict(color=(255, 200, 100, 255)))
+        try:
+            for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
+                start = newline_offset[item.start[0] - 1] + item.start[1]
+                stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+                if (item.type == tokenize.NAME) and (item.string in highlight):
+                    pass
+                elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
+                    start = start + 1
+                else:
+                    continue  # do not highlight this token
+                self.document.set_style(start, stopp,
+                                        dict(color=(255, 200, 100, 255)))
+        except tokenize.TokenError:
+            pass
 
     # --- Input events ---
 
