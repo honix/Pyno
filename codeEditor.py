@@ -161,7 +161,7 @@ class CodeEditor(object):
                     start = newline_offset[item.start[0] - 1] + item.start[1]
                     stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
                     # rudimentary autocomplete hint
-                    if (start <= self.caret.position) and (self.caret.position <= stopp):
+                    if (start <= self.caret.position <= stopp):
                         try:
                             obj = eval(item.string)
                             #print("Code hint:\n", obj.__doc__)
