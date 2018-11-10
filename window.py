@@ -249,7 +249,7 @@ class PynoWindow(pyglet.window.Window):
                             self.push_handlers(node)
                             self.field = node
                         elif isinstance(node, Sub):
-                            self.code_editor = CodeEditor(node)
+                            self.code_editor = CodeEditor(node, highlighting=False)
                             node.pwindow.set_visible(not node.pwindow.visible)
                         self.selected_nodes = [node]
                         self.node_drag = True

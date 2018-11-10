@@ -18,9 +18,11 @@ class CodeEditor(object):
     Code editor is the window you define nodes function
     '''
 
-    def __init__(self, node):
+    def __init__(self, node, highlighting=True):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
+
+        self.highlighting = highlighting
 
         @self.document.event
         def on_insert_text(start, end):
@@ -145,6 +147,10 @@ class CodeEditor(object):
         self.document.set_style(0, len(self.node.code),
                                 dict(color=(255, 255, 255, 255)))
         self.autocomplete.text = ""
+
+        if not self.highlighting:
+            return
+
         # rudimentary syntax highlighting and autocomplete hint
         newline_offset = ([0] +
                           [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
