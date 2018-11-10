@@ -1,6 +1,8 @@
 import pyglet
 import pyperclip
 import keyword
+import tokenize
+import io
 
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
@@ -19,6 +21,14 @@ class CodeEditor(object):
     def __init__(self, node):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
+
+        @self.document.event
+        def on_insert_text(start, end):
+            self.update_highlighting()
+        
+        @self.document.event
+        def on_delete_text(start, end):
+            self.update_highlighting()
 
         self.document.set_style(0, len(node.code),
                                 dict(font_name=font,
@@ -86,8 +96,7 @@ class CodeEditor(object):
         if self.hover:
             if self.document.text and not self.hovered:
                 self.hovered = True
-                self.document.set_style(0, len(self.node.code),
-                                        dict(color=(255, 255, 255, 255)))
+                self.update_highlighting()
 
             color = self.node.color if not self.change else (255, 100, 10)
             #  codeEditor background
@@ -108,18 +117,13 @@ class CodeEditor(object):
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
             #  codeEditor left line numbering
             font_height = self.layout.content_height / self.layout.get_line_count()
+            line_offset = (-self.layout.view_y)%font_height
             first_line = int(-self.layout.view_y/font_height)
-            count_line = min(int(self.layout.height/font_height)+1, self.layout.get_line_count())
+            count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
             self.line_numbering.x = l.x - 20 + 2
-            self.line_numbering.y = self.node.y + self.node.ch + 10 - (self.layout.view_y + first_line*font_height)
-            self.line_numbering.text = "\n".join([str(i).zfill(2) for i in range(first_line+1, first_line+count_line+1)])
+            self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
+            self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
-            # rudimentary syntax highlighting
-            for item in highlight:
-                p = self.node.code.find(item)
-                if (p >= 0) and (item == self.node.code[max(0, p-1):min(len(self.node.code), p+len(item)+1)].strip(" \n\t()[]:=<>,\\+-*/")):
-                    self.document.set_style(p, p+len(item),
-                                            dict(color=(100, 200, 255, 255)))
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
@@ -127,6 +131,26 @@ class CodeEditor(object):
                                         dict(color=(255, 255, 255, 50)))
 
         self.layout.draw()
+
+    def update_highlighting(self):
+        # reset highlighting
+        self.document.set_style(0, len(self.node.code),
+                                dict(color=(255, 255, 255, 255)))
+        # rudimentary syntax highlighting
+        newline_offset = ([0] +
+                          [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
+                          [len(self.document.text)])
+        for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
+            start = newline_offset[item.start[0] - 1] + item.start[1]
+            stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+            if (item.type == tokenize.NAME) and (item.string in highlight):
+                pass
+            elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
+                start = start + 1
+            else:
+                continue  # do not highlight this token
+            self.document.set_style(start, stopp,
+                                    dict(color=(255, 200, 100, 255)))
 
     # --- Input events ---
 
