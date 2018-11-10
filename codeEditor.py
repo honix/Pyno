@@ -48,6 +48,10 @@ class CodeEditor(object):
                                                 color=(255, 255, 255, 127),
                                                 width=2,
                                                 multiline=True)
+        self.autocomplete = pyglet.text.Label('',
+                                              font_name=font,
+                                              font_size=9,
+                                              color=(0, 255, 0, 127))
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -124,6 +128,10 @@ class CodeEditor(object):
             self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
             self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
+            #  codeEditor autocomplete hint
+            self.autocomplete.x = l.x - 20 + 2
+            self.autocomplete.y = self.node.y + self.node.ch + 40
+            self.autocomplete.draw()
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
@@ -133,10 +141,11 @@ class CodeEditor(object):
         self.layout.draw()
 
     def update_highlighting(self):
-        # reset highlighting
+        # reset highlighting and hint
         self.document.set_style(0, len(self.node.code),
                                 dict(color=(255, 255, 255, 255)))
-        # rudimentary syntax highlighting
+        self.autocomplete.text = ""
+        # rudimentary syntax highlighting and autocomplete hint
         newline_offset = ([0] +
                           [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
                           [len(self.document.text)])
@@ -144,6 +153,15 @@ class CodeEditor(object):
             for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
                 start = newline_offset[item.start[0] - 1] + item.start[1]
                 stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+                # rudimentary autocomplete hint
+                if (start <= self.caret.position) and (self.caret.position <= stopp):
+                    try:
+                        obj = eval(item.string)
+                        #print("Code hint:\n", obj.__doc__)
+                        self.autocomplete.text = obj.__doc__.split("\n")[0]
+                    except:
+                        pass
+                # syntax highlighting
                 if (item.type == tokenize.NAME) and (item.string in highlight):
                     pass
                 elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
