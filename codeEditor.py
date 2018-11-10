@@ -1,6 +1,8 @@
 import pyglet
 import pyperclip
 import keyword
+import tokenize
+import io
 
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
@@ -116,11 +118,20 @@ class CodeEditor(object):
             self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
             # rudimentary syntax highlighting
-            for item in highlight:
-                p = self.node.code.find(item)
-                if (p >= 0) and (item == self.node.code[max(0, p-1):min(len(self.node.code), p+len(item)+1)].strip(" \n\t()[]:=<>,\\+-*/")):
-                    self.document.set_style(p, p+len(item),
-                                            dict(color=(100, 200, 255, 255)))
+            newline_offset = ([0] +
+                              [i for i, ch in enumerate(self.node.code) if ch == '\n'] +
+                              [len(self.node.code)])
+            for item in tokenize.tokenize(io.BytesIO(self.node.code.encode('utf-8')).readline):
+                start = newline_offset[item.start[0] - 1] + item.start[1]
+                stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+                if (item.type == tokenize.NAME) and (item.string in highlight):
+                    pass
+                elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
+                    start = start + 1
+                else:
+                    continue  # do not highlight this token
+                self.document.set_style(start, stopp,
+                                        dict(color=(100, 200, 255, 255)))
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
