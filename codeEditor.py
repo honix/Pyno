@@ -22,6 +22,14 @@ class CodeEditor(object):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
 
+        @self.document.event
+        def on_insert_text(start, end):
+            self.update_highlighting()
+        
+        @self.document.event
+        def on_delete_text(start, end):
+            self.update_highlighting()
+
         self.document.set_style(0, len(node.code),
                                 dict(font_name=font,
                                 font_size=11, color=(255, 255, 255, 230)))
@@ -88,8 +96,7 @@ class CodeEditor(object):
         if self.hover:
             if self.document.text and not self.hovered:
                 self.hovered = True
-                self.document.set_style(0, len(self.node.code),
-                                        dict(color=(255, 255, 255, 255)))
+                self.update_highlighting()
 
             color = self.node.color if not self.change else (255, 100, 10)
             #  codeEditor background
@@ -117,21 +124,6 @@ class CodeEditor(object):
             self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
             self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
-            # rudimentary syntax highlighting
-            newline_offset = ([0] +
-                              [i for i, ch in enumerate(self.node.code) if ch == '\n'] +
-                              [len(self.node.code)])
-            for item in tokenize.tokenize(io.BytesIO(self.node.code.encode('utf-8')).readline):
-                start = newline_offset[item.start[0] - 1] + item.start[1]
-                stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
-                if (item.type == tokenize.NAME) and (item.string in highlight):
-                    pass
-                elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
-                    start = start + 1
-                else:
-                    continue  # do not highlight this token
-                self.document.set_style(start, stopp,
-                                        dict(color=(100, 200, 255, 255)))
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
@@ -139,6 +131,26 @@ class CodeEditor(object):
                                         dict(color=(255, 255, 255, 50)))
 
         self.layout.draw()
+
+    def update_highlighting(self):
+        # reset highlighting
+        self.document.set_style(0, len(self.node.code),
+                                dict(color=(255, 255, 255, 255)))
+        # rudimentary syntax highlighting
+        newline_offset = ([0] +
+                          [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
+                          [len(self.document.text)])
+        for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
+            start = newline_offset[item.start[0] - 1] + item.start[1]
+            stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+            if (item.type == tokenize.NAME) and (item.string in highlight):
+                pass
+            elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
+                start = start + 1
+            else:
+                continue  # do not highlight this token
+            self.document.set_style(start, stopp,
+                                    dict(color=(255, 200, 100, 255)))
 
     # --- Input events ---
 
