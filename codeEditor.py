@@ -108,11 +108,12 @@ class CodeEditor(object):
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
             #  codeEditor left line numbering
             font_height = self.layout.content_height / self.layout.get_line_count()
+            line_offset = (-self.layout.view_y)%font_height
             first_line = int(-self.layout.view_y/font_height)
-            count_line = min(int(self.layout.height/font_height)+1, self.layout.get_line_count())
+            count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
             self.line_numbering.x = l.x - 20 + 2
-            self.line_numbering.y = self.node.y + self.node.ch + 10 - (self.layout.view_y + first_line*font_height)
-            self.line_numbering.text = "\n".join([str(i).zfill(2) for i in range(first_line+1, first_line+count_line+1)])
+            self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset
+            self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
             # rudimentary syntax highlighting
             for item in highlight:
