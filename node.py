@@ -67,10 +67,13 @@ call = newNode'''
             inputs = tuple(map(lambda x: x.name, signature.parameters.values()))
 
             if (tuple in signature.return_annotation.mro()):
-                list = []
-                for i in range(0, len(signature.return_annotation.__args__)):
-                    list.append('result ' + str(i))
-                outputs = tuple(list)
+                out = []
+                i = 0
+                for arg in list(signature.return_annotation.__args__):
+                    is_string = isinstance(arg, typing._ForwardRef) and isinstance(arg.__forward_arg__, str)
+                    out.append(arg.__forward_arg__ if is_string else 'result ' + str(i))
+                    i += 1
+                outputs = tuple(out)
             else:
                 outputs = ('result',)
 
