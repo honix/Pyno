@@ -58,8 +58,10 @@ class PynoWindow(pyglet.window.Window):
 
         self.new_batch()
 
+        self.filename = filename
+
         # open auto-save or welcome-file
-        menu.paste_nodes(self, menu.load(filename) or \
+        menu.paste_nodes(self, menu.load(self.filename) or \
                                menu.load('examples/welcome.pn'))
 
     def new_batch(self):

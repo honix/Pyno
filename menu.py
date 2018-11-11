@@ -10,136 +10,134 @@ from sub import Sub
 from draw import uiGroup
 
 
-def copy_nodes(window, data=False):
-    x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
-    nodes = window.nodes if data else window.selected_nodes
-    buff = []
-    for node in nodes:
-        if isinstance(node, Node):
-            buff.append(OrderedDict({'type': 'node',
-                         'x': node.x - x,
-                         'y': node.y - y,
-                         'size': node.editor_size,
-                         'color': node.color,
-                         'code': node.code,
-                         'connects': node.get_con_id(),
-                         'parent': node.id}))
-        elif isinstance(node, Field):
-            buff.append(OrderedDict({'type': 'field',
-                         'x': node.x - x,
-                         'y': node.y - y,
-                         'size': (node.w, node.h),
-                         'code': node.document.text,
-                         'connects': node.get_con_id(),
-                         'parent': node.id}))
-        elif isinstance(node, Sub):
-            buff.append(OrderedDict({'type': 'sub',
-                         'x': node.x - x,
-                         'y': node.y - y,
-                         'size': node.editor_size,
-                         'color': node.color,
-                         'code': node.code,
-                         'connects': node.get_con_id(),
-                         'parent': node.id}))
-    if data:
-        #return str(buff)
-        return json.dumps(buff, indent=4)
-    #pyperclip.copy(str(buff))
-    pyperclip.copy(json.dumps(buff, indent=4))
-    window.info('Copy ' + str(len(buff)) + ' nodes')
+# def copy_nodes(window, data=False):
+#     x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
+#     nodes = window.nodes if data else window.selected_nodes
+#     buff = []
+#     for node in nodes:
+#         if isinstance(node, Node):
+#             buff.append(OrderedDict({'type': 'node',
+#                          'x': node.x - x,
+#                          'y': node.y - y,
+#                          'size': node.editor_size,
+#                          'color': node.color,
+#                          'code': node.code,
+#                          'connects': node.get_con_id(),
+#                          'parent': node.id}))
+#         elif isinstance(node, Field):
+#             buff.append(OrderedDict({'type': 'field',
+#                          'x': node.x - x,
+#                          'y': node.y - y,
+#                          'size': (node.w, node.h),
+#                          'code': node.document.text,
+#                          'connects': node.get_con_id(),
+#                          'parent': node.id}))
+#         elif isinstance(node, Sub):
+#             buff.append(OrderedDict({'type': 'sub',
+#                          'x': node.x - x,
+#                          'y': node.y - y,
+#                          'size': node.editor_size,
+#                          'color': node.color,
+#                          'code': node.code,
+#                          'connects': node.get_con_id(),
+#                          'parent': node.id}))
+#     if data:
+#         return json.dumps(buff, indent=4)
+#     pyperclip.copy(json.dumps(buff, indent=4))
+#     window.info('Copied ' + str(len(buff)) + ' nodes')
 
 
-def paste_nodes(window, data=None):
-    x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
-    buff = []
-    try:
-        #paste = eval(data) if data else eval(pyperclip.paste())
-        data = data if data else pyperclip.paste()
-        try:
-            paste = json.loads(data)
-            #paste = json.loads(data, object_pairs_hook=OrderedDict)
-        except ValueError:
-            print("Attention: pyno-file still uses the old save format, please re-save soon!")
-            paste = eval(data)
-        for node in paste:
-            if node['type'] == 'node':
-                buff.append([Node(window, 
-                                  node['x'] + x,
-                                  node['y'] + y,
-                                  window.batch,
-                                  tuple(node['color']),
-                                  node['code'],
-                                  node['connects'],
-                                  node['size']),
-                             node['parent']])
-            elif node['type'] == 'field':
-                buff.append([Field(node['x'] + x,
-                                   node['y'] + y,
-                                   window.batch,
-                                   node['code'],
-                                   node['connects'],
-                                   node['size']),
-                             node['parent']])
-            elif node['type'] == 'sub':
-                buff.append([Sub(node['x'] + x,
-                                  node['y'] + y,
-                                  window.batch,
-                                  tuple(node['color']),
-                                  node['code'],
-                                  node['connects'],
-                                  node['size']),
-                             node['parent']])
-    except Exception as ex:
-        print(ex)
-        print('Wrong paste!')
-        return False
-    finally:
-        for node in buff:
-            node[0].reconnect(buff)
-            window.nodes.append(node[0])
-        if data:
-            window.info('Loaded ' + str(len(buff)) + ' nodes')
-        else:
-            window.info('Paste ' + str(len(buff)) + ' nodes')
-        return True
+# def paste_nodes(window, data=None):
+#     x, y = (0, 0) if data else (window.pointer[0], window.pointer[1])
+#     buff = []
+#     try:
+#         data = data if data else pyperclip.paste()
+#         try:
+#             paste = json.loads(data)
+#             #paste = json.loads(data, object_pairs_hook=OrderedDict)
+#         except ValueError:
+#             print("Attention: pyno-file still uses the old save format, please re-save soon!")
+#             paste = eval(data)
+#         for node in paste:
+#             if node['type'] == 'node':
+#                 buff.append([Node(window, 
+#                                   node['x'] + x,
+#                                   node['y'] + y,
+#                                   window.batch,
+#                                   tuple(node['color']),
+#                                   node['code'],
+#                                   node['connects'],
+#                                   node['size']),
+#                              node['parent']])
+#             elif node['type'] == 'field':
+#                 buff.append([Field(node['x'] + x,
+#                                    node['y'] + y,
+#                                    window.batch,
+#                                    node['code'],
+#                                    node['connects'],
+#                                    node['size']),
+#                              node['parent']])
+#             elif node['type'] == 'sub':
+#                 buff.append([Sub(node['x'] + x,
+#                                   node['y'] + y,
+#                                   window.batch,
+#                                   tuple(node['color']),
+#                                   node['code'],
+#                                   node['connects'],
+#                                   node['size']),
+#                              node['parent']])
+#     except Exception as ex:
+#         print('Wrong paste:', ex)
+#         return False
+#     finally:
+#         for node in buff:
+#             node[0].reconnect(buff)
+#             window.nodes.append(node[0])
+#         if data:
+#             window.info('Loaded ' + str(len(buff)) + ' nodes!')
+#         else:
+#             window.info('Pasted ' + str(len(buff)) + ' nodes!')
+#         return True
 
 
 def load(file=None):
     if file:
-        file_path = file
+        path = file
     else:
         root = Tk()
         root.withdraw()
-        file_path = filedialog.askopenfilename(filetypes=(
+        path = filedialog.askopenfilename(filetypes=(
                                             ('Pyno files', '*.pn'),
                                             ('All files', '*.*')))
         root.destroy()
     try:
-        file = open(file_path, 'r')
+        file = open(path, 'r')
     except Exception as ex:
-        print(ex)
+        print('Can\'t load file:', ex)
         return False
     data = file.read()
     file.close()
+    print('File', path, 'saved!')
     return data
 
 
-def save(data):
+def save(data, initialfile='pyno_file.pn'):
     root = Tk()
     root.withdraw()
-    s = filedialog.asksaveasfilename(defaultextension='pn',
-                                     initialfile='pyno_file.pn',
-                                     filetypes=(
-                                         ('Pyno files', '*.pn'),
-                                         ('All files', '*.*')))
+    path = filedialog.asksaveasfilename(defaultextension='pn',
+                                        initialfile=initialfile,
+                                        filetypes=(
+                                            ('Pyno files', '*.pn'),
+                                            ('All files', '*.*')))
     root.destroy()
     try:
-        file = open(s, 'w')
+        file = open(path, 'w')
     except Exception as ex:
-        print(ex)
+        print('Can\'t save file:', ex)
         return False
     file.write(data)
     file.close()
+    print('File', path, 'saved!')
     return True
 
 
@@ -187,18 +185,13 @@ class Menu:
                 return True
             # SAVE
             if x < s.x + (s.width * 2 / 3):
-                if save(copy_nodes(self.window, data=True)):
-                    print('File saved')
-                else:
-                    print('No file')
+                save(copy_nodes(self.window, data=True), self.window.filename)
             # LOAD
             else:
                 loaded = load()
                 if loaded:
                     self.window.new_pyno()
                     paste_nodes(self.window, loaded)
-                else:
-                    print('No file')
             return True
 
     def update(self):
