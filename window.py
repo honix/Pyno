@@ -1,28 +1,28 @@
 import pyglet
 import pyperclip
+from pyglet.window import Window
 from pyglet import gl
 from random import randint
 
 import draw
 import menu
+from process import Process
 from node import Node
 from field import Field
 from sub import Sub
-from serializer import Serializer
-from fileOperator import FileOperator
 from codeEditor import CodeEditor
 from element import color_inverse
 from utils import font, x_y_pan_scale, point_intersect_quad
 
 
-class PynoWindow(pyglet.window.Window):
+class PynoWindow(Window, Process):
     '''
-    Main pyno window. It's gray with logo in bottom.
-    It handles all elements and controls
+    Visual interface for Process
     '''
 
-    def __init__(self, config, filename=None, caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
-        super().__init__(resizable=True, caption=caption, config=config, style=style)
+    def __init__(self, config, filename=None, caption='Pyno', style=Window.WINDOW_STYLE_DEFAULT):
+        Window.__init__(self, resizable=True, caption=caption, config=config, style=style)
+        Process.__init__(self)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
 
@@ -33,17 +33,9 @@ class PynoWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 0.016) # ~60fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
-        self.running = -1  # -1: run continously, 0: pause/stop, n: do n steps
 
-        self.serializer = Serializer(self)
-        self.file_operator = FileOperator()
-
-        self.nodes = []
         self.active_nodes = []
         self.selected_nodes = []
-
-        self.pyno_namespace = {}  # local space for in-pyno programs
-        self.pyno_namespace['G'] = self.pyno_namespace  # to get global stuff
 
         self.code_editor = None
         self.field = None
@@ -82,18 +74,6 @@ class PynoWindow(pyglet.window.Window):
         self.menu = menu.Menu(self)
         # line place-holder
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
-
-    def nodes_update(self):
-        if not self.running:
-            return
-        if self.running > 0:
-            self.running -= 1
-
-        for node in self.nodes:
-            node.reset_proc()
-
-        for node in self.nodes:
-            node.processor(self.pyno_namespace)
 
     def info(self, message=None):
         self.info_label.text = message or \
@@ -443,35 +423,16 @@ class PynoWindow(pyglet.window.Window):
             # print('Connect input to output')
 
     def new_pyno(self):
+        Process.new_pyno(self)
         self.switch_to()
         self.code_editor = None
-        for node in self.nodes:
-            node.delete(fully=True)
-            del node
         self.new_batch()
-        self.nodes = []
         self.pan_scale = [[0.0, 0.0], 1]
-        print('New pyno!')
-
-    def save_pyno(self, filepath=None):
-        data = self.serializer.serialize(self.nodes)
-        return self.file_operator.save(data, filepath=filepath, initialfile=self.filename)
+        print('New window!')
 
     def autosave(self):
         if self.save_pyno(filepath='.auto-saved.pn'):
             self.info('auto-saved')
-
-    def load_pyno(self, filepath=None):
-        data, self.filename = self.file_operator.load(filepath)
-        if data:
-            self.new_pyno()
-        return self.load_data(data)
-
-    def load_data(self, data, anchor=(0, 0)):
-        nodes = self.serializer.deserialize(data, anchor)
-        for node in nodes:
-            self.nodes.append(node[0])
-        return nodes
 
     def copy_nodes(self):
         data = self.serializer.serialize(self.selected_nodes, anchor=self.pointer)
