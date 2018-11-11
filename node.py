@@ -72,8 +72,7 @@ call = newNode'''
                 out = []
                 i = 0
                 for arg in list(signature.return_annotation.__args__):
-                    # TODO: Fix 'module 'typing' has no attribute '_ForwardRef''
-                    is_string = isinstance(arg, typing._ForwardRef) and isinstance(arg.__forward_arg__, str)
+                    is_string = isinstance(arg, typing.ForwardRef) and isinstance(arg.__forward_arg__, str)
                     out.append(arg.__forward_arg__ if is_string else 'result ' + str(i))
                     i += 1
                 outputs = tuple(out)

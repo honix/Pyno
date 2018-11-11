@@ -43,7 +43,7 @@ To run pyno you must install few libs:
 * ```pip install typing```
 * ```pip install pyperclip```
 
-Make sure you have Python 3.4 or better on your computer. If true then run ```Pyno.py```
+Make sure you have Python 3.5 or better on your computer. If true then run ```Pyno.py```
 
 Pay attention on systems that have python 2 and 3 installed. E.g. on ubuntu you have to use
 `python3` and `pip3` instead of `python` and `pip`. Also python3-tk has to be installed.
