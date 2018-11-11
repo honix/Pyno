@@ -1,4 +1,7 @@
-class Processor(object):
+from element import Element
+
+
+class Processor(Element):
     '''
     Processor is a engine of Pyno, 
     there functions defines and outputs calculates
@@ -6,7 +9,7 @@ class Processor(object):
 
     def init_processor(self):
         self.proc_result = None
-        self.func = None
+        self.func = lambda x: x
 
         self.gen_output = {}
 

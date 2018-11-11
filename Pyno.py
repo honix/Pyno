@@ -8,10 +8,10 @@ if __name__ == '__main__':
                               stencil_size=0, aux_buffers=0,
                               samples=1)
     try:
-        pwindow = window.PynoWindow(config=config)
+        pwindow = window.PynoWindow(config, filename='.auto-saved.pn')
     except:
         # if config is crashed run more default one
-        pwindow = window.PynoWindow(pyglet.gl.Config())
+        pwindow = window.PynoWindow(pyglet.gl.Config(), filename='.auto-saved.pn')
 
     pyglet.options['debug_gl'] = False  # performance boost?
 

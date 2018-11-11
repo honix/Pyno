@@ -10,7 +10,7 @@ from draw import labelsGroup
 from utils import font
 
 
-class Node(Element, Processor):
+class Node(Processor):
     '''
     Node is a main Pyno element, in fact it is a function with in/outputs
     '''

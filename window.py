@@ -21,7 +21,7 @@ class PynoWindow(pyglet.window.Window):
     It handles all elements and controls
     '''
 
-    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
+    def __init__(self, config, filename=None, caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
         super().__init__(resizable=True, caption=caption, config=config, style=style)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
@@ -64,10 +64,9 @@ class PynoWindow(pyglet.window.Window):
 
         self.new_batch()
 
-        self.filename = filename
-
-        # open auto-save or welcome-file
-        (self.load_pyno(self.filename) or self.load_pyno('examples/welcome.pn'))
+        if filename:
+            # open auto-save or welcome-file
+            (self.load_pyno(filename) or self.load_pyno('examples/welcome.pn'))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
@@ -253,7 +252,8 @@ class PynoWindow(pyglet.window.Window):
                             self.field = node
                         elif isinstance(node, Sub):
                             self.code_editor = CodeEditor(node, highlighting=2)
-                            node.pwindow.set_visible(not node.pwindow.visible)
+                            if node.pwindow:
+                                node.pwindow.set_visible(not node.pwindow.visible)
                         self.selected_nodes = [node]
                         self.node_drag = True
                         return
