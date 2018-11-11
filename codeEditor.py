@@ -3,6 +3,7 @@ import pyperclip
 import keyword
 import tokenize
 import io
+import os
 
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
@@ -18,9 +19,11 @@ class CodeEditor(object):
     Code editor is the window you define nodes function
     '''
 
-    def __init__(self, node):
+    def __init__(self, node, highlighting=1):
         self.node = node  # node-owner of this codeEditor
         self.document = pyglet.text.document.FormattedDocument(node.code)
+
+        self.highlighting = highlighting  # 0: off, 1: python (node), 2: file (sub)
 
         @self.document.event
         def on_insert_text(start, end):
@@ -48,6 +51,10 @@ class CodeEditor(object):
                                                 color=(255, 255, 255, 127),
                                                 width=2,
                                                 multiline=True)
+        self.autocomplete = pyglet.text.Label('',
+                                              font_name=font,
+                                              font_size=9,
+                                              color=(0, 255, 0, 127))
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -124,6 +131,10 @@ class CodeEditor(object):
             self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
             self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
+            #  codeEditor autocomplete hint
+            self.autocomplete.x = l.x - 20 + 2
+            self.autocomplete.y = self.node.y + self.node.ch + 40
+            self.autocomplete.draw()
         else:
             if self.document.text and self.hovered:
                 self.hovered = False
@@ -133,27 +144,45 @@ class CodeEditor(object):
         self.layout.draw()
 
     def update_highlighting(self):
-        # reset highlighting
+        # reset highlighting and hint
         self.document.set_style(0, len(self.node.code),
                                 dict(color=(255, 255, 255, 255)))
-        # rudimentary syntax highlighting
-        newline_offset = ([0] +
-                          [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
-                          [len(self.document.text)])
-        try:
-            for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
-                start = newline_offset[item.start[0] - 1] + item.start[1]
-                stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
-                if (item.type == tokenize.NAME) and (item.string in highlight):
-                    pass
-                elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
-                    start = start + 1
-                else:
-                    continue  # do not highlight this token
-                self.document.set_style(start, stopp,
+        self.autocomplete.text = ""
+
+        if self.highlighting == 0:    # 0: off
+            return
+        elif self.highlighting == 1:  # 1: python
+            # rudimentary syntax highlighting and autocomplete hint
+            newline_offset = ([0] +
+                              [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
+                              [len(self.document.text)])
+            try:
+                for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
+                    start = newline_offset[item.start[0] - 1] + item.start[1]
+                    stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+                    # rudimentary autocomplete hint
+                    if (start <= self.caret.position <= stopp):
+                        try:
+                            obj = eval(item.string, self.node.env)
+                            #print("Code hint:\n", obj.__doc__)
+                            self.autocomplete.text = obj.__doc__.split("\n")[0]
+                        except:
+                            pass
+                    # syntax highlighting
+                    if (item.type == tokenize.NAME) and (item.string in highlight):
+                        pass
+                    elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
+                        start = start + 1
+                    else:
+                        continue  # do not highlight this token
+                    self.document.set_style(start, stopp,
+                                            dict(color=(255, 200, 100, 255)))
+            except tokenize.TokenError:
+                pass
+        elif self.highlighting == 2:  # 2: file
+            if os.path.exists(self.document.text):
+                self.document.set_style(0, len(self.node.code),
                                         dict(color=(255, 200, 100, 255)))
-        except tokenize.TokenError:
-            pass
 
     # --- Input events ---
 
@@ -165,6 +194,7 @@ class CodeEditor(object):
         elif button == 1 and self.hover:
             self.set_focus()
             self.caret.on_mouse_press(x, y, button, modifiers)
+            self.update_highlighting()
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.screen_size)
@@ -209,17 +239,29 @@ class CodeEditor(object):
 
         elif modifiers & key.MOD_CTRL:
             if symbol == key.C and self.caret.mark:
-                start = min(self.caret.position, self.caret.mark)
-                end = max(self.caret.position, self.caret.mark)
-                text = self.document.text[start:end]
-                pyperclip.copy(text)
+                self.copy_text()
             elif symbol == key.V:
+                start = min(self.caret.position, self.caret.mark or self.caret.position)
+                end = max(self.caret.position, self.caret.mark or self.caret.position)
                 text = pyperclip.paste()
+                self.document.delete_text(start, end)
                 self.document.insert_text(self.caret.position, text)
                 self.caret.position += len(text)
+                self.caret.mark = self.caret.position
+            elif symbol == key.X and self.caret.mark:
+                start, end = self.copy_text()
+                self.document.delete_text(start, end)
+                self.caret.mark = self.caret.position
 
         elif symbol == key.BACKSPACE or symbol == key.DELETE:
             self.change = True
+
+    def copy_text(self):
+        start = min(self.caret.position, self.caret.mark)
+        end = max(self.caret.position, self.caret.mark)
+        text = self.document.text[start:end]
+        pyperclip.copy(text)
+        return (start, end)
 
     def set_focus(self):
         self.caret.visible = True

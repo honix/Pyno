@@ -271,4 +271,7 @@ class Field(Element):
 
     def lost_focus(self):
         self.caret.visible = False
-        self.caret.mark = self.caret.position = 0
+        try:
+            self.caret.mark = self.caret.position = 0
+        except AttributeError:
+            pass  # work-a-round for https://github.com/honix/Pyno/issues/12

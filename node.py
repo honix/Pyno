@@ -35,6 +35,8 @@ class Node(Element, Processor):
 
 call = newNode'''
 
+        self.env = {}
+
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name=font,
                                        bold=True, font_size=11,
@@ -51,9 +53,9 @@ call = newNode'''
 
         self.func = None
         try:
-            env = {'S': self.local_space, 'G': self.window.pyno_namespace}
-            exec(code, env)
-            self.func = env['call']
+            self.env = {'S': self.local_space, 'G': self.window.pyno_namespace}
+            exec(code, self.env)
+            self.func = self.env['call']
             if not isinstance(self.func, types.FunctionType):
                 raise Exception('Call value is not callable!')
         except Exception as ex:
