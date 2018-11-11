@@ -153,17 +153,24 @@ class CodeEditor(object):
             return
         elif self.highlighting == 1:  # 1: python
             # rudimentary syntax highlighting and autocomplete hint
-            newline_offset = ([0] +
+            newline_offset = ([-1] +
                               [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
                               [len(self.document.text)])
             try:
+                obj_string = ""
                 for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
-                    start = newline_offset[item.start[0] - 1] + item.start[1]
+                    start = newline_offset[item.start[0] - 1] + item.start[1] + 1
                     stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
                     # rudimentary autocomplete hint
+                    if (item.type == tokenize.NAME) or (item.string == "."):
+                        obj_string += item.string
+                    else:
+                        obj_string = ""
                     if (start <= self.caret.position <= stopp):
+                        if not obj_string:
+                            obj_string = item.string
                         try:
-                            obj = eval(item.string, self.node.env)
+                            obj = eval(obj_string.strip(), self.node.env)
                             #print("Code hint:\n", obj.__doc__)
                             self.autocomplete.text = obj.__doc__.split("\n")[0]
                         except:
@@ -172,7 +179,7 @@ class CodeEditor(object):
                     if (item.type == tokenize.NAME) and (item.string in highlight):
                         pass
                     elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
-                        start = start + 1
+                        pass  # (we could e.g. set another color here...)
                     else:
                         continue  # do not highlight this token
                     self.document.set_style(start, stopp,
