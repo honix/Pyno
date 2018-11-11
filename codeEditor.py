@@ -163,7 +163,7 @@ class CodeEditor(object):
                     # rudimentary autocomplete hint
                     if (start <= self.caret.position <= stopp):
                         try:
-                            obj = eval(item.string)
+                            obj = eval(item.string, self.node.env)
                             #print("Code hint:\n", obj.__doc__)
                             self.autocomplete.text = obj.__doc__.split("\n")[0]
                         except:
@@ -194,6 +194,7 @@ class CodeEditor(object):
         elif button == 1 and self.hover:
             self.set_focus()
             self.caret.on_mouse_press(x, y, button, modifiers)
+            self.update_highlighting()
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         x, y = x_y_pan_scale(x, y, self.pan_scale, self.screen_size)
