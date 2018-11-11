@@ -153,12 +153,12 @@ class CodeEditor(object):
             return
         elif self.highlighting == 1:  # 1: python
             # rudimentary syntax highlighting and autocomplete hint
-            newline_offset = ([0] +
+            newline_offset = ([-1] +
                               [i for i, ch in enumerate(self.document.text) if ch == '\n'] +
                               [len(self.document.text)])
             try:
                 for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
-                    start = newline_offset[item.start[0] - 1] + item.start[1]
+                    start = newline_offset[item.start[0] - 1] + item.start[1] + 1
                     stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
                     # rudimentary autocomplete hint
                     if (start <= self.caret.position <= stopp):
@@ -172,7 +172,7 @@ class CodeEditor(object):
                     if (item.type == tokenize.NAME) and (item.string in highlight):
                         pass
                     elif (item.type in [tokenize.COMMENT, tokenize.OP, tokenize.NUMBER, tokenize.STRING]):
-                        start = start + 1
+                        pass  # (we could e.g. set another color here...)
                     else:
                         continue  # do not highlight this token
                     self.document.set_style(start, stopp,
