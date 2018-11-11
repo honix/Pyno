@@ -2,7 +2,7 @@ from tkinter import Tk, filedialog
 
 class FileOperator():
     '''
-    File operations using filedialog or forward usage
+    File operations using filedialog if no filepath given
     '''
 
     def load(self, filepath=None):
