@@ -16,7 +16,7 @@ def color_inverse(color):
     return tuple(map(lambda c: int(c * -0.8), color))
 
 
-class Element(object):
+class Element():
     '''
     Element is a base class of pyno objects
     '''

@@ -8,7 +8,7 @@ from utils import font
 from field import Field
 
 
-class Sub(Element, Processor):
+class Sub(Processor):
     '''
     Sub is a main pyno element, in fact it is a pyno file with in/outputs
     '''
@@ -51,11 +51,9 @@ class Sub(Element, Processor):
         self.label.text = self.name + ' →'
 
         try:
-            if not window.menu.load(self.code):
-                raise FileNotFoundError("File could not be loaded.")
             pwin = window.PynoWindow(pyglet.gl.Config(),
-                                     filename=self.code,
                                      caption='→ ' + self.name)
+            pwin.load_pyno(self.code)
             if self.pwindow:
                 self.pwindow.close()
                 del self.pwindow

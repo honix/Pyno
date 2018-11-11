@@ -1,9 +1,12 @@
 import pyglet
+import pyperclip
+from pyglet.window import Window
 from pyglet import gl
 from random import randint
 
 import draw
 import menu
+from process import Process
 from node import Node
 from field import Field
 from sub import Sub
@@ -12,14 +15,14 @@ from element import color_inverse
 from utils import font, x_y_pan_scale, point_intersect_quad
 
 
-class PynoWindow(pyglet.window.Window):
+class PynoWindow(Window, Process):
     '''
-    Main pyno window. It's gray with logo in bottom.
-    It handles all elements and controls
+    Visual interface for Process
     '''
 
-    def __init__(self, config, filename='.auto-saved.pn', caption='Pyno', style=pyglet.window.Window.WINDOW_STYLE_DEFAULT):
-        super().__init__(resizable=True, caption=caption, config=config, style=style)
+    def __init__(self, config, filename=None, caption='Pyno', style=Window.WINDOW_STYLE_DEFAULT):
+        Window.__init__(self, resizable=True, caption=caption, config=config, style=style)
+        Process.__init__(self)
         self.set_minimum_size(320, 200)
         self.set_size(800, 600)
 
@@ -30,14 +33,9 @@ class PynoWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 0.016) # ~60fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
-        self.running = -1  # -1: run continously, 0: pause/stop, n: do n steps
 
-        self.nodes = []
         self.active_nodes = []
         self.selected_nodes = []
-
-        self.pyno_namespace = {}  # local space for in-pyno programs
-        self.pyno_namespace['G'] = self.pyno_namespace  # to get global stuff
 
         self.code_editor = None
         self.field = None
@@ -58,9 +56,9 @@ class PynoWindow(pyglet.window.Window):
 
         self.new_batch()
 
-        # open auto-save or welcome-file
-        menu.paste_nodes(self, menu.load(filename) or \
-                               menu.load('examples/welcome.pn'))
+        if filename:
+            # open auto-save or welcome-file
+            (self.load_pyno(filename) or self.load_pyno('examples/welcome.pn'))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
@@ -77,27 +75,11 @@ class PynoWindow(pyglet.window.Window):
         # line place-holder
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
 
-    def nodes_update(self):
-        if not self.running:
-            return
-        if self.running > 0:
-            self.running -= 1
-
-        for node in self.nodes:
-            node.reset_proc()
-
-        for node in self.nodes:
-            node.processor(self.pyno_namespace)
-
     def info(self, message=None):
         self.info_label.text = message or \
                                 'fps:' + str(int(pyglet.clock.get_fps())) + \
                                 ' active:' + str(len(self.active_nodes)) + \
                                 ' run:' + str(self.running)
-
-    def autosave(self):
-        if menu.autosave(menu.copy_nodes(self, data=True)):
-            self.info("auto-saved")
 
     def update(self, dt):
         self.pyno_namespace['dt'] = dt
@@ -250,7 +232,8 @@ class PynoWindow(pyglet.window.Window):
                             self.field = node
                         elif isinstance(node, Sub):
                             self.code_editor = CodeEditor(node, highlighting=2)
-                            node.pwindow.set_visible(not node.pwindow.visible)
+                            if node.pwindow:
+                                node.pwindow.set_visible(not node.pwindow.visible)
                         self.selected_nodes = [node]
                         self.node_drag = True
                         return
@@ -354,10 +337,10 @@ class PynoWindow(pyglet.window.Window):
 
             if modifiers & key.MOD_CTRL:
                 if symbol == key.C:
-                    menu.copy_nodes(self)
+                    self.copy_nodes()
 
                 elif symbol == key.V:
-                    menu.paste_nodes(self)
+                    self.paste_nodes()
 
             if symbol == key.DELETE:
                 for node in self.selected_nodes:
@@ -383,7 +366,7 @@ class PynoWindow(pyglet.window.Window):
         for node in self.nodes:
             if isinstance(node, Sub) and node.pwindow:
                 node.pwindow.on_close(force=True)
-        menu.autosave(menu.copy_nodes(self, data=True))
+        self.autosave()
         self.close()
 
     def disconnect_node(self, node):
@@ -423,7 +406,7 @@ class PynoWindow(pyglet.window.Window):
         if insert not in node.connected_to:
             node.connected_to.append(insert)
             self.connecting_node['node'].add_child(node)
-            print('Connect output to input')
+            # print('Connect output to input')
 
     def connect_in_to_out(self, node):
         del self.connecting_node['mode']
@@ -437,15 +420,24 @@ class PynoWindow(pyglet.window.Window):
             n.connected_to.append(insert)
             node.add_child(n)
             n.make_active()
-            print('Connect input to output')
+            # print('Connect input to output')
 
     def new_pyno(self):
+        Process.new_pyno(self)
         self.switch_to()
         self.code_editor = None
-        for node in self.nodes:
-            node.delete(fully=True)
-            del node
         self.new_batch()
-        self.nodes = []
         self.pan_scale = [[0.0, 0.0], 1]
-        print('New pyno')
+        print('New window!')
+
+    def autosave(self):
+        if self.save_pyno(filepath='.auto-saved.pn'):
+            self.info('auto-saved')
+
+    def copy_nodes(self):
+        data = self.serializer.serialize(self.selected_nodes, anchor=self.pointer)
+        pyperclip.copy(data)
+
+    def paste_nodes(self):
+        data = pyperclip.paste()
+        self.load_data(data, anchor=self.pointer)

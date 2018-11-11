@@ -14,7 +14,7 @@ highlight = set(list(__builtins__.keys()) +
                 ['call'])
 
 
-class CodeEditor(object):
+class CodeEditor():
     '''
     Code editor is the window you define nodes function
     '''
