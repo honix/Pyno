@@ -12,7 +12,7 @@ from utils import font
 
 class Node(Element, Processor):
     '''
-    Node is a main pyno element, in fact it is a function with in/outputs
+    Node is a main Pyno element, in fact it is a function with in/outputs
     '''
 
     def __init__(self, window, x, y, batch, color=(200, 200, 200), code=None,
@@ -72,6 +72,7 @@ call = newNode'''
                 out = []
                 i = 0
                 for arg in list(signature.return_annotation.__args__):
+                    # TODO: Fix 'module 'typing' has no attribute '_ForwardRef''
                     is_string = isinstance(arg, typing._ForwardRef) and isinstance(arg.__forward_arg__, str)
                     out.append(arg.__forward_arg__ if is_string else 'result ' + str(i))
                     i += 1

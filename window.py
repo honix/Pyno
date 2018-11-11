@@ -1,4 +1,5 @@
 import pyglet
+import pyperclip
 from pyglet import gl
 from random import randint
 
@@ -7,6 +8,8 @@ import menu
 from node import Node
 from field import Field
 from sub import Sub
+from serializer import Serializer
+from fileOperator import FileOperator
 from codeEditor import CodeEditor
 from element import color_inverse
 from utils import font, x_y_pan_scale, point_intersect_quad
@@ -31,6 +34,9 @@ class PynoWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
         self.running = -1  # -1: run continously, 0: pause/stop, n: do n steps
+
+        self.serializer = Serializer(self)
+        self.file_operator = FileOperator()
 
         self.nodes = []
         self.active_nodes = []
@@ -61,8 +67,7 @@ class PynoWindow(pyglet.window.Window):
         self.filename = filename
 
         # open auto-save or welcome-file
-        menu.paste_nodes(self, menu.load(self.filename) or \
-                               menu.load('examples/welcome.pn'))
+        (self.load_pyno(self.filename) or self.load_pyno('examples/welcome.pn'))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
@@ -96,10 +101,6 @@ class PynoWindow(pyglet.window.Window):
                                 'fps:' + str(int(pyglet.clock.get_fps())) + \
                                 ' active:' + str(len(self.active_nodes)) + \
                                 ' run:' + str(self.running)
-
-    def autosave(self):
-        if menu.autosave(menu.copy_nodes(self, data=True)):
-            self.info("auto-saved")
 
     def update(self, dt):
         self.pyno_namespace['dt'] = dt
@@ -356,10 +357,10 @@ class PynoWindow(pyglet.window.Window):
 
             if modifiers & key.MOD_CTRL:
                 if symbol == key.C:
-                    menu.copy_nodes(self)
+                    self.copy_nodes()
 
                 elif symbol == key.V:
-                    menu.paste_nodes(self)
+                    self.paste_nodes()
 
             if symbol == key.DELETE:
                 for node in self.selected_nodes:
@@ -385,7 +386,7 @@ class PynoWindow(pyglet.window.Window):
         for node in self.nodes:
             if isinstance(node, Sub) and node.pwindow:
                 node.pwindow.on_close(force=True)
-        menu.autosave(menu.copy_nodes(self, data=True))
+        self.autosave()
         self.close()
 
     def disconnect_node(self, node):
@@ -425,7 +426,7 @@ class PynoWindow(pyglet.window.Window):
         if insert not in node.connected_to:
             node.connected_to.append(insert)
             self.connecting_node['node'].add_child(node)
-            print('Connect output to input')
+            # print('Connect output to input')
 
     def connect_in_to_out(self, node):
         del self.connecting_node['mode']
@@ -439,7 +440,7 @@ class PynoWindow(pyglet.window.Window):
             n.connected_to.append(insert)
             node.add_child(n)
             n.make_active()
-            print('Connect input to output')
+            # print('Connect input to output')
 
     def new_pyno(self):
         self.switch_to()
@@ -450,4 +451,32 @@ class PynoWindow(pyglet.window.Window):
         self.new_batch()
         self.nodes = []
         self.pan_scale = [[0.0, 0.0], 1]
-        print('New pyno')
+        print('New pyno!')
+
+    def save_pyno(self, filepath=None):
+        data = self.serializer.serialize(self.nodes)
+        return self.file_operator.save(data, filepath=filepath, initialfile=self.filename)
+
+    def autosave(self):
+        if self.save_pyno(filepath='.auto-saved.pn'):
+            self.info('auto-saved')
+
+    def load_pyno(self, filepath=None):
+        data, self.filename = self.file_operator.load(filepath)
+        if data:
+            self.new_pyno()
+        return self.load_data(data)
+
+    def load_data(self, data, anchor=(0, 0)):
+        nodes = self.serializer.deserialize(data, anchor)
+        for node in nodes:
+            self.nodes.append(node[0])
+        return nodes
+
+    def copy_nodes(self):
+        data = self.serializer.serialize(self.selected_nodes, anchor=self.pointer)
+        pyperclip.copy(data)
+
+    def paste_nodes(self):
+        data = pyperclip.paste()
+        self.load_data(data, anchor=self.pointer)

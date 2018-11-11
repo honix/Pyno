@@ -1,6 +1,6 @@
 class Processor(object):
     '''
-    Processor is a engine of pyno, 
+    Processor is a engine of Pyno, 
     there functions defines and outputs calculates
     '''
 
