@@ -35,15 +35,15 @@ Controls:
 ![Pyno](screenshots/edit.png)
 
 # How to run
+Make sure you have **Python 3.5** or better on your computer.
+
 To run pyno you must install few libs:
 
 *(type this commands to your command line)*
 
-* ```pip install pyglet==1.3.0```
-* ```pip install typing```
+* ```pip install pyglet```
 * ```pip install pyperclip```
 
-Make sure you have Python 3.5 or better on your computer. If true then run ```Pyno.py```
+Then run ```python Pyno.py```
 
-Pay attention on systems that have python 2 and 3 installed. E.g. on ubuntu you have to use
-`python3` and `pip3` instead of `python` and `pip`. Also python3-tk has to be installed.
+Pay attention on systems that have python 2 and 3 installed. E.g. on Ubuntu you have to use `python3` and `pip3` instead of `python` and `pip`. Also python3-tk has to be installed.
