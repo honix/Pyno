@@ -15,25 +15,17 @@ class Node(Processor):
     Node is a main Pyno element, in fact it is a function with in/outputs
     '''
 
-    def __init__(self, window, x, y, batch, color=(200, 200, 200), code=None,
+    def __init__(self, window, x, y, batch, color=(200, 200, 200), code="",
                  connects=None, size=(300, 150)):
         Element.__init__(self, x, y, color, batch)
         Processor.init_processor(self)  # node has a processor for calculation
 
         self.window = window
         self.editor_size = size
+        self.code = code
 
         if connects:
             self.connected_to = connects
-
-        if code:
-            self.code = code
-        else:
-            self.code = '''def newNode(a=0, b=0):
-  result = a + b
-  return result
-
-call = newNode'''
 
         self.env = {}
 
@@ -43,7 +35,7 @@ call = newNode'''
                                        anchor_x='center', anchor_y='center',
                                        batch=batch, group=labelsGroup,
                                        color=(255, 255, 255, 230))
-        self.new_code(self.code)
+        self.reload()
 
     def new_code(self, code):
         # New code, search for in/outputs
@@ -82,6 +74,10 @@ call = newNode'''
             self.resize_to_name(self.name)
             self.insert_inouts({'inputs': inputs,
                                 'outputs': outputs})
+
+    def reload(self):
+        self.new_code(self.code)
+        self.make_active()
 
     def render_base(self):
         Element.render_base(self)

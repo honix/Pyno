@@ -1,14 +1,13 @@
 import platform
+from random import randint
 
 win = platform.system() == 'Windows'
 font = 'Consolas' if win else 'DejaVu Sans Mono'
 
-def sum_coma(t):
-    result = ''
-    for i in t:
-        result += (i[0] + '=' + 'gen_inputs[' +
-                   str(t.index(i)) + '][1]' + ',')
-    return result[:-1]
+def random_node_color():
+    return (randint(80, 130),
+            randint(80, 130),
+            randint(80, 130))
 
 
 def x_y_pan_scale(x, y, pan_scale, wscale):

@@ -21,6 +21,7 @@ There are only three elements:
 | Element | Description | Key on keyboard to spawn |
 |-|-|:-:|
 | **node** | is a function | **N** |
+| **node from file** | exact same as node but loads from file | **O** |
 | **field** | is a object, value or lambda function | **F** |
 | **subpatch** | is a link to pyno-file, allows you to control complexity of your patches | **S** |
 

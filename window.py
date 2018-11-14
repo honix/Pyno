@@ -2,17 +2,17 @@ import pyglet
 import pyperclip
 from pyglet.window import Window
 from pyglet import gl
-from random import randint
 
 import draw
 import menu
+import initialCode
 from process import Process
 from node import Node
 from field import Field
 from sub import Sub
 from codeEditor import CodeEditor
 from element import color_inverse
-from utils import font, x_y_pan_scale, point_intersect_quad
+from utils import font, x_y_pan_scale, point_intersect_quad, random_node_color
 
 
 class PynoWindow(Window, Process):
@@ -322,18 +322,23 @@ class PynoWindow(Window, Process):
         if not (self.code_editor or self.field):
             if symbol == key.N:
                 self.nodes.append(Node(self, self.pointer[0], self.pointer[1], self.batch,
-                                       (randint(80, 130),
-                                        randint(80, 130),
-                                        randint(80, 130))))
+                                       random_node_color(), code=initialCode.node))
+
+            elif symbol == key.O:
+                self.nodes.append(Node(self, self.pointer[0], self.pointer[1], self.batch,
+                                       random_node_color(), code=initialCode.open_node))
 
             elif symbol == key.F:
                 self.nodes.append(Field(self.pointer[0], self.pointer[1], self.batch))
 
             elif symbol == key.S:
                 self.nodes.append(Sub(self.pointer[0], self.pointer[1], self.batch,
-                                       (randint(80, 130),
-                                        randint(80, 130),
-                                        randint(80, 130))))
+                                      random_node_color()))
+
+            elif symbol == key.R:
+                for node in self.nodes:
+                    if isinstance(node, Node):
+                        node.reload()
 
             if modifiers & key.MOD_CTRL:
                 if symbol == key.C:
