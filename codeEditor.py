@@ -144,8 +144,11 @@ class CodeEditor():
         self.layout.draw()
 
     def update_highlighting(self):
+        if len(self.document.text) == 0:
+            return
+
         # reset highlighting and hint
-        self.document.set_style(0, len(self.node.code),
+        self.document.set_style(0, len(self.document.text),
                                 dict(color=(255, 255, 255, 255)))
         self.autocomplete.text = ""
 
