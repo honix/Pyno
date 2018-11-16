@@ -11,7 +11,7 @@ class Field(Element):
     Field is a white box where you can put values
     '''
 
-    def __init__(self, x, y, batch, code='0', connects=None, size=None):
+    def __init__(self, window, x, y, batch, code='0', connects=None, size=None):
         Element.__init__(self, x, y, (230, 230, 230), batch)
 
         if size:
@@ -20,6 +20,7 @@ class Field(Element):
         if connects:
             self.connected_to = connects
 
+        self.window = window
         self.code = code
 
         self.document = pyglet.text.document.FormattedDocument(self.code)
@@ -63,7 +64,7 @@ class Field(Element):
     def reset_proc(self):
         self.proc_result = None
 
-    def processor(self, space):
+    def processor(self):
         # Processor called every frame
 
         if self.proc_result:
@@ -75,7 +76,7 @@ class Field(Element):
         if self.connected_to:
             connection = self.connected_to[0]
             try:
-                inputs = connection['output']['node'].processor(space)
+                inputs = connection['output']['node'].processor()
                 data = inputs[connection['output']['put']['name']]
             except:
                 self.er_label.text = 'Cant read input'
@@ -92,13 +93,13 @@ class Field(Element):
         # update value carefully and check some stuff
         elif self.need_update:
             try:
-                self.value = eval(self.document.text, space)
+                self.value = eval(self.document.text, self.window.global_scope)
             except Exception as ex:
                 self.problem = True
                 self.er_label.text = str(ex)
                 self.is_number = False
                 try:
-                    exec(self.document.text, space)
+                    exec(self.document.text, self.window.global_scope)
                 except Exception as ex:
                     self.problem = True
                     self.er_label.text = str(ex)

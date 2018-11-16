@@ -1,231 +1,231 @@
 [
     {
+        "type": "field",
+        "x": 197,
+        "y": 188,
         "size": [
             308,
             89
         ],
-        "parent": 1,
-        "x": 197,
-        "connects": [],
-        "y": 188,
         "code": "# Patricles test\n\n# use mouse right and left\n# buttons to interact\n",
-        "type": "field"
+        "connects": [],
+        "parent": 35
     },
     {
+        "type": "node",
+        "x": 260,
+        "y": 513,
         "size": [
-            433,
-            162
+            460,
+            230
         ],
-        "parent": 2,
         "color": [
             129,
             105,
             124
         ],
-        "x": 260,
+        "code": "import pyglet\n\nS['window'] = pyglet.window.Window(450, 450)\n\ndef create_window():\n  return S['window']\n\ncall = create_window\n\ncleanup = lambda: S['window'].close()",
         "connects": [],
-        "y": 513,
-        "code": "import pyglet\n\nS['window'] = pyglet.window.Window(450, 450)\n\ndef create_window():\n  return S['window']\n\ncall = create_window",
-        "type": "node"
+        "parent": 36
     },
     {
+        "type": "node",
+        "x": 542,
+        "y": 224,
         "size": [
             509,
             487
         ],
-        "parent": 3,
         "color": [
             99,
             114,
             116
         ],
-        "x": 542,
+        "code": "import pyglet\n\nS['rects'] = []\nS['batch'] = None\n\ndef draw_rects(poses=[(0,0),(10,10),(30,30)]):\n\n  # make new array of rects if count not match\n  count = len(poses)\n  if len(S['rects']) != count:\n    S['rects'] = []\n    S['batch'] = pyglet.graphics.Batch()\n    for i in range(count):\n      S['rects'].append(S['batch'].add(\n                  1, pyglet.gl.GL_POINTS, None,\n                  ('v2i', (0, 0)),\n                  ('c4B', (255,255,255,10))))\n\n  # new poses and sizes\n  for rect, pos in zip(S['rects'], poses):\n    x, y = int(pos[0]), int(pos[1])  \n    rect.vertices = (x, y)\n\n  return S['batch']\n\ncall = draw_rects",
         "connects": [
             {
+                "output": {
+                    "node": 38,
+                    "put": {
+                        "name": "result"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "poses"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "result"
-                    },
-                    "node": 4
                 }
             }
         ],
-        "y": 224,
-        "code": "import pyglet\n\nS['rects'] = []\nS['batch'] = None\n\ndef draw_rects(poses=[(0,0),(10,10),(30,30)]):\n\n  # make new array of rects if count not match\n  count = len(poses)\n  if len(S['rects']) != count:\n    S['rects'] = []\n    S['batch'] = pyglet.graphics.Batch()\n    for i in range(count):\n      S['rects'].append(S['batch'].add(\n                  1, pyglet.gl.GL_POINTS, None,\n                  ('v2i', (0, 0)),\n                  ('c4B', (255,255,255,10))))\n\n  # new poses and sizes\n  for rect, pos in zip(S['rects'], poses):\n    x, y = int(pos[0]), int(pos[1])  \n    rect.vertices = (x, y)\n\n  return S['batch']\n\ncall = draw_rects",
-        "type": "node"
+        "parent": 37
     },
     {
+        "type": "node",
+        "x": 542,
+        "y": 310,
         "size": [
             528,
             680
         ],
-        "parent": 4,
         "color": [
             86,
             111,
             98
         ],
-        "x": 542,
+        "code": "import math\nfrom random import random\n\nS['p'] = []\nS['a'] = []\n\ndef particles(inv=False, magnet=(0,0), count=10):\n  if count != len(S['p']):\n    S['p'] = []\n    S['a'] = []\n    for i in range(count):\n      S['p'].append([225,225])\n      S['a'].append([random()*200-100,\n                     random()*200-100])\n\n  for pos, acc in zip(S['p'], S['a']):\n    dist = math.sqrt((pos[0] - magnet[0])**2 +\n                     (pos[1] - magnet[1])**2)\n    acc[0] *= 0.6\n    acc[1] *= 0.6\n    if not inv:\n      acc[0] += (pos[0] - magnet[0]) / dist * 2\n      acc[1] += (pos[1] - magnet[1]) / dist * 2\n    else:\n      acc[0] -= (pos[0] - magnet[0]) / dist * 2\n      acc[1] -= (pos[1] - magnet[1]) / dist * 2\n    pos[0] += acc[0] / 5\n    pos[1] += acc[1] / 5\n    if not (0 < pos[0] < 450):\n      acc[0] *= -20\n    if not (0 < pos[1] < 450):\n      acc[1] *= -20\n    \n  return S['p']\n\ncall = particles",
         "connects": [
             {
+                "output": {
+                    "node": 39,
+                    "put": {
+                        "name": "output"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "count"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "output"
-                    },
-                    "node": 5
                 }
             },
             {
+                "output": {
+                    "node": 41,
+                    "put": {
+                        "name": "mouse_pos"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "magnet"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "mouse_pos"
-                    },
-                    "node": 7
                 }
             },
             {
+                "output": {
+                    "node": 41,
+                    "put": {
+                        "name": "click"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "inv"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "click"
-                    },
-                    "node": 7
                 }
             }
         ],
-        "y": 310,
-        "code": "import math\nfrom random import random\n\nS['p'] = []\nS['a'] = []\n\ndef particles(inv=False, magnet=(0,0), count=10):\n  if count != len(S['p']):\n    S['p'] = []\n    S['a'] = []\n    for i in range(count):\n      S['p'].append([225,225])\n      S['a'].append([random()*200-100,\n                     random()*200-100])\n\n  for pos, acc in zip(S['p'], S['a']):\n    dist = math.sqrt((pos[0] - magnet[0])**2 +\n                     (pos[1] - magnet[1])**2)\n    acc[0] *= 0.6\n    acc[1] *= 0.6\n    if not inv:\n      acc[0] += (pos[0] - magnet[0]) / dist * 2\n      acc[1] += (pos[1] - magnet[1]) / dist * 2\n    else:\n      acc[0] -= (pos[0] - magnet[0]) / dist * 2\n      acc[1] -= (pos[1] - magnet[1]) / dist * 2\n    pos[0] += acc[0] / 5\n    pos[1] += acc[1] / 5\n    if not (0 < pos[0] < 450):\n      acc[0] *= -20\n    if not (0 < pos[1] < 450):\n      acc[1] *= -20\n    \n  return S['p']\n\ncall = particles",
-        "type": "node"
+        "parent": 38
     },
     {
+        "type": "field",
+        "x": 500,
+        "y": 506,
         "size": [
             98,
             30
         ],
-        "parent": 5,
-        "x": 500,
-        "connects": [],
-        "y": 506,
         "code": "512",
-        "type": "field"
+        "connects": [],
+        "parent": 39
     },
     {
+        "type": "node",
+        "x": 494,
+        "y": 140,
         "size": [
             317,
             178
         ],
-        "parent": 6,
         "color": [
             103,
             92,
             84
         ],
-        "x": 494,
+        "code": "def draw_batch(window=None,\n               trail=False,\n               batch=None):\n  window.switch_to()\n  if not trail:\n    window.clear()\n  batch.draw()\n\ncall = draw_batch",
         "connects": [
             {
+                "output": {
+                    "node": 36,
+                    "put": {
+                        "name": "result"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "window"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "result"
-                    },
-                    "node": 2
                 }
             },
             {
+                "output": {
+                    "node": 37,
+                    "put": {
+                        "name": "result"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "batch"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "result"
-                    },
-                    "node": 3
                 }
             },
             {
+                "output": {
+                    "node": 41,
+                    "put": {
+                        "name": "rclick"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "trail"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "rclick"
-                    },
-                    "node": 7
                 }
             }
         ],
-        "y": 140,
-        "code": "def draw_batch(window=None,\n               trail=False,\n               batch=None):\n  window.switch_to()\n  if not trail:\n    window.clear()\n  batch.draw()\n\ncall = draw_batch",
-        "type": "node"
+        "parent": 40
     },
     {
+        "type": "node",
+        "x": 373,
+        "y": 439,
         "size": [
             568,
             697
         ],
-        "parent": 7,
         "color": [
             80,
             81,
             92
         ],
-        "x": 373,
+        "code": "from typing import *\nfrom pyglet.window.mouse import *\n\nG['mouse_pos'] = [0,0]\nG['click'] = False\nG['rclick'] = False\n\ndef mouse(window=0) -> Tuple['rclick', 'click', 'mouse_pos']:\n  @window.event\n  def on_mouse_motion(x, y, \n                      dx, dy):\n    G['mouse_pos'] = x, y\n\n  @window.event\n  def on_mouse_drag(x, y, dx, dy, \n                    buttons, modifiers):\n    G['mouse_pos'] = x, y\n\n  @window.event\n  def on_mouse_press(x, y, \n                     button, modifiers):\n    if button & LEFT:\n      G['click'] = True\n    elif button & RIGHT:\n      G['rclick'] = True\n\n  @window.event\n  def on_mouse_release(x, y, \n                       button, modifiers):\n    if button & LEFT:\n      G['click'] = False\n    elif button & RIGHT:\n      G['rclick'] = False\n\n  return G['rclick'], G['click'], G['mouse_pos']\n\ncall = mouse",
         "connects": [
             {
+                "output": {
+                    "node": 36,
+                    "put": {
+                        "name": "result"
+                    }
+                },
                 "input": {
                     "put": {
                         "name": "window"
                     }
-                },
-                "output": {
-                    "put": {
-                        "name": "result"
-                    },
-                    "node": 2
                 }
             }
         ],
-        "y": 439,
-        "code": "from typing import *\nfrom pyglet.window.mouse import *\n\nG['mouse_pos'] = [0,0]\nG['click'] = False\nG['rclick'] = False\n\ndef mouse(window=0) -> Tuple['rclick', 'click', 'mouse_pos']:\n  @window.event\n  def on_mouse_motion(x, y, \n                      dx, dy):\n    G['mouse_pos'] = x, y\n\n  @window.event\n  def on_mouse_drag(x, y, dx, dy, \n                    buttons, modifiers):\n    G['mouse_pos'] = x, y\n\n  @window.event\n  def on_mouse_press(x, y, \n                     button, modifiers):\n    if button & LEFT:\n      G['click'] = True\n    elif button & RIGHT:\n      G['rclick'] = True\n\n  @window.event\n  def on_mouse_release(x, y, \n                       button, modifiers):\n    if button & LEFT:\n      G['click'] = False\n    elif button & RIGHT:\n      G['rclick'] = False\n\n  return G['rclick'], G['click'], G['mouse_pos']\n\ncall = mouse",
-        "type": "node"
+        "parent": 41
     },
     {
+        "type": "field",
+        "x": 672,
+        "y": 505,
         "size": [
             221,
             30
         ],
-        "parent": 8,
-        "x": 672,
-        "connects": [],
-        "y": 505,
         "code": "# number of particles",
-        "type": "field"
+        "connects": [],
+        "parent": 42
     }
 ]

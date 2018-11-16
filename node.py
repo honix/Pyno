@@ -10,7 +10,7 @@ from draw import labelsGroup
 from utils import font
 
 
-class Node(Processor):
+class Node(Element, Processor):
     '''
     Node is a main Pyno element, in fact it is a function with in/outputs
     '''
@@ -18,7 +18,7 @@ class Node(Processor):
     def __init__(self, window, x, y, batch, color=(200, 200, 200), code="",
                  connects=None, size=(300, 150)):
         Element.__init__(self, x, y, color, batch)
-        Processor.init_processor(self)  # node has a processor for calculation
+        Processor.init_processor(self, window.global_scope)  # node has a processor for calculation
 
         self.window = window
         self.editor_size = size
@@ -37,27 +37,35 @@ class Node(Processor):
                                        color=(255, 255, 255, 230))
         self.reload()
 
+    def processor(self):
+        return Processor.processor(self, self.connected_to, self.outputs)
+
     def new_code(self, code):
+        self.cleanup()
         # New code, search for in/outputs
 
         self.code = code
         self.problem = False
 
-        self.func = None
+        self.call_func = None
+        self.cleanup_func = None
         try:
-            self.env = {'S': self.local_space, 'G': self.window.pyno_namespace}
+            self.env = {'S': self.local_scope, 'G': self.window.global_scope}
             exec(code, self.env)
-            self.func = self.env['call']
-            if not isinstance(self.func, types.FunctionType):
+
+            self.call_func = self.env['call']
+            if not isinstance(self.call_func, types.FunctionType):
                 raise Exception('Call value is not callable!')
+
+            if 'cleanup' in self.env:
+                self.cleanup_func = self.env['cleanup']
         except Exception as ex:
             self.problem = True
             self.er_label.text = "Reader error: " + str(ex)
         else:
-            inputs, outputs = self.inputs, self.outputs
-            self.label.text = self.name = self.func.__name__
+            self.label.text = self.name = self.call_func.__name__
 
-            signature = inspect.signature(self.func)
+            signature = inspect.signature(self.call_func)
             inputs = tuple(map(lambda x: x.name, signature.parameters.values()))
 
             if (tuple in signature.return_annotation.mro()):
@@ -84,5 +92,6 @@ class Node(Processor):
         self.label.x, self.label.y = self.x, self.y
 
     def delete(self, fully=False):
+        self.cleanup()
         Element.delete(self, fully)
         self.label.delete()

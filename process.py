@@ -14,8 +14,8 @@ class Process():
 
         self.nodes = []
 
-        self.pyno_namespace = {}  # local space for in-pyno programs
-        self.pyno_namespace['G'] = self.pyno_namespace  # to get global stuff
+        self.global_scope = {}  # local space for in-pyno programs
+        self.global_scope['G'] = self.global_scope  # to get global stuff
 
     def nodes_update(self):
         if not self.running:
@@ -27,7 +27,7 @@ class Process():
             node.reset_proc()
 
         for node in self.nodes:
-            node.processor(self.pyno_namespace)
+            node.processor()
 
     def new_pyno(self):
         for node in self.nodes:

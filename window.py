@@ -82,7 +82,7 @@ class PynoWindow(Window, Process):
                                 ' run:' + str(self.running)
 
     def update(self, dt):
-        self.pyno_namespace['dt'] = dt
+        self.global_scope['dt'] = dt
 
         # ---- Calculations ----
 
@@ -329,7 +329,7 @@ class PynoWindow(Window, Process):
                                        random_node_color(), code=initialCode.open_node))
 
             elif symbol == key.F:
-                self.nodes.append(Field(self.pointer[0], self.pointer[1], self.batch))
+                self.nodes.append(Field(self, self.pointer[0], self.pointer[1], self.batch))
 
             elif symbol == key.S:
                 self.nodes.append(Sub(self.pointer[0], self.pointer[1], self.batch,

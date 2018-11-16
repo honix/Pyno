@@ -11,7 +11,7 @@ from draw import quad_aligned
 highlight = set(list(__builtins__.keys()) +
                 list(keyword.__dict__.keys()) +
                 keyword.kwlist + 
-                ['call'])
+                ['call', 'cleanup'])
 
 
 class CodeEditor():

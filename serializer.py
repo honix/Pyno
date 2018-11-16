@@ -66,7 +66,8 @@ class Serializer():
                                     node['size']),
                                 node['parent']])
                 elif node['type'] == 'field':
-                    buff.append([Field(node['x'] + anchor[0],
+                    buff.append([Field(self.window,
+                                    node['x'] + anchor[0],
                                     node['y'] + anchor[1],
                                     self.window.batch,
                                     node['code'],
