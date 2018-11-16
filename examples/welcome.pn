@@ -1,5 +1,8 @@
 [
     {
+        "version": 0.3
+    },
+    {
         "type": "node",
         "x": 557,
         "y": 411,
@@ -12,11 +15,17 @@
             130,
             117
         ],
-        "code": "def add(a=0, b=0):\n  result = a + b\n  return result\n\ncall = add",
+        "code": [
+            "def add(a=0, b=0):",
+            "  result = a + b",
+            "  return result",
+            "",
+            "call = add"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 13,
+                    "node": 24,
                     "put": {
                         "name": "output"
                     }
@@ -29,7 +38,7 @@
             },
             {
                 "output": {
-                    "node": 11,
+                    "node": 22,
                     "put": {
                         "name": "output"
                     }
@@ -41,7 +50,7 @@
                 }
             }
         ],
-        "parent": 10
+        "parent": 21
     },
     {
         "type": "field",
@@ -51,9 +60,11 @@
             70,
             30
         ],
-        "code": "5",
+        "code": [
+            "5"
+        ],
         "connects": [],
-        "parent": 11
+        "parent": 22
     },
     {
         "type": "field",
@@ -63,9 +74,37 @@
             350,
             496
         ],
-        "code": "#\n#         Welcome to Pyno!\n#\n#  Pyno is a visual programming env\n# based on Python\n#\n#  You can find info and tutorials\n# at https://github.com/honix/Pyno\n#\n#\n#         Basic controls\n#\n# Create - Node   press N or O\n#        - Field  press F\n#        - Sub    press S\n#\n# Pan    - right-mouse-button drag\n#\n# Zoom   - mouse wheel\n#\n#    ____\n#   |  _ \\ _   _  ____   ___\n#   | (_) ) | | ||  _ \\ / _ \\\n#   |  __/| |_| || | | | (_) )\n#   |_|   \\___  ||_| |_|\\___/\n#          (___/\n#",
+        "code": [
+            "#",
+            "#         Welcome to Pyno!",
+            "#",
+            "#  Pyno is a visual programming env",
+            "# based on Python",
+            "#",
+            "#  You can find info and tutorials",
+            "# at https://github.com/honix/Pyno",
+            "#",
+            "#",
+            "#         Basic controls",
+            "#",
+            "# Create - Node   press N or O",
+            "#        - Field  press F",
+            "#        - Sub    press S",
+            "#",
+            "# Pan    - right-mouse-button drag",
+            "#",
+            "# Zoom   - mouse wheel",
+            "#",
+            "#    ____",
+            "#   |  _ \\ _   _  ____   ___",
+            "#   | (_) ) | | ||  _ \\ / _ \\",
+            "#   |  __/| |_| || | | | (_) )",
+            "#   |_|   \\___  ||_| |_|\\___/",
+            "#          (___/",
+            "#"
+        ],
         "connects": [],
-        "parent": 12
+        "parent": 23
     },
     {
         "type": "field",
@@ -75,9 +114,11 @@
             70,
             30
         ],
-        "code": "20",
+        "code": [
+            "20"
+        ],
         "connects": [],
-        "parent": 13
+        "parent": 24
     },
     {
         "type": "field",
@@ -87,11 +128,13 @@
             70,
             30
         ],
-        "code": "25",
+        "code": [
+            "25"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 10,
+                    "node": 21,
                     "put": {
                         "name": "result"
                     }
@@ -103,7 +146,7 @@
                 }
             }
         ],
-        "parent": 14
+        "parent": 25
     },
     {
         "type": "node",
@@ -118,11 +161,17 @@
             127,
             128
         ],
-        "code": "def devide(a=0, b=1):\n  result = a // b\n  return result\n\ncall = devide",
+        "code": [
+            "def devide(a=0, b=1):",
+            "  result = a // b",
+            "  return result",
+            "",
+            "call = devide"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 16,
+                    "node": 27,
                     "put": {
                         "name": "output"
                     }
@@ -135,7 +184,7 @@
             },
             {
                 "output": {
-                    "node": 10,
+                    "node": 21,
                     "put": {
                         "name": "result"
                     }
@@ -147,7 +196,7 @@
                 }
             }
         ],
-        "parent": 15
+        "parent": 26
     },
     {
         "type": "field",
@@ -157,9 +206,11 @@
             70,
             30
         ],
-        "code": "5",
+        "code": [
+            "5"
+        ],
         "connects": [],
-        "parent": 16
+        "parent": 27
     },
     {
         "type": "field",
@@ -169,11 +220,13 @@
             70,
             30
         ],
-        "code": "5",
+        "code": [
+            "5"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 15,
+                    "node": 26,
                     "put": {
                         "name": "result"
                     }
@@ -185,7 +238,7 @@
                 }
             }
         ],
-        "parent": 17
+        "parent": 28
     },
     {
         "type": "field",
@@ -195,9 +248,11 @@
             170,
             30
         ],
-        "code": "lambda x: x - 5",
+        "code": [
+            "lambda x: x - 5"
+        ],
         "connects": [],
-        "parent": 18
+        "parent": 29
     },
     {
         "type": "field",
@@ -207,9 +262,11 @@
             129,
             30
         ],
-        "code": "range(1,10)",
+        "code": [
+            "range(1,10)"
+        ],
         "connects": [],
-        "parent": 19
+        "parent": 30
     },
     {
         "type": "node",
@@ -224,11 +281,17 @@
             114,
             81
         ],
-        "code": "def outOfFunction(a=None, b=()):\n    result = tuple(map(a,b))\n    return result\n\ncall = outOfFunction",
+        "code": [
+            "def outOfFunction(a=None, b=()):",
+            "    result = tuple(map(a,b))",
+            "    return result",
+            "",
+            "call = outOfFunction"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 19,
+                    "node": 30,
                     "put": {
                         "name": "output"
                     }
@@ -241,7 +304,7 @@
             },
             {
                 "output": {
-                    "node": 18,
+                    "node": 29,
                     "put": {
                         "name": "output"
                     }
@@ -253,7 +316,7 @@
                 }
             }
         ],
-        "parent": 20
+        "parent": 31
     },
     {
         "type": "field",
@@ -263,11 +326,13 @@
             328,
             30
         ],
-        "code": "(-4, -3, -2, -1, 0, 1, 2, 3, 4)",
+        "code": [
+            "(-4, -3, -2, -1, 0, 1, 2, 3, 4)"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 20,
+                    "node": 31,
                     "put": {
                         "name": "result"
                     }
@@ -279,7 +344,7 @@
                 }
             }
         ],
-        "parent": 21
+        "parent": 32
     },
     {
         "type": "node",
@@ -294,9 +359,21 @@
             120,
             86
         ],
-        "code": "S['timer'] = 0\n\ndef timeSinus():\n  import math\n\n  S['timer'] += G['dt']\n  result = math.sin(S['timer'])\n  return result\n\ncall = timeSinus\n",
+        "code": [
+            "S['timer'] = 0",
+            "",
+            "def timeSinus():",
+            "  import math",
+            "",
+            "  S['timer'] += G['dt']",
+            "  result = math.sin(S['timer'])",
+            "  return result",
+            "",
+            "call = timeSinus",
+            ""
+        ],
         "connects": [],
-        "parent": 22
+        "parent": 33
     },
     {
         "type": "field",
@@ -306,11 +383,13 @@
             224,
             30
         ],
-        "code": "-0.9585874289302495",
+        "code": [
+            "0.9985486813138783"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 22,
+                    "node": 33,
                     "put": {
                         "name": "result"
                     }
@@ -322,7 +401,7 @@
                 }
             }
         ],
-        "parent": 23
+        "parent": 34
     },
     {
         "type": "field",
@@ -332,9 +411,11 @@
             326,
             52
         ],
-        "code": "# Check examples folder for more",
+        "code": [
+            "# Check examples folder for more"
+        ],
         "connects": [],
-        "parent": 24
+        "parent": 35
     },
     {
         "type": "node",
@@ -349,11 +430,13 @@
             91,
             120
         ],
-        "code": "call = lambda x: x",
+        "code": [
+            "call = lambda x: x"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 26,
+                    "node": 37,
                     "put": {
                         "name": "output"
                     }
@@ -365,7 +448,7 @@
                 }
             }
         ],
-        "parent": 25
+        "parent": 36
     },
     {
         "type": "field",
@@ -375,9 +458,12 @@
             70,
             30
         ],
-        "code": "None\n",
+        "code": [
+            "None",
+            ""
+        ],
         "connects": [],
-        "parent": 26
+        "parent": 37
     },
     {
         "type": "field",
@@ -387,11 +473,13 @@
             70,
             30
         ],
-        "code": "None",
+        "code": [
+            "None"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 25,
+                    "node": 36,
                     "put": {
                         "name": "result"
                     }
@@ -403,7 +491,7 @@
                 }
             }
         ],
-        "parent": 27
+        "parent": 38
     },
     {
         "type": "node",
@@ -418,9 +506,15 @@
             113,
             125
         ],
-        "code": "path = 'nodes/timeSinus.py'\n\nwith open(path) as file:\n  exec(file.read())\n",
+        "code": [
+            "path = 'nodes/timeSinus.py'",
+            "",
+            "with open(path) as file:",
+            "  exec(file.read())",
+            ""
+        ],
         "connects": [],
-        "parent": 28
+        "parent": 39
     },
     {
         "type": "field",
@@ -430,11 +524,13 @@
             218,
             30
         ],
-        "code": "-0.9585874289302495",
+        "code": [
+            "0.9985486813138783"
+        ],
         "connects": [
             {
                 "output": {
-                    "node": 28,
+                    "node": 39,
                     "put": {
                         "name": "result"
                     }
@@ -446,6 +542,6 @@
                 }
             }
         ],
-        "parent": 29
+        "parent": 40
     }
 ]
