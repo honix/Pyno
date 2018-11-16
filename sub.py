@@ -8,15 +8,15 @@ from utils import font
 from field import Field
 
 
-class Sub(Processor):
+class Sub(Processor, Element):
     '''
     Sub is a main pyno element, in fact it is a pyno file with in/outputs
     '''
 
-    def __init__(self, x, y, batch, color=(200, 200, 200), code=None,
+    def __init__(self, window, x, y, batch, color=(200, 200, 200), code=None,
                  connects=None, size=(300, 150)):
         Element.__init__(self, x, y, color, batch)
-        Processor.init_processor(self)  # node has a processor for calculation
+        Processor.init_processor(self, window.global_scope)  # node has a processor for calculation
 
         self.editor_size = size
 
@@ -96,7 +96,7 @@ class Sub(Processor):
     # works with: sub_pass.pn (see test-sub_pass.pn)
     # works with: sub_add2.pn (see test-sub_add2.pn)
     # works with: sub_add2-2.pn (see test-sub_add2-2.pn)
-    def processor(self, space):
+    def processor(self):
         # Called every frame
 
         if (self.proc_result and not self.need_update) \
@@ -110,7 +110,7 @@ class Sub(Processor):
         gen_inputs = {}
         for connection in self.connected_to:
             try:
-                inputs = connection['output']['node'].processor(space)
+                inputs = connection['output']['node'].processor()
                 data = inputs[connection['output']['put']['name']]
 
                 # send data to sub part

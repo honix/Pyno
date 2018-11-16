@@ -86,7 +86,8 @@ class Serializer():
                                     node['size']),
                                 node['parent']])
                 elif node['type'] == 'sub':
-                    buff.append([Sub(node['x'] + anchor[0],
+                    buff.append([Sub(self.window,
+                                    node['x'] + anchor[0],
                                     node['y'] + anchor[1],
                                     self.window.batch,
                                     tuple(node['color']),

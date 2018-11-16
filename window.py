@@ -332,7 +332,7 @@ class PynoWindow(Window, Process):
                 self.nodes.append(Field(self, self.pointer[0], self.pointer[1], self.batch))
 
             elif symbol == key.S:
-                self.nodes.append(Sub(self.pointer[0], self.pointer[1], self.batch,
+                self.nodes.append(Sub(self, self.pointer[0], self.pointer[1], self.batch,
                                       random_node_color()))
 
             elif symbol == key.R:
