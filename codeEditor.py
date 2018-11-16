@@ -54,7 +54,7 @@ class CodeEditor():
         self.autocomplete = pyglet.text.Label('',
                                               font_name=font,
                                               font_size=9,
-                                              color=(0, 255, 0, 127))
+                                              color=(125, 255, 125, 127))
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -92,7 +92,7 @@ class CodeEditor():
         self.node.make_child_active()
 
         l = self.layout
-        l.x = self.node.x + self.node.cw + 25
+        l.x = self.node.x + self.node.cw + 35
         l.y = self.node.y - l.height + self.node.ch + 25
 
         if self.change:
@@ -107,8 +107,8 @@ class CodeEditor():
 
             color = self.node.color if not self.change else (255, 100, 10)
             #  codeEditor background
-            quad_aligned(l.x - 20, l.y,
-                         l.width + 20, l.height + 10,
+            quad_aligned(l.x - 5, l.y,
+                         l.width + 5, l.height + 10,
                          ((0, 0, 0) if not self.change
                                     else (20, 10, 5)) + (230,))
 
@@ -119,7 +119,7 @@ class CodeEditor():
                              -self.node.editor_size[1] - 10,
                              color + (100,))
             #  codeEditor left line
-            quad_aligned(l.x - 20, l.y, 20, l.height + 10, color + (255,))
+            quad_aligned(l.x - 25, l.y, 20, l.height + 10, color + (255,))
             #  codeEditor resize corner
             quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
             #  codeEditor left line numbering
@@ -127,12 +127,12 @@ class CodeEditor():
             line_offset = (-self.layout.view_y)%font_height
             first_line = int(-self.layout.view_y/font_height)
             count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
-            self.line_numbering.x = l.x - 20 + 2
+            self.line_numbering.x = l.x - 25 + 2
             self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
-            self.line_numbering.text = "\n".join(["%02i"%i for i in range(first_line+1, first_line+count_line+1)])
+            self.line_numbering.text = '\n'.join(['%02i'%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
             #  codeEditor autocomplete hint
-            self.autocomplete.x = l.x - 20 + 2
+            self.autocomplete.x = l.x
             self.autocomplete.y = self.node.y + self.node.ch + 40
             self.autocomplete.draw()
         else:
