@@ -36,7 +36,7 @@ Controls:
 ![Pyno](screenshots/edit.png)
 
 # How to run
-Make sure you have **Python 3.7** or better on your computer.
+Make sure you have **Python 3.4** or better on your computer.
 
 To run pyno you must install few libs ```pip install pyglet pyperclip```
 
