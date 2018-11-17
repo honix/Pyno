@@ -1,3 +1,4 @@
+import sys
 import pyglet
 import types
 import typing
@@ -8,6 +9,14 @@ from element import Element
 from processor import Processor
 from draw import labelsGroup
 from utils import font
+
+
+# Fix compatibility in typing module for Python < 3.7
+if sys.hexversion < 0x030700F0:
+    try:
+        typing.ForwardRef = typing._ForwardRef
+    except:
+        pass
 
 
 class Node(Element, Processor):
