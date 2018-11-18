@@ -1,18 +1,17 @@
+import pkg_resources
 import pyglet
 import pyperclip
 from pyglet.window import Window
 from pyglet import gl
 
-import draw
-import menu
-import initialCode
-from process import Process
-from node import Node
-from field import Field
-from sub import Sub
-from codeEditor import CodeEditor
-from element import color_inverse
-from utils import font, x_y_pan_scale, point_intersect_quad, random_node_color
+from . import draw, initialCode, menu
+from .process import Process
+from .node import Node
+from .field import Field
+from .sub import Sub
+from .codeEditor import CodeEditor
+from .element import color_inverse
+from .utils import font, x_y_pan_scale, point_intersect_quad, random_node_color
 
 
 class PynoWindow(Window, Process):
@@ -58,7 +57,8 @@ class PynoWindow(Window, Process):
 
         if filename:
             # open auto-save or welcome-file
-            (self.load_pyno(filename) or self.load_pyno('examples/welcome.pn'))
+            welcome = pkg_resources.resource_filename('pyno', 'examples/welcome.pn')
+            (self.load_pyno(filename) or self.load_pyno(welcome))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()
@@ -67,7 +67,8 @@ class PynoWindow(Window, Process):
                                             color=(200, 200, 255, 100),
                                             x=160, y=10, group=draw.uiGroup)
         # load pyno-logo in left bottom
-        pyno_logo_img = pyglet.image.load('imgs/corner.png')
+        corner = pkg_resources.resource_stream('pyno', 'imgs/corner.png')
+        pyno_logo_img = pyglet.image.load('dummyname', file=corner)
         self.pyno_logo = pyglet.sprite.Sprite(pyno_logo_img,
                                               batch=self.batch,
                                               group=draw.uiGroup)
@@ -446,3 +447,23 @@ class PynoWindow(Window, Process):
     def paste_nodes(self):
         data = pyperclip.paste()
         self.load_data(data, anchor=self.pointer)
+
+
+def app_run():
+    print('Loading...')
+    window = get_window()  # Not using this for anything
+    pyglet.options['debug_gl'] = False  # performance boost?
+    # profile.run('pyglet.app.run()', sort=1)
+    pyglet.app.run()
+
+
+def get_window():
+    config = pyglet.gl.Config(double_buffer=True, depth_size=0,
+                              stencil_size=0, aux_buffers=0,
+                              samples=1)
+    try:
+        pwindow = PynoWindow(config, filename='.auto-saved.pn')
+    except:
+        # if config is crashed run more default one
+        pwindow = PynoWindow(pyglet.gl.Config(), filename='.auto-saved.pn')
+    return pwindow

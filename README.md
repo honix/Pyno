@@ -1,5 +1,5 @@
 # Pyno — *Python-based data-flow visual programming*
-![Pyno](screenshots/particles.png)
+![Pyno](docs/screenshots/particles.png)
 
 **So, what you can?**
 - real-time interactive development
@@ -33,13 +33,24 @@ Controls:
 - Nodes has a code inside, edit code just by pressing on node and hover code editor
 - Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin
 
-![Pyno](screenshots/edit.png)
+![Pyno](docs/screenshots/edit.png)
 
 # How to run
 Make sure you have **Python 3.4** or better on your computer.
 
-To run pyno you must install few libs ```pip install pyglet pyperclip```
+To install pyno you must run ```pip install .``` from this directory.
+Pyno's dependencies `pyglet` and `pyperclip` are going to be installed automatically.
+Then run ```pyno``` in a console.
 
-Then run ```python Pyno.py```
+# How to modify
 
-Pay attention on systems that have python 2 and 3 installed. E.g. on Ubuntu you have to use `python3` and `pip3` instead of `python` and `pip`. Also python3-tk has to be installed.
+To develop/modify code, you can install Pyno in "developer mode" by running `pip install -e .` in the Pyno directory. 
+This runs setup.py and installs a link to the `pyno` directory, as if it were normally installed.
+
+To run the tests, you need `pytest`  installed. 
+You run `pytest` in the root directory of the repository. 
+It will discover the tests in the `tests` directory and run them on the installed package. 
+You will see a couple of flashing windows when they get instantiated.
+
+If you have (on Linux) `xvfb` and the pytest plugin `pytest-xvfb` installed, the tests should automatically be run on the virtual framebuffer, so no windows should become visible. 
+If this for some reason does not work, invoking pytest via `xvfb-run pytest` should do the trick.

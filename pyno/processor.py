@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from element import Element
+from .element import Element
 
 
 class Processor():

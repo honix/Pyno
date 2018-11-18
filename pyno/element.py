@@ -1,8 +1,8 @@
 import pyglet
 from pyglet import gl
 
-from draw import Line, Quad
-from utils import font, centered
+from pyno.draw import Line, Quad
+from pyno.utils import font, centered
 
 
 # some colors functions

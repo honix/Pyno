@@ -1,5 +1,5 @@
-from serializer import Serializer
-from fileOperator import FileOperator
+from .serializer import Serializer
+from .fileOperator import FileOperator
 
 
 class Process():
@@ -43,7 +43,9 @@ class Process():
 
     def load_pyno(self, filepath=None):
         data, self.filename = self.file_operator.load(filepath)
-        if data:
+        if data is None:  # Loading data failed
+            return None
+        elif data:
             self.new_pyno()
         return self.load_data(data)
 

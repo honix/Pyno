@@ -5,8 +5,8 @@ import tokenize
 import io
 import os
 
-from utils import x_y_pan_scale, font
-from draw import quad_aligned
+from pyno.utils import x_y_pan_scale, font
+from pyno.draw import quad_aligned
 
 
 highlight = set(list(__builtins__.keys()) +

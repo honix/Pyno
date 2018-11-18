@@ -1,11 +1,12 @@
+import pkg_resources
 import pyglet
-import window
+from pyno import window
 
-from element import Element
-from processor import Processor
-from draw import labelsGroup
-from utils import font
-from field import Field
+from .element import Element
+from .processor import Processor
+from .draw import labelsGroup
+from .utils import font
+from .field import Field
 
 
 class Sub(Processor, Element):
@@ -25,7 +26,8 @@ class Sub(Processor, Element):
 
         self.code = None
         if not code:
-            code = '''examples/sub_pass.pn'''  # identical to '''examples/blank.pn'''
+            sub_pass = pkg_resources.resource_filename('pyno', 'examples/sub_pass.pn')
+            code = sub_pass  # identical to '''examples/blank.pn'''
 
         self.name = ''
         self.label = pyglet.text.Label(self.name, font_name=font,
