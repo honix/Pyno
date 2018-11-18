@@ -1,5 +1,6 @@
 import pyglet
-import window
+from pyno import window
+
 # import profile
 
 if __name__ == '__main__':

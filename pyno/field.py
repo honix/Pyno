@@ -1,9 +1,9 @@
 import pyglet
 import pyperclip
 
-from element import Element
-from utils import x_y_pan_scale, font
-from draw import Quad, labelsGroup
+from pyno.element import Element
+from pyno.utils import x_y_pan_scale, font
+from pyno.draw import Quad, labelsGroup
 
 
 class Field(Element):

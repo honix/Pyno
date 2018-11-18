@@ -1,5 +1,5 @@
 # Pyno — *Python-based data-flow visual programming*
-![Pyno](screenshots/particles.png)
+![Pyno](docs/screenshots/particles.png)
 
 **So, what you can?**
 - real-time interactive development
@@ -33,7 +33,7 @@ Controls:
 - Nodes has a code inside, edit code just by pressing on node and hover code editor
 - Last, you want to transfer data from element to element, just press and hold on pin and drop connection to other pin
 
-![Pyno](screenshots/edit.png)
+![Pyno](docs/screenshots/edit.png)
 
 # How to run
 Make sure you have **Python 3.4** or better on your computer.
