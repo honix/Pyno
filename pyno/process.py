@@ -1,5 +1,5 @@
-from pyno.serializer import Serializer
-from pyno.fileOperator import FileOperator
+from .serializer import Serializer
+from .fileOperator import FileOperator
 
 class Process():
     '''

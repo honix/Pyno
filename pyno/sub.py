@@ -1,11 +1,11 @@
 import pyglet
 from pyno import window
 
-from pyno.element import Element
-from pyno.processor import Processor
-from pyno.draw import labelsGroup
-from pyno.utils import font
-from pyno.field import Field
+from .element import Element
+from .processor import Processor
+from .draw import labelsGroup
+from .utils import font
+from .field import Field
 
 
 class Sub(Processor, Element):

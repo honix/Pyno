@@ -9,11 +9,9 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-# Arguments marked as "Required" below must be included for upload to PyPI.
-# Fields marked as "Optional" may be commented out.
-
 setup(
     name='Pyno',
+    # TODO: "pyno" already exists on PyPI, maybe rename?
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -49,15 +47,9 @@ setup(
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
-    #
-    # Alternatively, if you just want to distribute a single Python file, use
-    # the `py_modules` argument instead as follows, which will expect a file
-    # called `my_module.py` to exist:
-    #
-    #   py_modules=["my_module"],
-    #
-    # TODO: this excludes the examples
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
+
+    # FIXME: this excludes the examples
+    packages=find_packages(exclude=['docs', 'tests']),  # Required
     install_requires=['pyglet', 'pyperclip'],
     extras_require={
         'test': ['pytest', 'coverage'],
@@ -66,11 +58,9 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     #
-    # If using Python 2.6 or earlier, then these have to be included in
-    # MANIFEST.in as well.
     #TODO: do these following points
     package_data={  # Optional
-        'sample': ['package_data.dat'],
+        'pyno': ['imgs/*.png'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -78,7 +68,7 @@ setup(
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
     #
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    data_files=[('my_data', ['data/data_file'])],  # Optional
+    # data_files=[('my_data', ['data/data_file'])],  # Optional
 
     entry_points={
         'console_scripts': [

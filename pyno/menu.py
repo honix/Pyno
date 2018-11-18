@@ -1,6 +1,6 @@
 import pyglet
 
-from pyno.draw import uiGroup
+from .draw import uiGroup
 
 
 class Menu:
