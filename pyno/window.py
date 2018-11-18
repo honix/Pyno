@@ -1,3 +1,4 @@
+import pkg_resources
 import pyglet
 import pyperclip
 from pyglet.window import Window
@@ -65,7 +66,8 @@ class PynoWindow(Window, Process):
                                             color=(200, 200, 255, 100),
                                             x=160, y=10, group=draw.uiGroup)
         # load pyno-logo in left bottom
-        pyno_logo_img = pyglet.image.load('imgs/corner.png')
+        corner = pkg_resources.resource_stream('pyno', 'imgs/corner.png')
+        pyno_logo_img = pyglet.image.load('dummyname', file=corner)
         self.pyno_logo = pyglet.sprite.Sprite(pyno_logo_img,
                                               batch=self.batch,
                                               group=draw.uiGroup)

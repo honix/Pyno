@@ -1,3 +1,4 @@
+import pkg_resources
 import pyglet
 
 from .draw import uiGroup
@@ -12,8 +13,8 @@ class Menu:
 
     def __init__(self, window):
         self.window = window
-
-        save_load_img = pyglet.image.load('imgs/save_load_32.png')
+        img = pkg_resources.resource_stream('pyno', 'imgs/save_load_32.png')
+        save_load_img = pyglet.image.load('dummyname', file=img)
         self.save_load = pyglet.sprite.Sprite(
                 save_load_img,
                 x=800-save_load_img.width-self.offset, y=self.offset,
