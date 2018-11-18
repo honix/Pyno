@@ -37,7 +37,7 @@ class CodeEditor():
         @self.document.event
         def on_insert_text(start, end):
             self.update_highlighting()
-        
+
         @self.document.event
         def on_delete_text(start, end):
             self.update_highlighting()
@@ -55,6 +55,7 @@ class CodeEditor():
                                               font_name=font,
                                               anchor_y='top',
                                               font_size=9)
+
         self.line_numbering = pyglet.text.Label('',
                                                 font_name=font,
                                                 font_size=11,
@@ -63,10 +64,12 @@ class CodeEditor():
                                                 anchor_y='top',
                                                 width=nline_width,
                                                 multiline=True)
+
         self.autocomplete = pyglet.text.Label('',
                                               font_name=font,
                                               font_size=9,
                                               color=(125, 255, 125, 127))
+
         self.caret = pyglet.text.caret.Caret(self.layout)
         self.caret.color = (255, 255, 255)
         self.caret.visible = False
@@ -118,6 +121,7 @@ class CodeEditor():
                 self.update_highlighting()
 
             color = self.node.color if not self.change else (255, 100, 10)
+
             #  codeEditor background
             quad_aligned(l.x - layout_padding, l.y,
                          l.width + layout_padding, l.height,
@@ -129,21 +133,25 @@ class CodeEditor():
                              self.node.editor_size[0] + layout_padding,
                              -self.node.editor_size[1],
                              color + (100,))
+
             #  codeEditor resize corner
             quad_aligned(l.x + l.width - resize_button, l.y,
                          resize_button, resize_button, color + (255,))
+
             #  codeEditor left line
             quad_aligned(l.x - layout_padding - nline_width, l.y,
                          nline_width, l.height, color + (255,))
+
             #  codeEditor left line numbering
             font_height = self.layout.content_height / self.layout.get_line_count()
-            line_offset = (-self.layout.view_y)%font_height
-            first_line = int(-self.layout.view_y/font_height)
-            count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
+            line_offset = (-self.layout.view_y) % font_height
+            first_line = int(-self.layout.view_y / font_height)
+            count_line = min(int((self.layout.height + line_offset) / font_height), self.layout.get_line_count())
             self.line_numbering.x = l.x - layout_padding - nline_width - nline_padding
             self.line_numbering.y = l.y + l.height + line_offset
-            self.line_numbering.text = '\n'.join(['%02i'%i for i in range(first_line+1, first_line+count_line+1)])
+            self.line_numbering.text = '\n'.join(['%02i'%i for i in range(first_line + 1, first_line + count_line + 1)])
             self.line_numbering.draw()
+
             #  codeEditor autocomplete hint
             self.autocomplete.x = l.x
             self.autocomplete.y = l.y + l.height + help_offset
@@ -177,6 +185,7 @@ class CodeEditor():
                 for item in tokenize.tokenize(io.BytesIO(self.document.text.encode('utf-8')).readline):
                     start = newline_offset[item.start[0] - 1] + item.start[1] + 1
                     stopp = newline_offset[item.end[0] - 1] + item.end[1] + 1
+
                     # rudimentary autocomplete hint
                     if (item.type == tokenize.NAME) or (item.string == "."):
                         obj_string += item.string
@@ -191,6 +200,7 @@ class CodeEditor():
                             self.autocomplete.text = obj.__doc__.split("\n")[0]
                         except:
                             pass
+
                     # syntax highlighting
                     if (item.type == tokenize.NAME) and (item.string in highlight):
                         pass
