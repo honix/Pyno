@@ -3,16 +3,14 @@ import pyperclip
 from pyglet.window import Window
 from pyglet import gl
 
-import draw
-import menu
-import initialCode
-from process import Process
-from node import Node
-from field import Field
-from sub import Sub
-from codeEditor import CodeEditor
-from element import color_inverse
-from utils import font, x_y_pan_scale, point_intersect_quad, random_node_color
+from pyno import draw, initialCode, menu
+from pyno.process import Process
+from pyno.node import Node
+from pyno.field import Field
+from pyno.sub import Sub
+from pyno.codeEditor import CodeEditor
+from pyno.element import color_inverse
+from pyno.utils import font, x_y_pan_scale, point_intersect_quad, random_node_color
 
 
 class PynoWindow(Window, Process):

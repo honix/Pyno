@@ -5,10 +5,10 @@ import typing
 import inspect
 from inspect import getargspec
 
-from element import Element
-from processor import Processor
-from draw import labelsGroup
-from utils import font
+from pyno.element import Element
+from pyno.processor import Processor
+from pyno.draw import labelsGroup
+from pyno.utils import font
 
 
 # Fix compatibility in typing module for Python < 3.7
