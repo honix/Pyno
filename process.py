@@ -1,6 +1,7 @@
 from serializer import Serializer
 from fileOperator import FileOperator
 
+
 class Process():
     '''
     Abstract process
