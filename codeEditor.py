@@ -8,10 +8,19 @@ import os
 from utils import x_y_pan_scale, font
 from draw import quad_aligned
 
+
 highlight = set(list(__builtins__.keys()) +
                 list(keyword.__dict__.keys()) +
                 keyword.kwlist + 
                 ['call', 'cleanup'])
+
+x_shift = 40
+y_shift = 20
+layout_padding = 5
+resize_button = 10
+nline_width = 30
+nline_padding = 2
+help_offset = 5
 
 
 class CodeEditor():
@@ -44,12 +53,15 @@ class CodeEditor():
 
         self.update_label = pyglet.text.Label('CTRL+ENTER to save and execute',
                                               font_name=font,
+                                              anchor_y='top',
                                               font_size=9)
         self.line_numbering = pyglet.text.Label('',
                                                 font_name=font,
                                                 font_size=11,
                                                 color=(255, 255, 255, 127),
-                                                width=2,
+                                                align='right',
+                                                anchor_y='top',
+                                                width=nline_width,
                                                 multiline=True)
         self.autocomplete = pyglet.text.Label('',
                                               font_name=font,
@@ -85,19 +97,19 @@ class CodeEditor():
     def intersect_corner(self, point):
         # Intersection with bottom right corner to resize
         l = self.layout
-        return (0 < point[0] - (l.x + l.width - 10) < 10 and
-                0 < point[1] - l.y < 10)
+        return (0 < point[0] - (l.x + l.width - resize_button) < resize_button and
+                0 < point[1] - l.y < resize_button)
 
     def render(self):
         self.node.make_child_active()
 
         l = self.layout
-        l.x = self.node.x + self.node.cw + 35
-        l.y = self.node.y - l.height + self.node.ch + 25
+        l.x = self.node.x + self.node.cw + x_shift
+        l.y = self.node.y - l.height + self.node.ch + y_shift
 
         if self.change:
             self.update_label.x = l.x
-            self.update_label.y = l.y - 20
+            self.update_label.y = l.y - help_offset
             self.update_label.draw()
 
         if self.hover:
@@ -107,33 +119,34 @@ class CodeEditor():
 
             color = self.node.color if not self.change else (255, 100, 10)
             #  codeEditor background
-            quad_aligned(l.x - 5, l.y,
-                         l.width + 5, l.height + 10,
+            quad_aligned(l.x - layout_padding, l.y,
+                         l.width + layout_padding, l.height,
                          ((0, 0, 0) if not self.change
                                     else (20, 10, 5)) + (230,))
 
             if self.resize:
-                quad_aligned(self.node.x + self.node.cw + 5,
-                             self.node.y + self.node.ch + 35,
-                             self.node.editor_size[0] + 20,
-                             -self.node.editor_size[1] - 10,
+                quad_aligned(l.x - layout_padding, l.y + l.height,
+                             self.node.editor_size[0] + layout_padding,
+                             -self.node.editor_size[1],
                              color + (100,))
-            #  codeEditor left line
-            quad_aligned(l.x - 25, l.y, 20, l.height + 10, color + (255,))
             #  codeEditor resize corner
-            quad_aligned(l.x + l.width - 10, l.y, 10, 10, color + (255,))
+            quad_aligned(l.x + l.width - resize_button, l.y,
+                         resize_button, resize_button, color + (255,))
+            #  codeEditor left line
+            quad_aligned(l.x - layout_padding - nline_width, l.y,
+                         nline_width, l.height, color + (255,))
             #  codeEditor left line numbering
             font_height = self.layout.content_height / self.layout.get_line_count()
             line_offset = (-self.layout.view_y)%font_height
             first_line = int(-self.layout.view_y/font_height)
             count_line = min(int((self.layout.height+line_offset)/font_height), self.layout.get_line_count())
-            self.line_numbering.x = l.x - 25 + 2
-            self.line_numbering.y = self.node.y + self.node.ch + 10 + line_offset + 1
+            self.line_numbering.x = l.x - layout_padding - nline_width - nline_padding
+            self.line_numbering.y = l.y + l.height + line_offset
             self.line_numbering.text = '\n'.join(['%02i'%i for i in range(first_line+1, first_line+count_line+1)])
             self.line_numbering.draw()
             #  codeEditor autocomplete hint
             self.autocomplete.x = l.x
-            self.autocomplete.y = self.node.y + self.node.ch + 40
+            self.autocomplete.y = l.y + l.height + help_offset
             self.autocomplete.draw()
         else:
             if self.document.text and self.hovered:
