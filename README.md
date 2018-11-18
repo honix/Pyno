@@ -41,3 +41,16 @@ Make sure you have **Python 3.4** or better on your computer.
 To install pyno you must run ```pip install .``` from this directory.
 Pyno's dependencies `pyglet` and `pyperclip` are going to be installed automatically.
 Then run ```pyno``` in a console.
+
+# How to modify
+
+To develop/modify code, you can install Pyno in "developer mode" by running `pip install -e .` in the Pyno directory. 
+This runs setup.py and installs a link to the `pyno` directory, as if it were normally installed.
+
+To run the tests, you need `pytest`  installed. 
+You run `pytest` in the root directory of the repository. 
+It will discover the tests in the `tests` directory and run them on the installed package. 
+You will see a couple of flashing windows when they get instantiated.
+
+If you have (on Linux) `xvfb` and the pytest plugin `pytest-xvfb` installed, the tests should automatically be run on the virtual framebuffer, so no windows should become visible. 
+If this for some reason does not work, invoking pytest via `xvfb-run pytest` should do the trick.

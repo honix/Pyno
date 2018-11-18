@@ -43,7 +43,7 @@ setup(
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=['pyglet', 'pyperclip'],
     extras_require={
-        'test': ['pytest', 'coverage'],
+        'test': ['pytest'],
     },
     package_data={
         'pyno': ['imgs/*.png', 'examples/*.pn'],
