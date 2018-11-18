@@ -38,8 +38,6 @@ Controls:
 # How to run
 Make sure you have **Python 3.4** or better on your computer.
 
-To run pyno you must install few libs ```pip install pyglet pyperclip```
-
-Then run ```python Pyno.py```
-
-Pay attention on systems that have python 2 and 3 installed. E.g. on Ubuntu you have to use `python3` and `pip3` instead of `python` and `pip`. Also python3-tk has to be installed.
+To install pyno you must run ```pip install .``` from this directory.
+Pyno's dependencies `pyglet` and `pyperclip` are going to be installed automatically.
+Then run ```pyno``` in a console.
