@@ -57,7 +57,8 @@ class PynoWindow(Window, Process):
 
         if filename:
             # open auto-save or welcome-file
-            (self.load_pyno(filename) or self.load_pyno('examples/welcome.pn'))
+            welcome = pkg_resources.resource_filename('pyno', 'examples/welcome.pn')
+            (self.load_pyno(filename) or self.load_pyno(welcome))
 
     def new_batch(self):
         self.batch = pyglet.graphics.Batch()

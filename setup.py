@@ -54,6 +54,8 @@ setup(
     extras_require={
         'test': ['pytest', 'coverage'],
     },
+    package_data={
+        'pyno': ['imgs/*.png', 'examples/*.pn'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.
