@@ -9,17 +9,17 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+# Keep version string only in one place to avoid duplication
+# Read the string from code without importing to avoid problems at setup
+with open(path.join('pyno', '__init__.py')) as init:
+    for l in init.readlines():
+        if l.startswith('__version__'):
+            version = l.split('=')[1].strip(" '\r\n")
+
 setup(
     name='Pyno',
     # TODO: "pyno" already exists on PyPI, maybe rename?
-
-    # Versions should comply with PEP 440:
-    # https://www.python.org/dev/peps/pep-0440/
-    #
-    # For a discussion on single-sourcing the version across setup.py and the
-    # project code, see
-    # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.2.0',  # Required
+    version=version,
     description='Python-based data-flow visual programming',
     long_description=long_description,
     long_description_content_type='text/markdown',  # Optional (see note above)
