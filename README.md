@@ -50,7 +50,7 @@ alternatively as one-liner:
 ```
 $ pip install git+https://github.com/honix/Pyno.git
 ```
-Then run ```pyno``` in a console. The pip install step is optional and needed only to be able to run pyno from any working directory.
+Then run ```pyno``` in a console. The pip install step is optional, but recommended.
 
 # How to modify
 
