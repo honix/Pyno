@@ -19,6 +19,7 @@ setup(
     name='Pyno',
     # TODO: "pyno" already exists on PyPI, maybe rename?
     version=version,
+    license='MIT',
     description='Python-based data-flow visual programming',
     long_description=long_description,
     long_description_content_type='text/markdown',  # Optional (see note above)
@@ -50,7 +51,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'pyno=pyno.window:app_run',
+            'pyno=pyno.runner:run',
         ],
     },
 )

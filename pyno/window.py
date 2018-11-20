@@ -447,23 +447,3 @@ class PynoWindow(Window, Process):
     def paste_nodes(self):
         data = pyperclip.paste()
         self.load_data(data, anchor=self.pointer)
-
-
-def app_run():
-    print('Loading...')
-    window = get_window()  # Not using this for anything
-    pyglet.options['debug_gl'] = False  # performance boost?
-    # profile.run('pyglet.app.run()', sort=1)
-    pyglet.app.run()
-
-
-def get_window():
-    config = pyglet.gl.Config(double_buffer=True, depth_size=0,
-                              stencil_size=0, aux_buffers=0,
-                              samples=1)
-    try:
-        pwindow = PynoWindow(config, filename='.auto-saved.pn')
-    except:
-        # if config is crashed run more default one
-        pwindow = PynoWindow(pyglet.gl.Config(), filename='.auto-saved.pn')
-    return pwindow
