@@ -54,7 +54,7 @@ $ pip install git+https://github.com/honix/Pyno.git
 
 Then you can run ```pyno``` in a console from anywhere. 
 
-If you want to work with just the project repository, i.e. without installing the package (this is not recommended!), open a python console in the repository root directory, and run
+If you want to work with just the project repository, i.e. without installing the package (this is not recommended!), run `python -m pyno` in a console, or open a python console in the repository root directory, and run
 ```
 import pyno
 pyno.app_run()
