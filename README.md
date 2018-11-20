@@ -40,7 +40,17 @@ Make sure you have **Python 3.4** or better on your computer.
 
 To install pyno you must run ```pip install .``` from this directory.
 Pyno's dependencies `pyglet` and `pyperclip` are going to be installed automatically.
-Then run ```pyno``` in a console.
+In detail:
+```
+$ git clone https://github.com/honix/Pyno.git
+$ cd Pyno
+$ pip install .
+```
+alternatively as one-liner:
+```
+$ pip install git+https://github.com/honix/Pyno.git
+```
+Then run ```pyno``` in a console. The pip install step is optional and needed only to be able to run pyno from any working directory.
 
 # How to modify
 
