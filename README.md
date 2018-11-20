@@ -47,10 +47,11 @@ $ git clone https://github.com/honix/Pyno.git
 $ cd Pyno
 $ pip install .
 ```
-alternatively as one-liner:
+Or alternatively as one-liner:
 ```
 $ pip install git+https://github.com/honix/Pyno.git
 ```
+
 Then you can run ```pyno``` in a console from anywhere. The pip install step is optional, but recommended.
 
 # How to modify
