@@ -1,6 +1,6 @@
 [
     {
-        "version": 0.3
+        "version": 0.4
     },
     {
         "type": "field",
@@ -18,15 +18,15 @@
             ""
         ],
         "connects": [],
-        "parent": 9
+        "id": 9
     },
     {
         "type": "node",
-        "x": 260,
-        "y": 513,
+        "x": 250,
+        "y": 517,
         "size": [
-            460,
-            230
+            332,
+            152
         ],
         "color": [
             129,
@@ -34,19 +34,14 @@
             124
         ],
         "code": [
-            "import pyglet",
+            "from pyno.nodes.window import Window",
             "",
-            "S['window'] = pyglet.window.Window(450, 450)",
-            "",
-            "def create_window():",
-            "  return S['window']",
-            "",
-            "call = create_window",
-            "",
-            "cleanup = lambda: S['window'].close()"
+            "w = Window(G)",
+            "call = lambda: w.call()",
+            "cleanup = lambda: w.cleanup()"
         ],
         "connects": [],
-        "parent": 10
+        "id": 10
     },
     {
         "type": "node",
@@ -104,7 +99,7 @@
                 }
             }
         ],
-        "parent": 11
+        "id": 11
     },
     {
         "type": "node",
@@ -198,7 +193,7 @@
                 }
             }
         ],
-        "parent": 12
+        "id": 12
     },
     {
         "type": "field",
@@ -212,7 +207,7 @@
             "512"
         ],
         "connects": [],
-        "parent": 13
+        "id": 13
     },
     {
         "type": "node",
@@ -241,19 +236,6 @@
         "connects": [
             {
                 "output": {
-                    "node": 10,
-                    "put": {
-                        "name": "result"
-                    }
-                },
-                "input": {
-                    "put": {
-                        "name": "window"
-                    }
-                }
-            },
-            {
-                "output": {
                     "node": 11,
                     "put": {
                         "name": "result"
@@ -277,13 +259,26 @@
                         "name": "trail"
                     }
                 }
+            },
+            {
+                "output": {
+                    "node": 10,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "window"
+                    }
+                }
             }
         ],
-        "parent": 14
+        "id": 14
     },
     {
         "type": "node",
-        "x": 373,
+        "x": 371,
         "y": 439,
         "size": [
             568,
@@ -348,7 +343,7 @@
                 }
             }
         ],
-        "parent": 15
+        "id": 15
     },
     {
         "type": "field",
@@ -362,6 +357,6 @@
             "# number of particles"
         ],
         "connects": [],
-        "parent": 16
+        "id": 16
     }
 ]
