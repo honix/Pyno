@@ -12,7 +12,7 @@ class Serializer():
     '''
 
     def __init__(self, window):
-        Serializer.version = 0.3
+        Serializer.version = 0.4
         self.window = window
 
     def serialize(self, nodes, anchor=(0, 0)):
@@ -27,7 +27,7 @@ class Serializer():
                             'color': node.color,
                             'code': node.code.split('\n'),
                             'connects': node.get_con_id(),
-                            'parent': node.id}))
+                            'id': node.id}))
             elif isinstance(node, Field):
                 buff.append(OrderedDict({'type': 'field',
                             'x': node.x - anchor[0],
@@ -35,7 +35,7 @@ class Serializer():
                             'size': (node.w, node.h),
                             'code': node.document.text.split('\n'),
                             'connects': node.get_con_id(),
-                            'parent': node.id}))
+                            'id': node.id}))
             elif isinstance(node, Sub):
                 buff.append(OrderedDict({'type': 'sub',
                             'x': node.x - anchor[0],
@@ -44,7 +44,7 @@ class Serializer():
                             'color': node.color,
                             'code': node.code,
                             'connects': node.get_con_id(),
-                            'parent': node.id}))
+                            'id': node.id}))
         return json.dumps(buff, indent=4)
 
     def deserialize(self, data, anchor=(0, 0)):
@@ -67,38 +67,38 @@ class Serializer():
         try:
             for node in nodes:
                 if node['type'] == 'node':
-                    buff.append([Node(self.window, 
+                    buff.append(Node(self.window, 
                                     node['x'] + anchor[0],
                                     node['y'] + anchor[1],
                                     self.window.batch,
                                     tuple(node['color']),
                                     '\n'.join(node['code']) if version >= 0.3 else node['code'],
                                     node['connects'],
-                                    node['size']),
-                                node['parent']])
+                                    node['size'],
+                                    node['id' if version >= 0.4 else 'parent']))
                 elif node['type'] == 'field':
-                    buff.append([Field(self.window,
+                    buff.append(Field(self.window,
                                     node['x'] + anchor[0],
                                     node['y'] + anchor[1],
                                     self.window.batch,
                                     '\n'.join(node['code']) if version >= 0.3 else node['code'],
                                     node['connects'],
-                                    node['size']),
-                                node['parent']])
+                                    node['size'],
+                                    node['id' if version >= 0.4 else 'parent']))
                 elif node['type'] == 'sub':
-                    buff.append([Sub(self.window,
+                    buff.append(Sub(self.window,
                                     node['x'] + anchor[0],
                                     node['y'] + anchor[1],
                                     self.window.batch,
                                     tuple(node['color']),
                                     node['code'],
                                     node['connects'],
-                                    node['size']),
-                                node['parent']])
+                                    node['size'],
+                                    node['id' if version >= 0.4 else 'parent']))
         except Exception as ex:
             print('Wrong data:', ex)
             return None
         finally:
             for node in buff:
-                node[0].reconnect(buff)
+                node.reconnect(buff)
             return buff

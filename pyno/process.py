@@ -52,5 +52,5 @@ class Process():
     def load_data(self, data, anchor=(0, 0)):
         nodes = self.serializer.deserialize(data, anchor)
         for node in nodes:
-            self.nodes.append(node[0])
+            self.nodes.append(node)
         return nodes

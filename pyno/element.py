@@ -23,9 +23,13 @@ class Element():
 
     id_counter = 0  # count of all elements
 
-    def __init__(self, x, y, color, batch):
-        Element.id_counter += 1
-        self.id = self.id_counter
+    def __init__(self, x, y, color, batch, id):
+        if id:
+            self.id_counter = max(self.id_counter, id)
+            self.id = self.id_counter
+        else:
+            Element.id_counter += 1
+            self.id = self.id_counter
 
         self.x, self.y = x, y
         self.w, self.h = 70, 30
@@ -147,8 +151,9 @@ class Element():
         while len(con) < len(self.connected_to):
             con.append([Line(self.batch), Line(self.batch), Line(self.batch)])
 
-        for i in range(len(self.connected_to)):
-            node = self.connected_to[i]
+        i = -1
+        for node in self.connected_to:
+            i += 1
             n = node['output']['node']
             try:
                 iputx = self.put_pos_by_name(node['input']['put']['name'],
@@ -161,12 +166,12 @@ class Element():
                                  (oputx, n.y - n.ch - n.offset))
                 con[i][2].redraw((oputx, n.y - n.ch - n.offset),
                                  (oputx, n.y - n.ch - n.offset // 2))
-            except:
+            except Exception as ex:
                 for lines in con[i]:
                     lines.delete()
                 con.remove(con[i])
                 del self.connected_to[self.connected_to.index(node)]
-                print('Connection is broken')
+                print('Connection is broken:', ex)
                 break
 
     def render_labels(self):
@@ -275,9 +280,9 @@ class Element():
         # Find parent node when paste
         for connect in self.connected_to:
             for o in buff:
-                if connect['output']['node'] == o[1]:
-                    connect['output']['node'] = o[0]
-                    o[0].add_child(self)
+                if connect['output']['node'] == o.id:
+                    connect['output']['node'] = o
+                    o.add_child(self)
 
     def delete(self, fully=False):
         for value in self.graphics.values():

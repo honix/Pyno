@@ -11,8 +11,8 @@ class Field(Element):
     Field is a white box where you can put values
     '''
 
-    def __init__(self, window, x, y, batch, code='0', connects=None, size=None):
-        Element.__init__(self, x, y, (230, 230, 230), batch)
+    def __init__(self, window, x, y, batch, code='0', connects=None, size=None, id=None):
+        Element.__init__(self, x, y, (230, 230, 230), batch, id)
 
         if size:
             self.w, self.h = size

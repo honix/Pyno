@@ -15,8 +15,8 @@ class Sub(Processor, Element):
     '''
 
     def __init__(self, window, x, y, batch, color=(200, 200, 200), code=None,
-                 connects=None, size=(300, 150)):
-        Element.__init__(self, x, y, color, batch)
+                 connects=None, size=(300, 150), id=None):
+        Element.__init__(self, x, y, color, batch, id)
         Processor.init_processor(self, window.global_scope)  # node has a processor for calculation
 
         self.editor_size = size
