@@ -1,4 +1,4 @@
-# Pyno — *Python-based data-flow visual programming*
+# Pyno — *Python-based data-flow visual programming* ![Build status](https://www.travis-ci.com/honix/Pyno.svg?branch=master)
 ![Pyno](docs/screenshots/particles.png)
 
 **So, what you can?**
