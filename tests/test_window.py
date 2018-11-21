@@ -1,12 +1,12 @@
 """Tests for pyno.window"""
 import pyglet
 
-from pyno import window
+from pyno import runner
 
 
 def test_app_run():
     pyglet.clock.schedule_once(lambda x: pyglet.app.exit(), 0.1)
-    window.app_run()
+    runner.run()
 
 
 def test_get_window(window):

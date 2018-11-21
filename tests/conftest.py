@@ -2,10 +2,10 @@
 
 import pytest
 
-import pyno.window
+import pyno.runner
 
 
 @pytest.fixture
 def window():
     """Supply a window, as that will probably be useful quite often."""
-    return pyno.window.get_window()
+    return pyno.runner.create_window()
