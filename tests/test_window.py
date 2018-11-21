@@ -15,3 +15,7 @@ def test_get_window(window):
     assert window.active_nodes == []
 
 
+def test_saving_consistency(window):
+    # Load some file n times then save and check equality
+    pass
+
