@@ -59,8 +59,6 @@ class Field(Element):
         self.problem = False
         self.gen_output = {'output': None}
 
-        self.timeout = 42
-
     def reset_proc(self):
         self.proc_result = None
 
@@ -84,11 +82,7 @@ class Field(Element):
             else:
                 self.is_number = False
                 self.gen_output['output'] = data
-                if self.timeout > 3:
-                    self.timeout = 0
-                    self.document.text = repr(data)
-                else:
-                    self.timeout += 1
+                self.document.text = repr(data)
 
         # update value carefully and check some stuff
         elif self.need_update:
@@ -120,30 +114,32 @@ class Field(Element):
         return self.gen_output
 
     def render_base(self):
-        Element.render_base(self)
-        self.style()
+        if Element.render_base(self):
+            self.style()
 
-        if self.is_number:
-            try:
+            if self.is_number:
+                if not self.graphics['scroll']:
+                    self.graphics['scroll'] = Quad(self.batch, frontdrop=True)
+
                 self.graphics['scroll'].redraw(self.x - self.cw + 10,
-                                               self.y, 10, self.ch,
-                                               (172, 150, 83))
-            except:
-                self.graphics['scroll'] = Quad(self.batch, frontdrop=True)
-        elif self.graphics['scroll']:
-            self.graphics['scroll'].delete()
-            self.graphics['scroll'] = None
+                                            self.y, 10, self.ch,
+                                            (172, 150, 83))
 
-        if self.hover:
-            try:
+            elif self.graphics['scroll']:
+                self.graphics['scroll'].delete()
+                self.graphics['scroll'] = None
+
+            if self.hover:
+                if not self.graphics['corner']:
+                    self.graphics['corner'] = Quad(self.batch, frontdrop=True)
+
                 self.graphics['corner'].redraw(self.x + self.cw - 5,
-                                               self.y - self.ch + 5,
-                                               5, 5, (50, 50, 50))
-            except:
-                self.graphics['corner'] = Quad(self.batch, frontdrop=True)
-        elif self.graphics['corner']:
-            self.graphics['corner'].delete()
-            self.graphics['corner'] = None
+                                            self.y - self.ch + 5,
+                                            5, 5, (50, 50, 50))
+                
+            elif self.graphics['corner']:
+                self.graphics['corner'].delete()
+                self.graphics['corner'] = None
 
     def style(self):
         # Vary how represent value, for numbers there is inc/decrement slider

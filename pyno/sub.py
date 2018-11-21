@@ -182,8 +182,8 @@ class Sub(Processor, Element):
         return {'output': None}
 
     def render_base(self):
-        Element.render_base(self)
-        self.label.x, self.label.y = self.x, self.y
+        if Element.render_base(self):
+            self.label.x, self.label.y = self.x, self.y
 
     def delete(self, fully=False):
         if self.pwindow:

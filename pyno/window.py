@@ -29,11 +29,10 @@ class PynoWindow(Window, Process):
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        pyglet.clock.schedule_interval(self.update, 0.016) # ~60fps
+        pyglet.clock.schedule_interval(self.update, 1 / 5) # fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
 
-        self.active_nodes = []
         self.selected_nodes = []
 
         self.code_editor = None
@@ -77,10 +76,7 @@ class PynoWindow(Window, Process):
         self.line = (draw.Line(self.batch), draw.Line(self.batch))
 
     def info(self, message=None):
-        self.info_label.text = message or \
-                                'fps:' + str(int(pyglet.clock.get_fps())) + \
-                                ' active:' + str(len(self.active_nodes)) + \
-                                ' run:' + str(self.running)
+        self.info_label.text = message or 'run:' + str(self.running)
 
     def update(self, dt):
         self.global_scope['dt'] = dt
@@ -105,11 +101,6 @@ class PynoWindow(Window, Process):
 
         self.menu.update()
 
-        # a bit strange to do drawing here, but it does better results here
-        self.active_nodes = list(filter(lambda x: x.active, self.nodes))
-        for node in self.active_nodes:
-            node.render_base()
-
     def on_draw(self):
         # ---- BG ----
 
@@ -124,37 +115,19 @@ class PynoWindow(Window, Process):
         gl.glTranslatef(self.width / -2 + ps[0][0],
                         self.height / -2 + ps[0][1], 0.0)
 
-        # ---- CURRENT LINK DRAW ----
-
-        if self.connection:
-            p = self.pointer
-            cn = self.connecting_node
-            n = self.connecting_node['node']
-
-            if self.connecting_node['mode'] == 'input':
-                start = n.put_pos_by_name(cn['put']['name'], 'inputs')
-                self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
-                                    (start, n.y + n.ch + n.offset))
-                self.line[1].redraw((start, n.y + n.ch + n.offset), p)
-
-            elif self.connecting_node['mode'] == 'output':
-                start = n.put_pos_by_name(cn['put']['name'], 'outputs')
-                self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
-                                    (start, n.y - n.ch - n.offset))
-                self.line[1].redraw((start, n.y - n.ch - n.offset), p)
-
-        else:
-            # line place-holder
-            self.line[0].redraw((-9000, 9000), (-9000, 9010))
-            self.line[1].redraw((-9000, 9010), (-9010, 9000))
-
         # ---- NODES ----
+
+        for node in self.nodes:
+            node.render_base()
 
         self.batch.draw()
 
-        for node in self.active_nodes:
+        for node in self.nodes:
             node.render_labels()
 
+        for node in self.nodes:
+            node.deactive()
+        
         if self.code_editor:
             self.code_editor.render()
 
@@ -258,6 +231,22 @@ class PynoWindow(Window, Process):
             for node in self.nodes:
                 node.intersect_point((x, y))
 
+            p = self.pointer
+            cn = self.connecting_node
+            n = self.connecting_node['node']
+
+            if self.connecting_node['mode'] == 'input':
+                start = n.put_pos_by_name(cn['put']['name'], 'inputs')
+                self.line[0].redraw((start, n.y + n.ch + n.offset // 2),
+                                    (start, n.y + n.ch + n.offset))
+                self.line[1].redraw((start, n.y + n.ch + n.offset), p)
+
+            elif self.connecting_node['mode'] == 'output':
+                start = n.put_pos_by_name(cn['put']['name'], 'outputs')
+                self.line[0].redraw((start, n.y - n.ch - n.offset // 2),
+                                    (start, n.y - n.ch - n.offset))
+                self.line[1].redraw((start, n.y - n.ch - n.offset), p)
+
         if buttons == 4 or buttons == 5:
             self.pan_scale[0][0] += dx
             self.pan_scale[0][1] += dy
@@ -268,6 +257,9 @@ class PynoWindow(Window, Process):
         if button == 1:
             self.node_drag = False
             self.connection = False
+
+            self.line[0].redraw((-9000, 9000), (-9000, 9010))
+            self.line[1].redraw((-9000, 9010), (-9010, 9000))
 
             if self.select:
                 select = []

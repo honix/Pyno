@@ -2,13 +2,10 @@ import pyglet
 
 from .window import PynoWindow
 
+
 def run():
     print('Loading...')
-
     create_window()
-
-    pyglet.options['debug_gl'] = False  # performance boost?
-    # profile.run('pyglet.app.run()', sort=1)
     pyglet.app.run()
 
 

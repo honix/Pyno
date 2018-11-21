@@ -42,7 +42,6 @@ class Element():
         self.er_color = (230, 20, 20)
 
         self.active = True
-        self.active_timer = 1.0
         self.batch = batch
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
@@ -88,8 +87,11 @@ class Element():
                     if put['pos'] + self.put_size * 2 > point[0] > \
                                     put['pos'] - self.put_size * 2:
                         self.selectedOutput = ({'name': put['name']})
-            self.make_active()
+            self.active = True
             return True
+
+        elif self.hover:
+            self.active = True
 
         self.selectedInput = {'name': 'none', 'pos': 0}
         self.selectedOutput = {'name': 'none', 'pos': 0}
@@ -101,21 +103,20 @@ class Element():
     def render_base(self):
         # Render for base
 
-        if self.active_timer > 0:
-            self.active_timer -= 0.1
-        else:
-            self.active = False
+        if not self.active and not self.hover:
+            return False
 
         gr = self.graphics
         self.cw, self.ch = self.w // 2, self.h // 2
 
         if self.problem:
-            try:
-                gr['error'].redraw(self.x, self.y, self.cw + self.put_size,
-                                   self.ch + self.put_size,
-                                   (190, 20, 20))
-            except:
+            if not gr['error']:
                 gr['error'] = Quad(self.batch, True)
+
+            gr['error'].redraw(self.x, self.y, self.cw + self.put_size,
+                               self.ch + self.put_size,
+                               (190, 20, 20))
+
         elif gr['error']:
             gr['error'].id.delete()
             gr['error'] = None
@@ -155,17 +156,14 @@ class Element():
         for node in self.connected_to:
             i += 1
             n = node['output']['node']
+
             try:
                 iputx = self.put_pos_by_name(node['input']['put']['name'],
                                              'inputs')
                 oputx = n.put_pos_by_name(node['output']['put']['name'],
                                           'outputs')
-                con[i][0].redraw((iputx, self.y + self.ch + self.offset // 2),
-                                 (iputx, self.y + self.ch + self.offset))
-                con[i][1].redraw((iputx, self.y + self.ch + self.offset),
-                                 (oputx, n.y - n.ch - n.offset))
-                con[i][2].redraw((oputx, n.y - n.ch - n.offset),
-                                 (oputx, n.y - n.ch - n.offset // 2))
+                if not iputx or not oputx:
+                    raise Exception()
             except Exception as ex:
                 for lines in con[i]:
                     lines.delete()
@@ -174,8 +172,22 @@ class Element():
                 print('Connection is broken:', ex)
                 break
 
+            from_in = self.y + self.ch + self.offset // 2
+            from_out = self.y + self.ch + self.offset
+            to_out = n.y - n.ch - n.offset
+            to_in = n.y - n.ch - n.offset // 2
+
+            con[i][0].redraw((iputx, from_in), (iputx, from_out))
+            con[i][1].redraw((iputx, from_out), (oputx, to_out))
+            con[i][2].redraw((oputx, to_out), (oputx, to_in))
+
+        return True
+
     def render_labels(self):
         # Render for errors and labels of pins
+
+        if not self.active and not self.hover:
+            return
 
         if self.problem:
             self.er_label.x = self.x - self.cw - self.offset
@@ -196,6 +208,10 @@ class Element():
                 gl.glRotatef(45.0, 0.0, 0.0, 1.0)
                 label.draw()
                 gl.glPopMatrix()
+
+    def deactive(self):
+        if self.active:
+            self.active = False
 
     def insert_inouts(self, data):
         # New inputs and output was created.
@@ -256,7 +272,6 @@ class Element():
         self.cw = self.w // 2
 
     def make_active(self):
-        self.active_timer = 1.0
         self.active = True
 
     def make_child_active(self):
