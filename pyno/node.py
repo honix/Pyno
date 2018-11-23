@@ -59,7 +59,7 @@ class Node(Element, Processor):
         self.call_func = None
         self.cleanup_func = None
         try:
-            self.env = {'S': self.local_scope, 'G': self.window.global_scope}
+            self.env = {'node': self, 'then': self.window.to_exec, 'S': self.local_scope, 'G': self.window.global_scope}
             exec(code, self.env)
 
             self.call_func = self.env['call']

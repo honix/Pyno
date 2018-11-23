@@ -74,7 +74,7 @@ class Field(Element):
         if self.connected_to:
             connection = self.connected_to[0]
             try:
-                inputs = connection['output']['node'].processor()
+                inputs = connection['output']['node'].proc_result
                 data = inputs[connection['output']['put']['name']]
             except:
                 self.er_label.text = 'Cant read input'

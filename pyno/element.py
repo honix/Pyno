@@ -46,7 +46,7 @@ class Element():
         self.graphics = dict(inputs=dict(), outputs=dict(), connections=list(),
                              error=None, base=Quad(self.batch))
 
-        self.er_label = pyglet.text.Label('error', font_name=font,
+        self.er_label = pyglet.text.Label('...', font_name=font,
                                           bold=True, font_size=12,
                                           color=self.er_color + (255,),
                                           anchor_x='right', anchor_y='center')

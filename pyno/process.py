@@ -1,5 +1,6 @@
 from .serializer import Serializer
 from .fileOperator import FileOperator
+from .field import Field
 
 
 class Process():
@@ -14,6 +15,7 @@ class Process():
         self.file_operator = FileOperator()
 
         self.nodes = []
+        self.nodes_to_exec = []
 
         self.global_scope = {}  # local space for in-pyno programs
         self.global_scope['G'] = self.global_scope  # to get global stuff
@@ -24,11 +26,19 @@ class Process():
         if self.running > 0:
             self.running -= 1
 
-        for node in self.nodes:
+        for node in self.nodes_to_exec:
             node.reset_proc()
-
-        for node in self.nodes:
             node.processor()
+            self.nodes_to_exec.remove(node)
+        
+        for node in self.nodes:
+            if isinstance(node, Field):
+                node.reset_proc()
+                node.processor()
+
+    def to_exec(self, node):
+        #if node not in self.nodes_to_exec: # TODO: allow self query
+        self.nodes_to_exec.append(node)
 
     def new_pyno(self):
         for node in self.nodes:
