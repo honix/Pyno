@@ -29,7 +29,7 @@ class PynoWindow(Window, Process):
         screen = self.display.get_default_screen()
         self.set_location(screen.width // 2 - 400, screen.height // 2 - 300)
 
-        pyglet.clock.schedule_interval(self.update, 1 / 5) # fps
+        pyglet.clock.schedule_interval(self.update, 1 / 30) # fps
         pyglet.clock.schedule_interval(lambda x: self.info(), 1) # drop time arg
         pyglet.clock.schedule_interval(lambda x: self.autosave(), 30)
 
