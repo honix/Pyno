@@ -12,7 +12,6 @@ def test_app_run():
 def test_get_window(window):
     # Check some meaningful things
     assert window.caption == 'Pyno'
-    assert window.active_nodes == []
 
 
 def test_saving_consistency(window):
