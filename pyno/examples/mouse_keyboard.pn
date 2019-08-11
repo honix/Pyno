@@ -1,1 +1,457 @@
-[{'type': 'node', 'x': 494, 'y': 116, 'size': (436, 293), 'color': (99, 114, 116), 'code': "import pyglet\n\ndef box(pos=[0, 0]):\n  x, y = int(pos[0]), int(pos[1])\n  box = pyglet.graphics.vertex_list_indexed(4,\n      [0, 1, 2, 0, 2, 3],\r\n      ('v2i', (x,      y,\r\n               x + 50, y,\r\n               x + 50, y +50,\r\n               x,      y + 50))\r,\n      ('c3B', (255, 100, 0)*4)\n    )\n  return box\n\ncall = box", 'connects': [{'output': {'node': 14, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'pos'}}}], 'parent': 10}, {'type': 'field', 'x': 143, 'y': 523, 'size': (250, 107), 'code': "'''\nGetting keyboard and mouse events from window\n\n'''", 'connects': [], 'parent': 11}, {'type': 'node', 'x': 495, 'y': 435, 'size': (447, 398), 'color': (93, 93, 89), 'code': "G['key'] = []\n\ndef keyboard(window=0):\n\n  @window.event\n  def on_key_press(symbol, mod):\n    G['key'].append(symbol)\n\n  @window.event\n  def on_key_release(symbol, mod):\n    if symbol in G['key']:\n      G['key'].pop(G['key'].index(symbol))\n\n  @window.event\n  def on_deactivate():\n    G['key'] = []\n\n  return G['key']\n\ncall = keyboard", 'connects': [{'output': {'node': 20, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'window'}}}], 'parent': 12}, {'type': 'field', 'x': 631, 'y': 357, 'size': (140, 30), 'code': '[]', 'connects': [{'output': {'node': 12, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'input'}}}], 'parent': 13}, {'type': 'node', 'x': 495, 'y': 297, 'size': (631, 398), 'color': (101, 91, 127), 'code': "import pyglet\n\nS['position'] = [20, 20]\n\ndef position(key=[]):\n\n  key = list(map(lambda x: pyglet.window.key.symbol_string(x), key))\n\n  if 'UP' in key:\n    S['position'][1] += 1\n  if 'DOWN' in key:\n    S['position'][1] -= 1\n  if 'RIGHT' in key:\n    S['position'][0] += 1\n  if 'LEFT' in key:\n    S['position'][0] -= 1\n  return S['position']\n\ncall = position", 'connects': [{'output': {'node': 12, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'key'}}}], 'parent': 14}, {'type': 'field', 'x': 634, 'y': 215, 'size': (132, 30), 'code': '[20, 104]', 'connects': [{'output': {'node': 14, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'input'}}}], 'parent': 15}, {'type': 'node', 'x': 337, 'y': 331, 'size': (326, 214), 'color': (80, 81, 92), 'code': "import pyglet\n\nG['mouse_pos'] = [0,0]\n\ndef mouse(window=0):\n  @window.event\n  def on_mouse_motion(x, y, \n                    dx, dy):\n    G['mouse_pos'] = [x, y]\n  return G['mouse_pos']\n\ncall = mouse", 'connects': [{'output': {'node': 20, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'window'}}}], 'parent': 16}, {'type': 'field', 'x': 210, 'y': 242, 'size': (124, 30), 'code': '[278, 123]', 'connects': [{'output': {'node': 16, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'input'}}}], 'parent': 17}, {'type': 'node', 'x': 336, 'y': 112, 'size': (434, 298), 'color': (99, 114, 116), 'code': "import pyglet\n\ndef box(pos=[0, 0]):\n  x, y = int(pos[0]), int(pos[1])\n  box = pyglet.graphics.vertex_list_indexed(4,\n      [0, 1, 2, 0, 2, 3],\r\n      ('v2i', (x,      y,\r\n               x + 50, y,\r\n               x + 50, y +50,\r\n               x,      y + 50))\r,\n      ('c3B', (100, 255, 0)*4)\n    )\n  return box\n\ncall = box", 'connects': [{'output': {'node': 16, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'pos'}}}], 'parent': 18}, {'type': 'node', 'x': 495, 'y': -28, 'size': (379, 243), 'color': (127, 96, 112), 'code': "import pyglet\n\ndef render(a=0, b=0, clear=True):\n  window = G['window']\n  window.switch_to()\n  if clear:\n    window.clear()\n  a.draw(pyglet.gl.GL_TRIANGLES)\n  b.draw(pyglet.gl.GL_TRIANGLES)\n\ncall = render", 'connects': [{'output': {'node': 10, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'b'}}}, {'output': {'node': 18, 'put': {'name': 'result'}}, 'input': {'put': {'name': 'a'}}}, {'output': {'node': 21, 'put': {'name': 'output'}}, 'input': {'put': {'name': 'clear'}}}], 'parent': 19}, {'type': 'node', 'x': 439, 'y': 545, 'size': (406, 194), 'color': (129, 105, 124), 'code': "import pyglet\n\nG['window'] = pyglet.window.Window(300,300)\n\ndef create_window():\n  return G['window']\n\ncall = create_window", 'connects': [], 'parent': 20}, {'type': 'field', 'x': 629, 'y': 87, 'size': (70, 30), 'code': '1', 'connects': [], 'parent': 21}]
+[
+    {
+        "version": 0.4
+    },
+    {
+        "type": "node",
+        "x": 494,
+        "y": 116,
+        "size": [
+            436,
+            293
+        ],
+        "color": [
+            99,
+            114,
+            116
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "def box(pos=[0, 0]):",
+            "  x, y = int(pos[0]), int(pos[1])",
+            "  box = pyglet.graphics.vertex_list_indexed(4,",
+            "      [0, 1, 2, 0, 2, 3],\r",
+            "      ('v2i', (x,      y,\r",
+            "               x + 50, y,\r",
+            "               x + 50, y +50,\r",
+            "               x,      y + 50))\r,",
+            "      ('c3B', (255, 100, 0)*4)",
+            "    )",
+            "  return box",
+            "",
+            "call = box"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 14,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "pos"
+                    }
+                }
+            }
+        ],
+        "id": 10
+    },
+    {
+        "type": "field",
+        "x": 143,
+        "y": 523,
+        "size": [
+            250,
+            107
+        ],
+        "code": [
+            "'''",
+            "Getting keyboard and mouse events from window",
+            "",
+            "'''"
+        ],
+        "connects": [],
+        "id": 11
+    },
+    {
+        "type": "node",
+        "x": 495,
+        "y": 435,
+        "size": [
+            447,
+            398
+        ],
+        "color": [
+            93,
+            93,
+            89
+        ],
+        "code": [
+            "G['key'] = []",
+            "",
+            "def keyboard(window=0):",
+            "",
+            "  @window.event",
+            "  def on_key_press(symbol, mod):",
+            "    G['key'].append(symbol)",
+            "",
+            "  @window.event",
+            "  def on_key_release(symbol, mod):",
+            "    if symbol in G['key']:",
+            "      G['key'].pop(G['key'].index(symbol))",
+            "",
+            "  @window.event",
+            "  def on_deactivate():",
+            "    G['key'] = []",
+            "",
+            "  return G['key']",
+            "",
+            "call = keyboard"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 20,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "window"
+                    }
+                }
+            }
+        ],
+        "id": 12
+    },
+    {
+        "type": "field",
+        "x": 631,
+        "y": 357,
+        "size": [
+            140,
+            30
+        ],
+        "code": [
+            "[]"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 12,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "id": 13
+    },
+    {
+        "type": "node",
+        "x": 495,
+        "y": 297,
+        "size": [
+            631,
+            398
+        ],
+        "color": [
+            101,
+            91,
+            127
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "S['position'] = [20, 20]",
+            "",
+            "def position(key=[]):",
+            "",
+            "  key = list(map(lambda x: pyglet.window.key.symbol_string(x), key))",
+            "",
+            "  if 'UP' in key:",
+            "    S['position'][1] += 1",
+            "  if 'DOWN' in key:",
+            "    S['position'][1] -= 1",
+            "  if 'RIGHT' in key:",
+            "    S['position'][0] += 1",
+            "  if 'LEFT' in key:",
+            "    S['position'][0] -= 1",
+            "  return S['position']",
+            "",
+            "call = position"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 12,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "key"
+                    }
+                }
+            }
+        ],
+        "id": 14
+    },
+    {
+        "type": "field",
+        "x": 634,
+        "y": 215,
+        "size": [
+            132,
+            30
+        ],
+        "code": [
+            "[84, 132]"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 14,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "id": 15
+    },
+    {
+        "type": "node",
+        "x": 337,
+        "y": 331,
+        "size": [
+            326,
+            214
+        ],
+        "color": [
+            80,
+            81,
+            92
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "G['mouse_pos'] = [0,0]",
+            "",
+            "def mouse(window=0):",
+            "  @window.event",
+            "  def on_mouse_motion(x, y, ",
+            "                    dx, dy):",
+            "    G['mouse_pos'] = [x, y]",
+            "  return G['mouse_pos']",
+            "",
+            "call = mouse"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 20,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "window"
+                    }
+                }
+            }
+        ],
+        "id": 16
+    },
+    {
+        "type": "field",
+        "x": 210,
+        "y": 242,
+        "size": [
+            124,
+            30
+        ],
+        "code": [
+            "[272, 300]"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 16,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "input"
+                    }
+                }
+            }
+        ],
+        "id": 17
+    },
+    {
+        "type": "node",
+        "x": 336,
+        "y": 112,
+        "size": [
+            434,
+            298
+        ],
+        "color": [
+            99,
+            114,
+            116
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "def box(pos=[0, 0]):",
+            "  x, y = int(pos[0]), int(pos[1])",
+            "  box = pyglet.graphics.vertex_list_indexed(4,",
+            "      [0, 1, 2, 0, 2, 3],\r",
+            "      ('v2i', (x,      y,\r",
+            "               x + 50, y,\r",
+            "               x + 50, y +50,\r",
+            "               x,      y + 50))\r,",
+            "      ('c3B', (100, 255, 0)*4)",
+            "    )",
+            "  return box",
+            "",
+            "call = box"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 16,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "pos"
+                    }
+                }
+            }
+        ],
+        "id": 18
+    },
+    {
+        "type": "node",
+        "x": 495,
+        "y": -28,
+        "size": [
+            379,
+            243
+        ],
+        "color": [
+            127,
+            96,
+            112
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "def render(a=0, b=0, clear=True):",
+            "  window = G['window']",
+            "  window.switch_to()",
+            "  if clear:",
+            "    window.clear()",
+            "  a.draw(pyglet.gl.GL_TRIANGLES)",
+            "  b.draw(pyglet.gl.GL_TRIANGLES)",
+            "",
+            "call = render"
+        ],
+        "connects": [
+            {
+                "output": {
+                    "node": 10,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "b"
+                    }
+                }
+            },
+            {
+                "output": {
+                    "node": 18,
+                    "put": {
+                        "name": "result"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "a"
+                    }
+                }
+            },
+            {
+                "output": {
+                    "node": 21,
+                    "put": {
+                        "name": "output"
+                    }
+                },
+                "input": {
+                    "put": {
+                        "name": "clear"
+                    }
+                }
+            }
+        ],
+        "id": 19
+    },
+    {
+        "type": "node",
+        "x": 439,
+        "y": 545,
+        "size": [
+            406,
+            194
+        ],
+        "color": [
+            129,
+            105,
+            124
+        ],
+        "code": [
+            "import pyglet",
+            "",
+            "config = pyglet.gl.Config(double_buffer=False)",
+            "G['window'] = pyglet.window.Window(300,300, config=config)",
+            "",
+            "def create_window():",
+            "  return G['window']",
+            "",
+            "call = create_window"
+        ],
+        "connects": [],
+        "id": 20
+    },
+    {
+        "type": "field",
+        "x": 629,
+        "y": 87,
+        "size": [
+            70,
+            30
+        ],
+        "code": [
+            "1"
+        ],
+        "connects": [],
+        "id": 21
+    }
+]

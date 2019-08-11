@@ -1,5 +1,8 @@
 [
     {
+        "version": 0.4
+    },
+    {
         "type": "node",
         "x": 509,
         "y": 96,
@@ -12,7 +15,25 @@
             114,
             116
         ],
-        "code": "import pyglet\n\nS['box'] = pyglet.graphics.vertex_list_indexed(\n      4, [0, 1, 2, 0, 2, 3],\n      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),\n      ('c3B', (255,255,255)*4) )\n\ndef draw_rect(pos=(0,0), size=(10,10)):\n  x, y = int(pos[0]),  int(pos[1])\n  w, h = int(size[0]), int(size[1])\n  S['box'].vertices = (x,     y,\n                       x + w, y,\n                       x + w, y + h,\n                       x,     y + h)\n  return S['box']\n\ncall = draw_rect",
+        "code": [
+            "import pyglet",
+            "",
+            "S['box'] = pyglet.graphics.vertex_list_indexed(",
+            "      4, [0, 1, 2, 0, 2, 3],",
+            "      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),",
+            "      ('c3B', (255,255,255)*4) )",
+            "",
+            "def draw_rect(pos=(0,0), size=(10,10)):",
+            "  x, y = int(pos[0]),  int(pos[1])",
+            "  w, h = int(size[0]), int(size[1])",
+            "  S['box'].vertices = (x,     y,",
+            "                       x + w, y,",
+            "                       x + w, y + h,",
+            "                       x,     y + h)",
+            "  return S['box']",
+            "",
+            "call = draw_rect"
+        ],
         "connects": [
             {
                 "output": {
@@ -41,7 +62,7 @@
                 }
             }
         ],
-        "parent": 43
+        "id": 43
     },
     {
         "type": "field",
@@ -51,9 +72,18 @@
             256,
             169
         ],
-        "code": "'''\nLittle ping-pong game\nKeys:\n    upper pad:\n        A    D\n    bottom pad:\n        LEFT RIGHT\n'''",
+        "code": [
+            "'''",
+            "Little ping-pong game",
+            "Keys:",
+            "    upper pad:",
+            "        A    D",
+            "    bottom pad:",
+            "        LEFT RIGHT",
+            "'''"
+        ],
         "connects": [],
-        "parent": 44
+        "id": 44
     },
     {
         "type": "node",
@@ -68,7 +98,30 @@
             93,
             89
         ],
-        "code": "import pyglet\n\nG['key'] = []\n\ndef keyboard(window=0):\n\n  @window.event\n  def on_key_press(symbol, mod):\n    G['key'].append(symbol)\n\n  @window.event\n  def on_key_release(symbol, mod):\n    if symbol in G['key']:\n      G['key'].pop(G['key'].index(symbol))\n\n  @window.event\n  def on_deactivate():\n    G['key'] = []\n\n  return G['key']\n\ncall = keyboard",
+        "code": [
+            "import pyglet",
+            "",
+            "G['key'] = []",
+            "",
+            "def keyboard(window=0):",
+            "",
+            "  @window.event",
+            "  def on_key_press(symbol, mod):",
+            "    G['key'].append(symbol)",
+            "",
+            "  @window.event",
+            "  def on_key_release(symbol, mod):",
+            "    if symbol in G['key']:",
+            "      G['key'].pop(G['key'].index(symbol))",
+            "",
+            "  @window.event",
+            "  def on_deactivate():",
+            "    G['key'] = []",
+            "",
+            "  return G['key']",
+            "",
+            "call = keyboard"
+        ],
         "connects": [
             {
                 "output": {
@@ -84,7 +137,7 @@
                 }
             }
         ],
-        "parent": 45
+        "id": 45
     },
     {
         "type": "field",
@@ -94,7 +147,9 @@
             110,
             118
         ],
-        "code": "[]",
+        "code": [
+            "[]"
+        ],
         "connects": [
             {
                 "output": {
@@ -110,7 +165,7 @@
                 }
             }
         ],
-        "parent": 46
+        "id": 46
     },
     {
         "type": "node",
@@ -125,7 +180,18 @@
             96,
             112
         ],
-        "code": "import pyglet\n\ndef render(meshes=None):\n  window = G['window']\n  window.switch_to()\n  window.clear()\n  for mesh in meshes:\n    mesh.draw(pyglet.gl.GL_TRIANGLES)\n  \ncall = render",
+        "code": [
+            "import pyglet",
+            "",
+            "def render(meshes=None):",
+            "  window = G['window']",
+            "  window.switch_to()",
+            "  window.clear()",
+            "  for mesh in meshes:",
+            "    mesh.draw(pyglet.gl.GL_TRIANGLES)",
+            "  ",
+            "call = render"
+        ],
         "connects": [
             {
                 "output": {
@@ -141,7 +207,7 @@
                 }
             }
         ],
-        "parent": 47
+        "id": 47
     },
     {
         "type": "node",
@@ -156,9 +222,21 @@
             105,
             124
         ],
-        "code": "import pyglet\n\nG['window'] = pyglet.window.Window(300, 450)\n\ndef create_window():\n  return G['window']\n\ncall = create_window\n\ncleanup = lambda: G['window'].close()",
+        "code": [
+            "import pyglet",
+            "",
+            "config = pyglet.gl.Config(double_buffer=False)",
+            "G['window'] = pyglet.window.Window(300, 450, config=config)",
+            "",
+            "def create_window():",
+            "  return G['window']",
+            "",
+            "call = create_window",
+            "",
+            "cleanup = lambda: G['window'].close()"
+        ],
         "connects": [],
-        "parent": 48
+        "id": 48
     },
     {
         "type": "node",
@@ -173,7 +251,26 @@
             91,
             127
         ],
-        "code": "from typing import *\n\nw = G['window']\nS['size'] = [70, 10]\nS['position'] = [w.width/2 - S['size'][0]/2, w.height - 30]\n\ndef pad_upper(key=[]) -> Tuple[Any, Any, Any]:\n  speed = G['dt'] * 200\n\n  if 'D' in key:\n    if S['position'][0] < w.width - S['size'][0]:\n      S['position'][0] += speed\n  if 'A' in key:\n    if S['position'][0] > 0:\n      S['position'][0] -= speed\n  return S['position'], S['size'], S\n\ncall = pad_upper",
+        "code": [
+            "from typing import *",
+            "",
+            "w = G['window']",
+            "S['size'] = [70, 10]",
+            "S['position'] = [w.width/2 - S['size'][0]/2, w.height - 30]",
+            "",
+            "def pad_upper(key=[]) -> Tuple[Any, Any, Any]:",
+            "  speed = G['dt'] * 20",
+            "",
+            "  if 'D' in key:",
+            "    if S['position'][0] < w.width - S['size'][0]:",
+            "      S['position'][0] += speed",
+            "  if 'A' in key:",
+            "    if S['position'][0] > 0:",
+            "      S['position'][0] -= speed",
+            "  return S['position'], S['size'], S",
+            "",
+            "call = pad_upper"
+        ],
         "connects": [
             {
                 "output": {
@@ -189,7 +286,7 @@
                 }
             }
         ],
-        "parent": 49
+        "id": 49
     },
     {
         "type": "node",
@@ -204,7 +301,15 @@
             121,
             111
         ],
-        "code": "import pyglet\n\ndef keys_to_names(keys=[]):\n  keys = list(map(lambda x: pyglet.window.key.symbol_string(x), keys))\n  return keys\n\ncall = keys_to_names",
+        "code": [
+            "import pyglet",
+            "",
+            "def keys_to_names(keys=[]):",
+            "  keys = list(map(lambda x: pyglet.window.key.symbol_string(x), keys))",
+            "  return keys",
+            "",
+            "call = keys_to_names"
+        ],
         "connects": [
             {
                 "output": {
@@ -220,7 +325,7 @@
                 }
             }
         ],
-        "parent": 50
+        "id": 50
     },
     {
         "type": "node",
@@ -235,7 +340,48 @@
             91,
             127
         ],
-        "code": "from typing import *\n\nw = G['window']\nS['position'] = [w.width // 2, w.height // 2]\nS['size'] = [10, 10]\nS['acc'] = [2, 1]\n\ndef ball(pad_u={}, pad_b={}) -> Tuple[Any, Any]:\n  speed = G['dt'] * 60\n  pos = S['position']\n\n  # OUT OF GAME\n  if (pos[1] > w.height) or (pos[1] < -S['size'][0]):\n    S['position'] = [w.width // 2, w.height // 2]\n    S['acc'][1] *= -1\n\n  # WALLS COLLISION\n  if pos[0] < w.width - S['size'][0]:\n    S['acc'][0] *= -1\n  if pos[0] > 0:\n    S['acc'][0] *= -1\n\n  # PADS COLLISION  \n  pu, su = pad_u['position'], pad_u['size']\n  if ((pu[1] > pos[1] > pu[1] - su[1]) and\n      (pu[0] < pos[0] < pu[0] + su[0])):\n    S['acc'][1] *= -1\n\n  pu, su = pad_b['position'], pad_b['size']\n  if ((pu[1] < pos[1] < pu[1] + su[1]) and\n      (pu[0] < pos[0] < pu[0] + su[0])):\n    S['acc'][1] *= -1\n\n  # MOVEMENT\n  S['position'][0] += S['acc'][0] * speed\n  S['position'][1] += S['acc'][1] * speed\n\n  return S['position'], S['size']\n\ncall = ball",
+        "code": [
+            "from typing import *",
+            "",
+            "w = G['window']",
+            "S['position'] = [w.width // 2, w.height // 2]",
+            "S['size'] = [10, 10]",
+            "S['acc'] = [2, 1]",
+            "",
+            "def ball(pad_u={}, pad_b={}) -> Tuple[Any, Any]:",
+            "  speed = G['dt'] * 6",
+            "  pos = S['position']",
+            "",
+            "  # OUT OF GAME",
+            "  if (pos[1] > w.height) or (pos[1] < -S['size'][0]):",
+            "    S['position'] = [w.width // 2, w.height // 2]",
+            "    S['acc'][1] *= -1",
+            "",
+            "  # WALLS COLLISION",
+            "  if pos[0] < w.width - S['size'][0]:",
+            "    S['acc'][0] *= -1",
+            "  if pos[0] > 0:",
+            "    S['acc'][0] *= -1",
+            "",
+            "  # PADS COLLISION  ",
+            "  pu, su = pad_u['position'], pad_u['size']",
+            "  if ((pu[1] > pos[1] > pu[1] - su[1]) and",
+            "      (pu[0] < pos[0] < pu[0] + su[0])):",
+            "    S['acc'][1] *= -1",
+            "",
+            "  pu, su = pad_b['position'], pad_b['size']",
+            "  if ((pu[1] < pos[1] < pu[1] + su[1]) and",
+            "      (pu[0] < pos[0] < pu[0] + su[0])):",
+            "    S['acc'][1] *= -1",
+            "",
+            "  # MOVEMENT",
+            "  S['position'][0] += S['acc'][0] * speed",
+            "  S['position'][1] += S['acc'][1] * speed",
+            "",
+            "  return S['position'], S['size']",
+            "",
+            "call = ball"
+        ],
         "connects": [
             {
                 "output": {
@@ -264,7 +410,7 @@
                 }
             }
         ],
-        "parent": 51
+        "id": 51
     },
     {
         "type": "node",
@@ -279,7 +425,13 @@
             90,
             127
         ],
-        "code": "def join3(a=None, b=None, c=None):\n  result = a, b, c\n  return result\n\ncall = join3",
+        "code": [
+            "def join3(a=None, b=None, c=None):",
+            "  result = a, b, c",
+            "  return result",
+            "",
+            "call = join3"
+        ],
         "connects": [
             {
                 "output": {
@@ -321,7 +473,7 @@
                 }
             }
         ],
-        "parent": 52
+        "id": 52
     },
     {
         "type": "node",
@@ -336,7 +488,25 @@
             114,
             116
         ],
-        "code": "import pyglet\n\nS['box'] = pyglet.graphics.vertex_list_indexed(\n      4, [0, 1, 2, 0, 2, 3],\n      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),\n      ('c3B', (255,255,255)*4) )\n\ndef draw_rect(pos=(0,0), size=(10,10)):\n  x, y = int(pos[0]),  int(pos[1])\n  w, h = int(size[0]), int(size[1])\n  S['box'].vertices = (x,     y,\n                       x + w, y,\n                       x + w, y + h,\n                       x,     y + h)\n  return S['box']\n\ncall = draw_rect",
+        "code": [
+            "import pyglet",
+            "",
+            "S['box'] = pyglet.graphics.vertex_list_indexed(",
+            "      4, [0, 1, 2, 0, 2, 3],",
+            "      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),",
+            "      ('c3B', (255,255,255)*4) )",
+            "",
+            "def draw_rect(pos=(0,0), size=(10,10)):",
+            "  x, y = int(pos[0]),  int(pos[1])",
+            "  w, h = int(size[0]), int(size[1])",
+            "  S['box'].vertices = (x,     y,",
+            "                       x + w, y,",
+            "                       x + w, y + h,",
+            "                       x,     y + h)",
+            "  return S['box']",
+            "",
+            "call = draw_rect"
+        ],
         "connects": [
             {
                 "output": {
@@ -365,7 +535,7 @@
                 }
             }
         ],
-        "parent": 53
+        "id": 53
     },
     {
         "type": "node",
@@ -380,7 +550,25 @@
             114,
             116
         ],
-        "code": "import pyglet\n\nS['box'] = pyglet.graphics.vertex_list_indexed(\n      4, [0, 1, 2, 0, 2, 3],\n      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),\n      ('c3B', (255,100,20)*4) )\n\ndef draw_rect(pos=(0,0), size=(10,10)):\n  x, y = int(pos[0]),  int(pos[1])\n  w, h = int(size[0]), int(size[1])\n  S['box'].vertices = (x,     y,\n                       x + w, y,\n                       x + w, y + h,\n                       x,     y + h)\n  return S['box']\n\ncall = draw_rect",
+        "code": [
+            "import pyglet",
+            "",
+            "S['box'] = pyglet.graphics.vertex_list_indexed(",
+            "      4, [0, 1, 2, 0, 2, 3],",
+            "      ('v2i', (0, 0, 10, 0, 10, 10, 0, 10)),",
+            "      ('c3B', (255,100,20)*4) )",
+            "",
+            "def draw_rect(pos=(0,0), size=(10,10)):",
+            "  x, y = int(pos[0]),  int(pos[1])",
+            "  w, h = int(size[0]), int(size[1])",
+            "  S['box'].vertices = (x,     y,",
+            "                       x + w, y,",
+            "                       x + w, y + h,",
+            "                       x,     y + h)",
+            "  return S['box']",
+            "",
+            "call = draw_rect"
+        ],
         "connects": [
             {
                 "output": {
@@ -409,7 +597,7 @@
                 }
             }
         ],
-        "parent": 54
+        "id": 54
     },
     {
         "type": "node",
@@ -424,7 +612,26 @@
             91,
             127
         ],
-        "code": "from typing import *\n\nw = G['window']\nS['size'] = [70, 10]\nS['position'] = [w.width/2 - S['size'][0]/2, 20]\n\ndef pad_bottom(key=[]) -> Tuple[Any, Any, Any]:\n  speed = G['dt'] * 200\n\n  if 'RIGHT' in key:\n    if S['position'][0] < w.width - S['size'][0]:\n      S['position'][0] += speed\n  if 'LEFT' in key:\n    if S['position'][0] > 0:\n      S['position'][0] -= speed\n  return S['position'], S['size'], S\n\ncall = pad_bottom",
+        "code": [
+            "from typing import *",
+            "",
+            "w = G['window']",
+            "S['size'] = [70, 10]",
+            "S['position'] = [w.width/2 - S['size'][0]/2, 20]",
+            "",
+            "def pad_bottom(key=[]) -> Tuple[Any, Any, Any]:",
+            "  speed = G['dt'] * 20",
+            "",
+            "  if 'RIGHT' in key:",
+            "    if S['position'][0] < w.width - S['size'][0]:",
+            "      S['position'][0] += speed",
+            "  if 'LEFT' in key:",
+            "    if S['position'][0] > 0:",
+            "      S['position'][0] -= speed",
+            "  return S['position'], S['size'], S",
+            "",
+            "call = pad_bottom"
+        ],
         "connects": [
             {
                 "output": {
@@ -440,6 +647,6 @@
                 }
             }
         ],
-        "parent": 55
+        "id": 55
     }
 ]
