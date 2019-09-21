@@ -1,3 +1,4 @@
+### (This repository is archived and no longer under development!)
 # Pyno — *Python-based data-flow visual programming* [![Build Status](https://travis-ci.com/honix/Pyno.svg?branch=master)](https://travis-ci.com/honix/Pyno)
 ![Pyno](docs/screenshots/particles.png)
 
